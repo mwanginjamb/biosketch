@@ -23,8 +23,15 @@ class AppAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
-        'css/site.css',
+        'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap',
+        'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
+        'css/tailwind.css', // compiled Tailwind CSS
     ];
+
+    public $js = [
+        'js/app.js', // optional: shared interactions
+    ];
+    
     public $depends = [
         YiiAsset::class,
         BootstrapAsset::class,
