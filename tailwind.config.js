@@ -2,9 +2,10 @@
 module.exports = {
     darkMode: 'class',
     content: [
-        './views/**/*.php',
-        './assets/**/*.js',
-        './views/layouts/*.php',
+        './frontend/views/**/*.php',
+        './frontend/widgets/**/*.js',
+        './frontend/web/js/**/*.js',
+        './frontend/views/layouts/*.php',
     ],
     theme: {
         extend: {

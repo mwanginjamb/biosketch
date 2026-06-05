@@ -46,3 +46,15 @@ if (toggleBtn && passwordInput) {
         toggleBtn.innerText = isPassword ? 'visibility_off' : 'visibility';
     });
 }
+
+// Password Field Type Toggle for Active record password field
+const pwdInput = document.getElementById('loginform-password');
+const pwdIcon = document.getElementById('pwd-icon');
+const pwdToggle = document.getElementById('pwd-toggle');
+
+pwdToggle.addEventListener('click', () => {
+    const isPassword = pwdInput.type === 'password';
+    pwdInput.type = isPassword ? 'text' : 'password';
+    pwdIcon.innerText = isPassword ? 'visibility_off' : 'visibility';
+    pwdToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+});
