@@ -11,6 +11,11 @@ AppAsset::register($this);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
 </head>
 <body class="bg-surface text-on-surface">
 <?php $this->beginBody(); ?>

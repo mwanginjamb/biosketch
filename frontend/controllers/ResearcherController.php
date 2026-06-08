@@ -67,6 +67,7 @@ class ResearcherController extends Controller
      */
     public function actionCreate()
     {
+        $this->layout = 'create';
         $model = new Researcher();
 
         if ($this->request->isPost) {
@@ -77,8 +78,12 @@ class ResearcherController extends Controller
             $model->loadDefaultValues();
         }
 
+        //
+
         return $this->render('create', [
             'model' => $model,
+            'modelEducation' => [new \frontend\models\ResearcherEducation()],
+            'modelPublications' => [new \frontend\models\Publications()]
         ]);
     }
 

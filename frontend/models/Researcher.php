@@ -37,6 +37,7 @@ use Yii;
 class Researcher extends \yii\db\ActiveRecord
 {
 
+    public $attachment;
 
     /**
      * {@inheritdoc}
@@ -61,6 +62,9 @@ class Researcher extends \yii\db\ActiveRecord
             [['website', 'profile_photo'], 'string', 'max' => 500],
             [['era_commons_id', 'orcid'], 'string', 'max' => 100],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            // Attachment  - jpeg, jpg,png
+            [['attachment'], 'file', 'mimeTypes' => ['image/jpeg','image/png']],
+            [['attachment'], 'file', 'maxSize' => '5120'], //5mb
         ];
     }
 
@@ -159,6 +163,19 @@ class Researcher extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \frontend\models\query\ResearcherQuery(get_called_class());
+    }
+
+    //get titles list for dropdown
+    public function getTitles()
+    {
+        return [
+            'Dr.' => 'Dr.',
+            'Prof.' => 'Prof.',
+            'Mr.' => 'Mr.',
+            'Ms.' => 'Ms.',     
+            'Mrs.' => 'Mrs.',
+
+        ];
     }
 
 }

@@ -51,12 +51,13 @@ class FormUi
      *   $form = ActiveForm::begin(FormUi::formConfig());
      *   $form = ActiveForm::begin(FormUi::formConfig('patient-form'));
      */
-    public static function formConfig(string $id = 'auth-form'): array
+    public static function formConfig(string $id = 'auth-form', bool $isCreate = false): array
     {
+        $isCreateClass = $isCreate ? 'px-sm md:px-md' : '';
         return [
             'id'      => $id,
             'options' => [
-                'class' => 'space-y-md',
+                'class' => 'space-y-md ' . $isCreateClass,
             ],
             /*
              * Global default field config. Override per-field with:
@@ -240,35 +241,7 @@ public static function passwordFieldConfig(
         ";
     }
 
-    /**
-     * Compact input variant used inside card / sub-form contexts
-     * (e.g. publication entries in create.html).
-     *
-     * Matches: bg-white border border-outline-variant rounded p-2
-     *          text-body-md font-body-md form-focus-ring
-     *
-     * Usage:
-     *   ->textInput(['class' => FormUi::inputClassCompact()])
-     */
-    public static function inputClassCompact(): string
-    {
-        return '
-            w-full
-            bg-surface-container-lowest
-            border
-            border-outline-variant
-            rounded
-            p-2
-            font-body-md
-            text-body-md
-            text-on-surface
-            focus:border-secondary
-            focus:ring-1
-            focus:ring-secondary
-            outline-none
-            transition-all
-        ';
-    }
+  
 
     /**
      * Mono variant of the compact input (DOI fields, accession numbers, etc.).
@@ -381,6 +354,21 @@ public static function passwordFieldConfig(
         ';
     }
 
+    private const BUTTON_SECONDARY_CREATE = '
+    w-full
+    py-4
+    bg-white
+    border
+    border-secondary
+    text-secondary
+    font-bold
+    rounded
+    flex
+    items-center
+    justify-center
+    gap-xs
+';
+
     /**
      * Renders a full-width secondary outline <a> button.
      *
@@ -397,6 +385,7 @@ public static function passwordFieldConfig(
             'encode' => false,
         ]);
     }
+
 
 
     /*
@@ -906,4 +895,171 @@ public static function passwordFieldConfig(
             'class' => 'flex items-center gap-xs font-label-caps text-label-caps text-on-surface-variant mb-xs uppercase tracking-widest',
         ]);
     }
+
+    // ==================================================================
+    // NEW HELPERS FOR create.html (added without modifying anything above)
+    // ==================================================================
+
+    /**
+     * Standard input class for create.html main fields.
+     * Matches: bg-surface-container-low, border, rounded, p-2, form-focus-ring
+     */
+    public static function inputClassStandard(): string
+    {
+        return self::INPUT_STANDARD;
+    }
+
+    /**
+     * Compact input class for publication entries (white background).
+     */
+    public static function inputClassCompact(): string
+    {
+        return self::INPUT_COMPACT;
+    }
+
+    /**
+     * Textarea class (same as standard, adds resize-none).
+     */
+    public static function textareaClass(): string
+    {
+        return self::INPUT_STANDARD . ' resize-none';
+    }
+
+    /**
+     * Select class (same as standard input).
+     */
+    public static function selectClass(): string
+    {
+        return self::INPUT_STANDARD;
+    }
+
+    /**
+     * Renders the photo upload widget from create.html.
+     * Generates a clickable circle that opens a hidden file input and shows preview.
+     *
+     * @param string $inputName   Name attribute for the file input.
+     * @param string $currentImage Existing image URL (optional).
+     * @return string
+     */
+    public static function photoUploadWidget(string $inputName = 'photo', string $currentImage = ''): string
+    {
+        $containerId = 'photo-upload-' . uniqid();
+        $fileInputId = 'photo-file-' . uniqid();
+        $previewId   = 'photo-preview-' . uniqid();
+        $circleClass = self::UPLOAD_CIRCLE_CLASS;
+        $bgStyle = $currentImage ? "background-image: url('" . Html::encode($currentImage) . "'); background-size: cover; background-position: center;" : '';
+
+        return <<<HTML
+<div id="{$containerId}" class="flex flex-col items-center gap-xs mb-sm">
+    <div class="{$circleClass}" style="{$bgStyle}" onclick="document.getElementById('{$fileInputId}').click();">
+        <span class="material-symbols-outlined text-3xl" data-icon="add_a_photo">add_a_photo</span>
+        <span class="text-[10px] font-bold uppercase mt-1">Upload Photo</span>
+    </div>
+    <input type="file" id="{$fileInputId}" name="{$inputName}" accept="image/*" style="display: none;" onchange="previewPhoto(this, '{$previewId}', '{$containerId}')">
+    <div id="{$previewId}"></div>
+</div>
+
+<script>
+function previewPhoto(input, previewContainerId, containerId) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var container = document.getElementById(containerId);
+            if (container) {
+                var uploadDiv = container.querySelector('.w-24.h-24');
+                if (uploadDiv) {
+                    uploadDiv.style.backgroundImage = "url('" + e.target.result + "')";
+                    uploadDiv.style.backgroundSize = "cover";
+                    uploadDiv.style.backgroundPosition = "center";
+                    var iconSpan = uploadDiv.querySelector('.material-symbols-outlined');
+                    var textSpan = uploadDiv.querySelector('.text-\\[10px\\]');
+                    if (iconSpan) iconSpan.style.display = 'none';
+                    if (textSpan) textSpan.style.display = 'none';
+                }
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+HTML;
+    }
+
+    // ==================================================================
+    // TAILWIND CLASS CONSTANTS – only for the new create.html helpers
+    // (Existing methods keep their inline class strings)
+    // ==================================================================
+
+    private const INPUT_STANDARD = '
+        w-full
+        bg-surface-container-low
+        border
+        border-outline-variant
+        rounded
+        p-2
+        text-body-md
+        font-body-md
+        form-focus-ring
+    ';
+
+    private const INPUT_COMPACT = '
+        w-full
+        bg-white
+        border
+        border-outline-variant
+        rounded
+        p-2
+        text-body-md
+        font-body-md
+        form-focus-ring
+    ';
+
+    private const INPUT_MONO = '
+        w-full
+        bg-white
+        border
+        border-outline-variant
+        rounded
+        p-2
+        font-data-mono
+        text-data-mono
+        text-[12px]
+        form-focus-ring
+    ';
+
+    private const UPLOAD_CIRCLE_CLASS = '
+        w-24 h-24 rounded-full bg-surface-container-high border-2 border-dashed border-outline-variant
+        flex flex-col items-center justify-center text-on-surface-variant cursor-pointer
+        hover:bg-surface-variant transition-colors overflow-hidden
+    ';
+
+    private const SECTION_CLASS = 'bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm p-md ';
+
+
+    /**
+ * Begins a repeatable section container with a header.
+ *
+ * @param string $title Section title (e.g., "Personal Information").
+ * @param string $icon  Material Symbol name (e.g., "person", "school", "description").
+ * @return string Opening HTML for the section.
+ *
+ * Usage:
+ *   <?= FormUi::beginSection('Personal Information', 'person') ?>
+ *       ... form fields ...
+ *   <?= FormUi::endSection() ?>
+ */
+public static function beginSection(string $title, string $icon): string
+{
+    return '<section class="' . self::SECTION_CLASS . '">'
+         . '<div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">'
+         . '<h2 class="font-headline-md text-headline-md">' . Html::encode($title) . '</h2>'
+         . '<span class="material-symbols-outlined text-on-surface-variant" data-icon="' . Html::encode($icon) . '">' . Html::encode($icon) . '</span>'
+         . '</div>';
+}
+
+public static function endSection(): string
+{
+    return '</section>';
+}
+
 }
