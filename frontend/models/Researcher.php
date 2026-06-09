@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\models;
+use common\models\User;
 
 use Yii;
 
@@ -38,6 +39,7 @@ class Researcher extends \yii\db\ActiveRecord
 {
 
     public $attachment;
+    public $avatar_url; // virtual attribute for profile photo URL
 
     /**
      * {@inheritdoc}
@@ -63,7 +65,7 @@ class Researcher extends \yii\db\ActiveRecord
             [['era_commons_id', 'orcid'], 'string', 'max' => 100],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // Attachment  - jpeg, jpg,png
-            [['attachment'], 'file', 'mimeTypes' => ['image/jpeg','image/png']],
+            [['attachment'], 'file', 'mimeTypes' => ['image/jpeg', 'image/png']],
             [['attachment'], 'file', 'maxSize' => '5120'], //5mb
         ];
     }
@@ -172,7 +174,7 @@ class Researcher extends \yii\db\ActiveRecord
             'Dr.' => 'Dr.',
             'Prof.' => 'Prof.',
             'Mr.' => 'Mr.',
-            'Ms.' => 'Ms.',     
+            'Ms.' => 'Ms.',
             'Mrs.' => 'Mrs.',
 
         ];

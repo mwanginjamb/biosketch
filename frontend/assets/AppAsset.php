@@ -31,10 +31,10 @@ class AppAsset extends AssetBundle
     public $js = [
         'js/app.js', // optional: shared interactions
     ];
-    
+
     public $depends = [
         YiiAsset::class,
-        //BootstrapAsset::class,
-        // ColorModeAsset::class,
+        BootstrapAsset::class,
+        ColorModeAsset::class,
     ];
 }

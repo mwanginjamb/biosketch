@@ -53,10 +53,14 @@ class ResearcherController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView($id = 1)
     {
+        //$model = $this->findModel($id),
+        $model = new Researcher();
+        $model->id = $id;
+        $model->avatar_url = 'https://randomuser.me/api/portraits/men/75.jpg';
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -69,6 +73,7 @@ class ResearcherController extends Controller
     {
         $this->layout = 'create';
         $model = new Researcher();
+        $model->user_id = 1; // default to user ID 1 for testing
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
