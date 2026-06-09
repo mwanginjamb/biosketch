@@ -88,4 +88,16 @@ class ResearcherEducation extends \yii\db\ActiveRecord
         return new \frontend\models\query\ResearcherEducationQuery(get_called_class());
     }
 
+    // Get Degree options for dropdown
+    public static function getDegreeOptions()
+    {        
+        return [
+            'Ph.D.' => 'Ph.D.',
+            'M.D.' => 'M.D.',
+            'M.S.' => 'M.S.',
+            'B.S.' => 'B.S.',
+        ];      
+
+    }
+
 }

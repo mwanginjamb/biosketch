@@ -41,7 +41,7 @@ $this->beginPage();
                 ]) ?>
             </div>
             <?= Html::img(
-                Yii::$app->user->identity->avatar_url ?? '',
+               'https://randomuser.me/api/portraits/men/75.jpg',
                 ['alt' => 'Profile', 'class' => 'w-10 h-10 rounded-full border border-outline-variant object-cover']
             ) ?>
         </div>

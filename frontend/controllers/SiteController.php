@@ -204,6 +204,7 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset(): string|Response
     {
+        $this->layout = 'guest';
         $model = new PasswordResetRequestForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
@@ -284,6 +285,7 @@ class SiteController extends Controller
      */
     public function actionResendVerificationEmail(): string|Response
     {
+        $this->layout = 'guest';
         $model = new ResendVerificationEmailForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {

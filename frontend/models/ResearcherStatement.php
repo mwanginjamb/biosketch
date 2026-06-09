@@ -80,4 +80,15 @@ class ResearcherStatement extends \yii\db\ActiveRecord
         return new \frontend\models\query\ResearcherStatementQuery(get_called_class());
     }
 
+    // statement Type options
+    public static function getStatementTypeOptions()
+    {
+        return [
+            'research_interests' => 'Research Interests',
+            'current_projects' => 'Current Projects',
+            'future_plans' => 'Future Plans',
+            'personal_statement' => 'Personal Statement'
+        ];
+    }
+
 }

@@ -7,6 +7,10 @@ use frontend\models\ResearcherSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use frontend\models\ResearcherEducation;
+use yii\web\BadRequestHttpException;
+
+use Yii;
 
 /**
  * ResearcherController implements the CRUD actions for Researcher model.
@@ -141,4 +145,59 @@ class ResearcherController extends Controller
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
+
+    public function actionSaveEducation()
+{
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+    if (!Yii::$app->request->isPost && !Yii::$app->request->isPut || !Yii::$app->request->isAjax) {
+        throw new BadRequestHttpException('Invalid request.');
+    }
+
+    $body = Json::decode(Yii::$app->request->rawBody, true);
+    if (empty($body)) {
+        return ['success' => false, 'message' => 'Empty request body.'];
+    }
+
+    $id = $body['id'] ?? null;
+    if ($id) {
+        $model = ResearcherEducation::findOne($id);
+        if (!$model) {
+            return ['success' => false, 'message' => 'Record not found.'];
+        }
+    } else {
+        $model = new ResearcherEducation();
+    }
+
+    // Map attributes (adjust if your field names differ)
+    $model->setAttributes([
+        'degree'          => $body['degree'] ?? null,
+        'institution_name'=> $body['institution_name'] ?? null,
+        'field_of_study'  => $body['field_of_study'] ?? null,
+        'graduation_year' => $body['graduation_year'] ?? null,
+        'sort_order'      => $body['sort_order'] ?? 0,
+        // researcher_id will be set after main researcher is saved? For now, you may need to link:
+        // 'researcher_id' => Yii::$app->user->identity->researcher_id ?? null,
+    ]);
+
+    // If you have a researcher_id from session or logged-in user, set it
+    if (!$id && !$model->researcher_id) {
+        // Example: get from logged-in user's profile
+        $model->researcher_id = Yii::$app->user->identity->id ?? null;
+    }
+
+    if ($model->save()) {
+        return [
+            'success' => true,
+            'id'      => $model->id,
+            'message' => $id ? 'Entry updated.' : 'Entry saved.',
+        ];
+    }
+
+    return [
+        'success' => false,
+        'message' => 'Validation failed',
+        'errors'  => $model->getFirstErrors(),
+    ];
+}
 }

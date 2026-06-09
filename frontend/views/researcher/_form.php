@@ -1,12 +1,13 @@
 <?php
 
 use yii\bootstrap5\Html;
-use yii\bootstrap5\ActiveForm;
+use yii\widgets\ActiveForm;
 use common\library\FormUi;
+use frontend\models\ResearcherStatement;
 
 /** @var yii\web\View $this */
 /** @var frontend\models\Researcher $model */
-/** @var yii\bootstrap5\ActiveForm $form */
+/** @var yii\widgets\ActiveForm $form */
 ?>
 
 <!-- Welcome / Active Tab Indicator -->
@@ -45,23 +46,17 @@ use common\library\FormUi;
 
     <div class="grid grid-cols-2 gap-xs">
 
-        <?= $form->field($model, 'era_commons_id', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassStandard(),'placeholder' => 'Enter your ERA Commons ID.']) ?>
+        <?= $form->field($model, 'era_commons_id', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(),'placeholder' => 'ARIVERA_77']) ?>
 
-        <?= $form->field($model, 'orcid', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassStandard(),'placeholder' => 'Enter your ORCID.']) ?>
+        <?= $form->field($model, 'orcid', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(),'placeholder' => '0000-0002-1825-0097']) ?>
 
     </div>
 
     
 
-    <?= $form->field($model, 'status', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassStandard()]) ?>
+    <?php $form->field($model, 'status', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
 
-    <?= $form->field($model, 'version', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassStandard()]) ?>
-
-    
-
-  
-
-
+    <?php $form->field($model, 'version', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
     
     <?= FormUi::endSection() ?>   
     
@@ -69,22 +64,79 @@ use common\library\FormUi;
     
     <!-- Education and Training  -->
     
-    <?= FormUi::beginSection('Education and Training', 'school') ?>
-    
-    
-    
 
+<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+    <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
+        <h2 class="font-headline-md text-headline-md">Education &amp; Training</h2>
+
+        <button type="button" class="text-secondary flex items-center" id="add-education">
+            <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+        </button>
+    </div>
     
     
-    <?= FormUi::endSection() ?>  
+    <div id="education-wrapper" class="space-y-4">
+        <?php foreach ($eduLines as $index =>$edu): ?>
+            <?= $this->render('_education_row', ['model' => $edu, 'index' => $index, 'form' => $form]) ?>
+        <?php endforeach; ?>
+    </div>
+
+        <!-- Template for new education entries -->
+        <?= $this->render('_education_template', ['model' => $edu,'form' => $form]) ?>
+
+</section>
+
+<!-- Researcher Statement -->
+<?= FormUi::beginSection('Researcher Statement', 'description') ?>
+
+<?= $form->field(new \frontend\models\ResearcherStatement(), 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(),['prompt' => 'Select statement type','class' => FormUi::selectClass()]) ?>
+
+<?= $form->field(new \frontend\models\ResearcherStatement(), 'content', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(),'placeholder' => 'Enter a brief statement about your research interests and expertise.']) ?>
+
+<?= FormUi::endSection() ?>
+
+
+<!-- Publications -->
+
+
+<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+    <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
+        <h2 class="font-headline-md text-headline-md">Select Publications</h2>
+
+        <button type="button" class="text-secondary flex items-center" id="add-publication">
+            <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+        </button>
+    </div>
+    
+    
+    <div id="publication-wrapper" class="space-y-4">
+        <?php foreach ($publicationLines as $index =>$pub): ?>
+            <?= $this->render('_publication_row', ['model' => $pub, 'index' => $index, 'form' => $form]) ?>
+        <?php endforeach; ?>
+    </div>
+
+        <!-- Template for new publication entries -->
+        <?= $this->render('_publication_template', ['model' => new \frontend\models\Publications(),'form' => $form]) ?>
+
+</section>
+
+
+<!-- Publications -->
+    
+    
+    
+    
     
     
     <!-- Save Actions -->
     <div class="pt-sm pb-lg space-y-sm">
       <?= Html::submitButton('Save Progress', ['class' => FormUi::buttonClass('auth')]) ?>
-    <?= ($model->id)?FormUi::secondaryButton('Preview BioSketch', 'visibility', ['biosketch/preview', 'id' => $model->id ?? null]):'' ?>
+     <?= ($model->id)?FormUi::secondaryButton('Preview BioSketch', 'visibility', ['biosketch/preview', 'id' => $model->id ?? null]):'' ?>
     </div>
     
     <!-- End composite form -->
     <?php ActiveForm::end(); ?>
+
+
+    <?php $this->registerJsFile('@web/js/form.js', ['position' => \yii\web\View::POS_END]); ?>
     
