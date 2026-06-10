@@ -55,6 +55,12 @@ AppAsset::register($this);
             <span class="font-body-md">Analytics</span>
         </a>
     </nav>
+
+<div class="mt-auto space-y-1 border-t border-outline-variant pt-sm">
+    
+    <?= Html::a('<span class="material-symbols-outlined">Power</span> Sign out',['site/logout'],['class' => 'flex items-center gap-xs px-sm py-xs transition-all text-on-surface-variant hover:bg-surface-container-high rounded-xl' ]) ?>
+      
+</div>
 </aside>
 
 <!-- Main Content Area -->

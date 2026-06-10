@@ -23,15 +23,15 @@ $this->title = 'List of Pulished BioSketches';
     <div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col sm:flex-row items-center justify-between gap-md rounded-t-xl">
 
         <div class="flex items-center gap-xs">
-            <button class="px-md py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps">
+            <button id="filter-all" class="px-md py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps">
                 All
             </button>
 
-            <button class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
+            <button id="filter-draft" class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
                 Drafts
             </button>
 
-            <button class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
+            <button id="filter-published" class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
                 Published
             </button>
         </div>
@@ -252,6 +252,43 @@ const table = new DataTable('#researchers-table', {
 
 $('#biosketch-filter').on('keyup', function () {
     table.search(this.value).draw();
+});
+
+// filtering using the chip buttons
+
+function activateFilter(buttonId)
+{
+    $('#filter-all,#filter-draft,#filter-published')
+        .removeClass('bg-primary text-on-primary')
+        .addClass('hover:bg-surface-container-high text-on-surface-variant');
+
+    $(buttonId)
+        .removeClass('hover:bg-surface-container-high text-on-surface-variant')
+        .addClass('bg-primary text-on-primary');
+}
+
+$('#filter-all').click(function() {
+
+    activateFilter('#filter-all');
+
+    table.column(4).search('').draw();
+
+});
+
+$('#filter-draft').click(function() {
+
+    activateFilter('#filter-draft');
+
+    table.column(4).search('DRAFT').draw();
+
+});
+
+$('#filter-published').click(function() {
+
+    activateFilter('#filter-published');
+
+    table.column(4).search('PUBLISHED').draw();
+
 });
 
 JS;
