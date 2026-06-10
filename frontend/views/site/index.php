@@ -1,209 +1,261 @@
 <?php
 
-declare(strict_types=1);
+use yii\bootstrap5\Html;
 
-/** @var yii\web\View $this */
+use frontend\assets\DtAsset;
+DtAsset::register($this);
 
-use yii\helpers\Html;
-
-$this->title = 'My Yii Application';
-$this->params['meta_description'] = 'A high-performance PHP framework best for developing web applications. Fast, secure, and professional.';
-$this->params['meta_keywords'] = 'yii, yii2, php, framework, web application, high-performance';
+$this->title = 'List of Pulished BioSketches';
 ?>
-<div class="site-index">
 
-    <!-- Hero banner with Yii gradient -->
-    <div class="hero-banner text-white rounded-4 p-5 mb-4 position-relative overflow-hidden">
-        <?= Html::img(Yii::getAlias('@web/images/yii3_full_white_for_dark.svg'), [
-            'alt' => '',
-            'class' => 'd-none d-lg-block position-absolute hero-logo',
-        ]) ?>
-        <div class="position-relative">
-            <h1 class="display-5 fw-bold mb-3">Build with Yii Framework</h1>
-            <p class="lead opacity-75 mb-4 hero-lead">
-                A high-performance PHP framework best for developing web applications.
-                Fast, secure, and professional.
-            </p>
-            <div class="d-flex gap-2 flex-wrap">
-                <?= Html::a(
-                    'Get Started',
-                    'https://www.yiiframework.com/doc/guide/2.0/en/start-installation',
-                    [
-                        'class' => 'btn btn-light btn-lg fw-semibold px-4',
-                        'rel' => 'noopener',
-                        'target' => '_blank',
-                    ],
-                ) ?>
-                <?= Html::a(
-                    'API Reference',
-                    'https://www.yiiframework.com/doc/api/2.0',
-                    [
-                        'class' => 'btn btn-outline-light btn-lg px-4',
-                        'rel' => 'noopener',
-                        'target' => '_blank',
-                    ],
-                ) ?>
-            </div>
+<div class="px-gutter py-lg max-w-[1280px] w-full mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
+<div>
+<h1 class="font-display text-display text-primary tracking-tight">Published Biosketches</h1>
+<p class="text-on-surface-variant font-body-lg">Manage and update your NIH and NSF formatted professional profiles.</p>
+</div>
+
+<?= Html::a(' <span class="material-symbols-outlined">add_circle</span> Create New',['researcher/create'],['title' => 'Create Your Bio Sketch','class' => 'flex items-center justify-center gap-xs bg-primary text-on-primary px-lg py-3 rounded-lg font-bold shadow-md hover:shadow-lg transition-all']) ?>
+   
+</div>
+<!-- Table Controls -->
+    <div class="bg-surface-container-lowest border border-outline-variant p-md flex flex-col sm:flex-row items-center justify-between gap-md rounded-t-xl">
+
+        <div class="flex items-center gap-xs">
+            <button class="px-md py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps">
+                All
+            </button>
+
+            <button class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
+                Drafts
+            </button>
+
+            <button class="px-md py-1.5 rounded-full hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps">
+                Published
+            </button>
         </div>
+
+        <div class="relative w-full sm:w-64">
+
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">
+                search
+            </span>
+
+            <input
+                id="biosketch-filter"
+                type="text"
+                placeholder="Filter biosketches..."
+                class="w-full pl-9 pr-4 py-2 border border-outline-variant bg-surface-container-low rounded-lg text-body-md focus:border-secondary focus:ring-0"
+            >
+
+        </div>
+
     </div>
 
-    <!-- Extensions grid -->
-    <div class="row g-3">
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#128270;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-debug</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Debug toolbar and debugger for Yii2. Inspect logs, database queries,
-                        request data, and application performance in real time.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://www.yiiframework.com/extension/yiisoft/yii2-debug',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ],
-                    ) ?>
-                </div>
-            </div>
+    <!-- Data Table -->
+    <div class="bg-surface-container-lowest border-x border-b border-outline-variant overflow-hidden rounded-b-xl shadow-sm">
+
+        <div class="overflow-x-auto">
+
+            <table id="researchers-table" class="w-full text-left border-collapse">
+
+                <thead class="bg-surface-container-low border-b border-outline-variant">
+
+                    <tr>
+                        <th class="px-md py-4">Profile</th>
+                        <th class="px-md py-4">Role</th>
+                        <th class="px-md py-4">Department</th>
+                        <th class="px-md py-4">Last Updated</th>
+                        <th class="px-md py-4">Status</th>
+                        <th class="px-md py-4 text-center">Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody class="divide-y divide-outline-variant">
+
+                <?php foreach ($models as $model): ?>
+
+                    <tr class="hover:bg-surface-container-low/50 transition-colors">
+
+                        <td class="px-md py-4">
+
+                            <div class="flex items-center gap-sm">
+
+                                <div class="h-10 w-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+                                    <?= Html::encode($model->title) ?>
+                                </div>
+
+                                <div>
+
+                                    <div class="font-body-md font-bold text-primary">
+                                        <?= Html::encode($model->full_name) ?>
+                                    </div>
+
+                                    <div class="text-xs text-on-surface-variant">
+                                        <?= Html::encode($model->email) ?>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td class="px-md py-4 text-on-surface-variant">
+                            <?= Html::encode($model->role_title) ?>
+                        </td>
+
+                        <td class="px-md py-4 text-on-surface-variant">
+                            <?= Html::encode($model->department) ?>
+                        </td>
+
+                        <td class="px-md py-4 font-data-mono text-on-surface-variant">
+                            <?= Yii::$app->formatter->asDate($model->updated_at) ?>
+                        </td>
+
+                        <td class="px-md py-4">
+
+                            <?php if ($model->status === 1): ?>
+
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                                    PUBLISHED
+                                </span>
+
+                            <?php else: ?>
+
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-[10px] font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                    DRAFT
+                                </span>
+
+                            <?php endif; ?>
+
+                        </td>
+
+                        <td class="px-md py-4">
+
+                            <div class="flex justify-center gap-xs">
+
+                                <?= Html::a(
+                                    '<span class="material-symbols-outlined">visibility</span>',
+                                    ['researcher/view', 'id' => $model->id],
+                                    [
+                                        'class' => 'p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors',
+                                        'title' => 'View'
+                                    ]
+                                ) ?>
+
+                                <?= Html::a(
+                                    '<span class="material-symbols-outlined">edit</span>',
+                                    ['researcher/update', 'id' => $model->id],
+                                    [
+                                        'class' => 'p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors',
+                                        'title' => 'Edit'
+                                    ]
+                                ) ?>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                <?php endforeach; ?>
+
+                </tbody>
+
+            </table>
+
         </div>
 
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#9881;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-gii</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Automatic code generator for models, controllers, CRUD, forms, and modules.
-                        Boost your productivity with scaffolding.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://www.yiiframework.com/extension/yiisoft/yii2-gii',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ],
-                    ) ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#128203;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-queue</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Asynchronous job queue with support for DB, Redis, AMQP, Beanstalk,
-                        and SQS drivers. Run background tasks with ease.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://www.yiiframework.com/extension/yiisoft/yii2-queue',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ]
-                    ) ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#9889;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-redis</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Redis integration providing cache, session, and ActiveRecord support.
-                        Leverage in-memory storage for blazing-fast data access.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://www.yiiframework.com/extension/yiisoft/yii2-redis',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ]
-                    ) ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#128269;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-elasticsearch</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Elasticsearch integration with ActiveRecord and query builder.
-                        Add powerful full-text search capabilities to your application.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://www.yiiframework.com/extension/yiisoft/yii2-elasticsearch',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ]
-                    ) ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 extension-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="extension-icon">&#9993;</span>
-                        <h3 class="h6 fw-bold mb-0 ms-2">yii2-symfonymailer</h3>
-                    </div>
-                    <p class="text-body-secondary small mb-0">
-                        Email sending integration powered by Symfony Mailer.
-                        Compose and deliver rich HTML emails with attachments and templates.
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <?= Html::a(
-                        'Learn more &raquo;',
-                        'https://github.com/yiisoft/yii2-symfonymailer',
-                        [
-                            'class' => 'btn btn-sm btn-outline-secondary',
-                            'rel' => 'noopener',
-                            'target' => '_blank',
-                        ]
-                    ) ?>
-                </div>
-            </div>
-        </div>
     </div>
 
 </div>
+
+
+
+
+
+
+
+
+<!-- Stats/Summary Bento-ish Section -->
+<div class="mt-lg grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-secondary bg-secondary-container p-2 rounded-lg">verified</span>
+<span class="text-data-mono text-xs text-on-surface-variant">+12% vs last month</span>
+</div>
+<div class="text-display font-display text-primary">08</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">Published Biosketches</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-primary bg-primary-container/20 p-2 rounded-lg text-primary">pending_actions</span>
+<span class="text-data-mono text-xs text-on-surface-variant">4 active drafts</span>
+</div>
+<div class="text-display font-display text-primary">04</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">Work in Progress</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
+<div class="flex justify-between items-start mb-sm">
+<span class="material-symbols-outlined text-on-primary-fixed-variant bg-tertiary-fixed p-2 rounded-lg">history</span>
+<span class="text-data-mono text-xs text-on-surface-variant">Last activity 2h ago</span>
+</div>
+<div class="text-display font-display text-primary">24</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant">Annual Revisions</div>
+</div>
+</div>
+</div>
+
+
+
+<?php
+
+$js = <<<JS
+
+const table = new DataTable('#researchers-table', {
+
+    responsive: true,
+    ordering: true,
+    pageLength: 10,
+
+    responsive: true,
+    columnDefs: [
+        {
+            targets: 5, // Actions
+            searchable: false,
+            orderable: false
+        }
+    ],
+
+    layout: {
+
+        topStart: {
+            buttons: [
+               // 'copy',
+               // 'csv',
+                'excel',
+               // 'pdf',
+              //  'print'
+            ]
+        },
+
+        topEnd: null
+
+    }
+
+});
+
+$('#biosketch-filter').on('keyup', function () {
+    table.search(this.value).draw();
+});
+
+JS;
+
+$this->registerJs($js);
+
+?>

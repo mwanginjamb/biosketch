@@ -2,8 +2,10 @@
 
 namespace frontend\models;
 use common\models\User;
-
+use Override;
 use Yii;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "researcher".
@@ -32,14 +34,14 @@ use Yii;
  * @property ResearcherEducation[] $researcherEducations
  * @property ResearcherIdentifier[] $researcherIdentifiers
  * @property ResearcherMedia[] $researcherMedia
- * @property ResearcherStatement[] $researcherStatements
+ * @property ResearcherStatement|null $researcherStatement
+ * @property Grants[] $grants
  * @property User $user
  */
 class Researcher extends \yii\db\ActiveRecord
 {
 
     public $attachment;
-    public $avatar_url; // virtual attribute for profile photo URL
 
     /**
      * {@inheritdoc}
@@ -47,6 +49,15 @@ class Researcher extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'researcher';
+    }
+
+    
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class,
+            BlameableBehavior::class
+        ];
     }
 
     /**
@@ -139,13 +150,18 @@ class Researcher extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[ResearcherStatements]].
+     * Gets query for [[ResearcherStatement]].
      *
      * @return \yii\db\ActiveQuery|\frontend\models\query\ResearcherStatementQuery
      */
-    public function getResearcherStatements()
+    public function getResearcherStatement()
     {
-        return $this->hasMany(ResearcherStatement::class, ['researcher_id' => 'id']);
+        return $this->hasOne(ResearcherStatement::class, ['researcher_id' => 'id']);
+    }
+
+    public function getGrants()
+    {
+        return $this->hasOne(Grants::class,['researcher_id' => 'id']);
     }
 
     /**
@@ -177,6 +193,14 @@ class Researcher extends \yii\db\ActiveRecord
             'Ms.' => 'Ms.',
             'Mrs.' => 'Mrs.',
 
+        ];
+    }
+
+    public static function statusOptions()
+    {
+        return [
+            0 => 'Draft',
+            1 => 'Active',
         ];
     }
 

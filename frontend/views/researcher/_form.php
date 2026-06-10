@@ -3,6 +3,7 @@
 use yii\bootstrap5\Html;
 use yii\widgets\ActiveForm;
 use common\library\FormUi;
+use frontend\models\Researcher;
 use frontend\models\ResearcherStatement;
 
 /** @var yii\web\View $this */
@@ -29,7 +30,7 @@ use frontend\models\ResearcherStatement;
 
 <?php $form->field($model, 'user_id')->hiddenInput(['value' => Yii::$app->user->id]) ?>
 
-<?= $form->field($model, 'title', FormUi::fieldConfig())->dropDownList($model->titles, ['prompt' => 'Select your title', 'maxlength' => true, 'class' => FormUi::selectClass()]) ?>
+<?= $form->field($model, 'title', FormUi::fieldConfig())->dropDownList($model->titles, ['prompt' => 'Select your title', 'class' => FormUi::selectClass()]) ?>
 
 <?= $form->field($model, 'full_name', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassStandard(), 'placeholder' => 'Enter your full name.']) ?>
 
@@ -55,7 +56,7 @@ use frontend\models\ResearcherStatement;
 
 
 
-<?php $form->field($model, 'status', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
+<?= $form->field($model, 'status', FormUi::fieldConfig())->dropDownList(Researcher::statusOptions(),['prompt' => 'Select ...','class' => FormUi::selectClass()]) ?>
 
 <?php $form->field($model, 'version', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
 

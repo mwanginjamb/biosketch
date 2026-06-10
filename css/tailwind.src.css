@@ -38,6 +38,8 @@
         scroll-margin-top: 80px;
     }
 
+    
+
     @media print {
         .no-print {
             display: none;
@@ -51,4 +53,173 @@
             padding: 0 !important;
         }
     }
+
+
+    /* DataTables Styling */
+
+/* ==========================================================
+   DATATABLES MATERIAL / TAILWIND THEME
+========================================================== */
+
+
+
+.dt-container {
+    @apply bg-transparent;
+}
+
+/* Hide DataTables generated search */
+.dt-search {
+    @apply hidden;
+}
+
+/* Layout rows */
+.dt-layout-row {
+    @apply flex flex-col md:flex-row items-center justify-between gap-4 py-4;
+}
+
+/* Export buttons */
+
+.dt-buttons {
+    @apply flex flex-wrap gap-2;
+}
+
+.dt-button {
+    @apply inline-flex
+    items-center
+    gap-2
+    px-4
+    py-2
+    rounded-lg
+    bg-primary
+    text-on-primary
+    font-semibold
+    shadow-sm
+    border-0
+    transition-all;
+}
+
+.dt-button:hover {
+    @apply shadow-md;
+}
+
+/* Length Dropdown */
+
+.dt-length {
+    @apply flex items-center gap-2;
+}
+
+.dt-length label {
+    @apply text-sm text-on-surface-variant;
+}
+
+.dt-length select {
+    @apply rounded-lg
+    border
+    border-outline-variant
+    bg-surface-container-low
+    px-3
+    py-2
+    text-on-surface;
+}
+
+/* Info Text */
+
+.dt-info {
+    @apply text-body-md text-on-surface-variant;
+}
+
+/* Pagination Container */
+
+.dt-paging {
+    @apply flex items-center gap-2;
+}
+
+.dt-paging nav {
+    @apply flex items-center gap-2;
+}
+
+/* Pagination Buttons */
+
+.dt-paging-button {
+    @apply px-3
+    py-1
+    rounded
+    border
+    border-outline-variant
+    bg-transparent
+    cursor-pointer
+    transition-colors;
+}
+
+.dt-paging-button:hover {
+    @apply bg-surface-container-high;
+}
+
+.dt-paging-button.current {
+    @apply bg-secondary-container
+    text-on-secondary-container
+    border-secondary
+    font-bold;
+}
+
+.dt-paging-button.disabled {
+    @apply opacity-50
+    cursor-not-allowed;
+}
+
+/* Header Cells */
+
+table.dataTable thead th {
+    @apply font-label-caps
+    text-label-caps
+    text-on-surface-variant
+    tracking-widest;
+}
+
+/* Body Rows */
+
+table.dataTable tbody tr {
+    @apply transition-colors;
+}
+
+table.dataTable tbody tr:hover {
+    @apply bg-surface-container-low/50;
+}
+
+/* Remove DataTables borders */
+
+table.dataTable,
+table.dataTable th,
+table.dataTable td {
+    border: none !important;
+}
+
+/* Sorting icons spacing */
+
+table.dataTable thead > tr > th.dt-orderable-asc,
+table.dataTable thead > tr > th.dt-orderable-desc {
+    padding-right: 2rem;
+}
+
+/* Footer spacing */
+
+.dt-layout-end {
+    @apply flex items-center gap-3;
+}
+
+.dt-layout-start {
+    @apply flex items-center gap-3;
+}
+
+/* Responsive child rows */
+
+table.dataTable > tbody > tr.child ul.dtr-details {
+    @apply w-full;
+}
+
+table.dataTable > tbody > tr.child ul.dtr-details li {
+    @apply py-2 border-b border-outline-variant;
+}
+
+
 }

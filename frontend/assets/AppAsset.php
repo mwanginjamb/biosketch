@@ -34,7 +34,7 @@ class AppAsset extends AssetBundle
 
     public $depends = [
         YiiAsset::class,
-        BootstrapAsset::class,
+        //BootstrapAsset::class,
         // ColorModeAsset::class,
     ];
 }

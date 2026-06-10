@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var frontend\models\Researcher $model */
 
 $this->title = Yii::t('app', 'Update Researcher: {name}', [
-    'name' => $model->title,
+    'name' => $model->title.' '.$model->full_name,
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Researchers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
@@ -18,6 +18,9 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'eduLines' => $modelEducation,
+        'publicationLines' => $modelPublications,
+        'modelStatements' => $modelStatements,
     ]) ?>
 
 </div>

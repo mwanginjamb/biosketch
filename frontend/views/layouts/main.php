@@ -1,81 +1,101 @@
 <?php
-/** @var yii\web\View $this */
-/** @var string $content */
-
 use yii\helpers\Html;
-
 use frontend\assets\AppAsset;
+use yii\helpers\Url;
+
 AppAsset::register($this);
+
 $this->beginPage();
 ?>
 <!DOCTYPE html>
-<html class="light" lang="<?= Yii::$app->language ?>">
-
+<html lang="<?= Yii::$app->language ?>" class="light">
 <head>
-    <meta charset="<?= Yii::$app->charset ?>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= Html::encode($this->title ?: 'BioSketch Professional') ?></title>
+
     <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+
+
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+
+    <?php $this->head(); ?>
 </head>
 
-<body
-    class="bg-surface text-on-surface font-body-md selection:bg-secondary-container selection:text-on-secondary-container">
-    <?php $this->beginBody() ?>
+<body class="bg-surface text-on-surface font-body-md">
+<?php $this->beginBody(); ?>
 
-    <!-- Top Navigation -->
-    <nav
-        class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline no-print">
-        <div class="flex items-center gap-xs">
-            <span class="material-symbols-outlined text-primary dark:text-inverse-primary">biotech</span>
-            <h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-on-primary-fixed">BioSketch
-                Professional</h1>
+<!-- NAVBAR -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-12 h-16 bg-surface border-b border-outline-variant no-print">
+    <div class="flex items-center gap-2">
+        <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
+        BioSketch Professional',['site/index'],['class' => 'font-bold text-lg text-primary']) ?>
+       
+    </div>
+
+    <div class="flex items-center gap-6">
+        <div class="hidden md:flex gap-4">
+            <a href="#" class="font-bold border-b-2 border-primary">Public Profile</a>
+            <a href="<?=  Url::toRoute(['researcher/create']) ?>">Data Entry</a>
         </div>
-        <div class="flex items-center gap-md">
-            <div class="hidden md:flex gap-sm">
-                <?= Html::a('Public Profile', ['profile/view'], [
-                    'class' => 'text-primary dark:text-secondary-fixed font-bold border-b-2 border-primary cursor-pointer transition-opacity active:opacity-80',
-                ]) ?>
-                <?= Html::a('Data Entry', ['researcher/create'], [
-                    'class' => 'text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors',
-                ]) ?>
-            </div>
-            <?= Html::img(
-                'https://randomuser.me/api/portraits/men/75.jpg',
-                ['alt' => 'Profile', 'class' => 'w-10 h-10 rounded-full border border-outline-variant object-cover']
-            ) ?>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main
-        class="max-w-[1280px] mx-auto mt-16 px-margin-mobile md:px-margin-desktop py-lg flex flex-col md:flex-row gap-lg">
-        <?= $this->render('_alerts') ?>
-        <?= $content ?>
-    </main>
+        <img class="w-10 h-10 rounded-full border object-cover"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmDS_35xhZTEhGVnpqDyladtXgq9lspOIeNlKI1td7_zTuY4HefWm4e2XVmxRIrc0qBhRGyxi9GpA5z6EkeVdFmUovQpTs9O1s_6qFYEBt70H30xC61FaiWuLVyzH34kcRvLki4XFykrV_gWEt0oGO7Qn5jqvD1LvWezwT5TInvH7ubXFVwo5hAzE_Rr8Rgl_Mi4GCCxRdRAJhA4kyZ2YjX5_w2YjfHgAioMJEvRJBVhTA14pmF6PLvnI65eFweLd3a_ZQg3AqOKah">
+    </div>
+</nav>
 
-    <!--  Footer -->
-    <foo ter
-        class="w-full py-sm px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center mt-lg bg-surface-container-lowest dark:bg-surface-container-low border-t border-outline-variant dark:border-outline no-print">
-        <p class="font-label-caps text-label-caps text-on-surface-variant dark:text-surface-variant mb-md md:mb-0">
-            &copy; <?= date('Y') ?> BioSketch Institutional. All rights reserved. Clinical Grade Precision.
-        </p>
-        <div class="flex gap-md">
-            <?= Html::a('Compliance', ['site/compliance'], ['class' => 'text-on-surface-variant dark:text-surface-variant font-label-caps text-label-caps hover:text-primary dark:hover:text-inverse-primary transition-colors']) ?>
-            <?= Html::a('Research Guidelines', ['site/guidelines'], ['class' => 'text-on-surface-variant dark:text-surface-variant font-label-caps text-label-caps hover:text-primary dark:hover:text-inverse-primary transition-colors']) ?>
-            <?= Html::a('Help Desk', ['site/help'], ['class' => 'text-on-surface-variant dark:text-surface-variant font-label-caps text-label-caps hover:text-primary dark:hover:text-inverse-primary transition-colors']) ?>
-        </div>
-    </foo>
 
-    <!-- Print FAB -->
-    <button
-        class="fixed bottom-margin-mobile right-margin-mobile w-12 h-12 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-95 transition-all no-print"
-        onclick="window.print()" aria-label="Print">
-        <span class="material-symbols-outlined">print</span>
-    </button>
+<!-- MAIN CONTENT -->
+<main class="max-w-[1280px] mx-auto mt-16 px-4 md:px-12 py-10">
+    <?= $content ?>
+</main>
 
-    <?php $this->endBody() ?>
+
+<!-- FOOTER -->
+<footer class="w-full py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mt-10 bg-gray-100 border-t no-print">
+    <p class="text-sm text-gray-600 mb-2 md:mb-0">
+        © <?= date('Y') ?> BioSketch Institutional. All rights reserved.
+    </p>
+
+    <div class="flex gap-6 text-sm">
+        <a href="#">Compliance</a>
+        <a href="#">Research Guidelines</a>
+        <a href="#">Help Desk</a>
+    </div>
+</footer>
+
+
+<!-- PRINT BUTTON -->
+<button class="fixed bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full shadow-lg flex items-center justify-center no-print"
+        onclick="window.print()">
+    <span class="material-symbols-outlined">print</span>
+</button>
+
+
+<!-- SCRIPT -->
+<script>
+const sections = document.querySelectorAll('.section-anchor');
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100','translate-y-0');
+            entry.target.classList.remove('opacity-50','translate-y-4');
+        }
+    });
+}, { threshold: 0.3 });
+
+sections.forEach(section => {
+    section.classList.add('transition-all','duration-500','opacity-50','translate-y-4');
+    observer.observe(section);
+});
+</script>
+
+<?php $this->endBody(); ?>
 </body>
-
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage(); ?>
