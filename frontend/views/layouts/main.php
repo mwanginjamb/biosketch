@@ -36,12 +36,12 @@ $this->beginPage();
                 <?= Html::a('Public Profile', ['profile/view'], [
                     'class' => 'text-primary dark:text-secondary-fixed font-bold border-b-2 border-primary cursor-pointer transition-opacity active:opacity-80',
                 ]) ?>
-                <?= Html::a('Data Entry', ['profile/update'], [
+                <?= Html::a('Data Entry', ['researcher/create'], [
                     'class' => 'text-on-surface-variant dark:text-surface-variant hover:text-secondary dark:hover:text-secondary-fixed transition-colors',
                 ]) ?>
             </div>
             <?= Html::img(
-               'https://randomuser.me/api/portraits/men/75.jpg',
+                'https://randomuser.me/api/portraits/men/75.jpg',
                 ['alt' => 'Profile', 'class' => 'w-10 h-10 rounded-full border border-outline-variant object-cover']
             ) ?>
         </div>
@@ -50,6 +50,7 @@ $this->beginPage();
     <!-- Main Content -->
     <main
         class="max-w-[1280px] mx-auto mt-16 px-margin-mobile md:px-margin-desktop py-lg flex flex-col md:flex-row gap-lg">
+        <?= $this->render('_alerts') ?>
         <?= $content ?>
     </main>
 

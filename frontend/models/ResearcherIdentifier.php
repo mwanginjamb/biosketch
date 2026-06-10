@@ -38,7 +38,7 @@ class ResearcherIdentifier extends \yii\db\ActiveRecord
     {
         return [
             [['identifier_type', 'identifier_value', 'verification_status', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'default', 'value' => null],
-            [['researcher_id'], 'required'],
+            // [['researcher_id'], 'required'],
             [['researcher_id', 'verification_status', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['identifier_type', 'identifier_value'], 'string', 'max' => 255],
             [['researcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Researcher::class, 'targetAttribute' => ['researcher_id' => 'id']],

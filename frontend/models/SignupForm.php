@@ -17,6 +17,7 @@ class SignupForm extends Model
     public string $username = '';
     public string $email = '';
     public string $password = '';
+    public string $passwordConfirm = '';
     public string $staffID = '';
     /**
      * {@inheritdoc}
@@ -37,6 +38,10 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+            ['passwordConfirm', 'required'],
+            ['passwordConfirm', 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords do not match.'],
+
+            ['staffID', 'safe'],
         ];
     }
 

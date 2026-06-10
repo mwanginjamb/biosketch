@@ -44,7 +44,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', 'index', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -52,7 +52,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'index', 'view', 'create', 'update', 'delete'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -178,7 +178,7 @@ class SiteController extends Controller
      */
     public function actionSignup(): string|Response
     {
-         $this->layout = 'guest';
+        $this->layout = 'guest';
         $model = new SignupForm();
 
         $signed = $model->load(Yii::$app->request->post()) && $model->signup(

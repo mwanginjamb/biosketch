@@ -4,31 +4,45 @@ use common\library\FormUi;
 
 ?>
 
-<div id="education-template" class="hidden space-y-sm">
-
-    <div class="education-item">
+<div id="publication-template" class="hidden space-y-sm">
+    <div class="publication-item">
         <div class="flex items-center justify-between mb-2">
 
-                    <button type="button"
-                        class="remove-source flex items-center justify-center w-8 h-8 rounded-md hover:bg-red-50 text-red-500 transition">
-                        ✕
-                    </button>
+            <button type="button"
+                class="remove-publication flex items-center justify-center w-8 h-8 rounded-md hover:bg-red-50 text-red-500 transition">
+                ✕
+            </button>
 
         </div>
 
-        <div class="p-xs bg-surface-container-low border border-outline-variant rounded relative group">
+        <div class="p-xs bg-surface-container-low border border-outline-variant rounded relative group space-y-xs">
+            <!-- <div class="flex items-center justify-between mb-2">
+                    <span class="font-label-caps text-[10px] text-secondary font-bold">SELECTED FOR PROFILE</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer" checked="">
+                        <div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-secondary"></div>
+                    </label>
+                </div> -->
             <div class="grid grid-cols-1 gap-xs">
-                <div class="flex gap-xs">
-                    <?= $form->field(new \frontend\models\ResearcherEducation, "[__index__]degree",FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherEducation::getDegreeOptions(), ['class' => FormUi::selectClass(), 'prompt' => 'Select Degree']) ?>
-                    <?= $form->field(new \frontend\models\ResearcherEducation, "[__index__]graduation_year", FormUi::fieldConfig())->textInput(['type' => 'number','pattern' => '[0-9]{4}','class' => FormUi::inputClassStandard(),'placeholder' => 'Graduation Year']) ?>
-                    </div>
-                <?= $form->field(new \frontend\models\ResearcherEducation, "[__index__]institution_name", FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassStandard(),'placeholder' => 'Institution Name']) ?>
-                    <?= $form->field(new \frontend\models\ResearcherEducation, "[__index__]field_of_study", FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassStandard(),'placeholder' => 'Field of Study (e.g., Immunology)']) ?>
+                <div>
+                    <?= $form->field($model, '[__index__]title', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Neural Circuitry of Circadian Rhythms in D. melanogaster', 'disabled' => 'disabled']) ?>
                 </div>
+                <div class="grid grid-cols-3 gap-xs">
+                    <div class="col-span-2">
+                        <?= $form->field($model, '[__index__]journal', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Journal / Venue', 'disabled' => 'disabled']) ?>
+                    </div>
+                    <div>
+                        <?= $form->field($model, '[__index__]publication_year', FormUi::fieldConfig())->textInput(['type' => 'number', 'pattern' => '[0-9]{4}', 'class' => FormUi::inputClassMono(), 'placeholder' => 'Publication Year', 'disabled' => 'disabled']) ?>
+                    </div>
+                </div>
+                <div>
+                    <?= $form->field($model, '[__index__]doi', FormUi::fieldConfig())->textInput(['type' => 'url', 'class' => FormUi::inputClassMono(), 'placeholder' => 'DOI - Digital Object Identifier', 'disabled' => 'disabled']) ?>
+                </div>
+                <div>
+                    <?= $form->field($model, '[__index__]pmid', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'PMID - PubMed Identifier', 'disabled' => 'disabled']) ?>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    
 </div>
-<!-- /template -->

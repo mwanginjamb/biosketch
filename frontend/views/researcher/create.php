@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var frontend\models\Researcher $model */
 
-$this->title = Yii::t('app', 'Create Researcher');
+$this->title = \Yii::t('app', 'Create Researcher');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Researchers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -16,7 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_form', [
         'model' => $model,
         'eduLines' => $modelEducation,
-        'publicationLines' => $modelPublications
+        'publicationLines' => $modelPublications,
+        'modelStatements' => $modelStatements,
     ]) ?>
 
 </div>

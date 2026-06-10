@@ -11,7 +11,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
-    'name' => env('APP_NAME','Researcher Bio Sketch App'),
+    'name' => env('APP_NAME', 'Researcher Bio Sketch App'),
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
@@ -26,7 +26,16 @@ return [
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-frontend',
+             'name' => 'advanced-frontend',
+            'class' => 'yii\web\Session',
+            'timeout' => 3600, // 60 min
+            'useCookies' => true,
+            'cookieParams' => [
+                'httponly' => true,
+                'lifetime' => 3600, // one hour
+                'samesite' => YII_ENV === 'dev' ? 'Lax' : 'None', // Allow cross-origin requests only in dev
+                'secure' => YII_ENV === 'dev' ? false : true,     // Ensure secure (HTTPS) transmission only on dev
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -40,14 +49,14 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        
+
     ],
     'params' => $params,
 ];

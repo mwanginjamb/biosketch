@@ -41,7 +41,7 @@ class ResearcherEducation extends \yii\db\ActiveRecord
         return [
             [['field_of_study', 'graduation_year', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'default', 'value' => null],
             [['sort_order'], 'default', 'value' => 0],
-            [['researcher_id', 'degree', 'institution_name'], 'required'],
+            [['degree', 'institution_name'], 'required'],
             [['researcher_id', 'graduation_year', 'sort_order', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['degree'], 'string', 'max' => 100],
             [['institution_name', 'field_of_study'], 'string', 'max' => 255],
@@ -90,13 +90,13 @@ class ResearcherEducation extends \yii\db\ActiveRecord
 
     // Get Degree options for dropdown
     public static function getDegreeOptions()
-    {        
+    {
         return [
             'Ph.D.' => 'Ph.D.',
             'M.D.' => 'M.D.',
             'M.S.' => 'M.S.',
             'B.S.' => 'B.S.',
-        ];      
+        ];
 
     }
 

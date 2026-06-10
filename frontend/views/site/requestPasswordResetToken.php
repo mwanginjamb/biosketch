@@ -47,7 +47,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
             </div>
 
             <!-- Form panel -->
-            <div class="col-md-7">
+            <div>
                 <div class="p-4 p-lg-5">
                     <div class="text-center mb-4">
                         <div class="d-md-none mb-3">
@@ -61,7 +61,8 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
                             ) ?>
                         </div>
                         <h1 class="h3 fw-bold mb-1"><?= Html::encode($this->title) ?></h1>
-                        <p class="text-body-secondary small">A link to reset your password will be sent to your email</p>
+                        <p class="text-body-secondary small">A link to reset your password will be sent to your email
+                        </p>
                     </div>
 
                     <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>

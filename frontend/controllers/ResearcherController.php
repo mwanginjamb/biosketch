@@ -2,15 +2,20 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Publications;
 use frontend\models\Researcher;
+use frontend\models\ResearcherEducation;
+use frontend\models\ResearcherIdentifier;
+use frontend\models\ResearcherMedia;
 use frontend\models\ResearcherSearch;
+use frontend\models\ResearcherStatement;
+use Yii;
+use yii\base\Model;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use frontend\models\ResearcherEducation;
-use yii\web\BadRequestHttpException;
-
-use Yii;
 
 /**
  * ResearcherController implements the CRUD actions for Researcher model.
@@ -29,6 +34,21 @@ class ResearcherController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                    ],
+                ],
+                'access' => [
+                    'class' => AccessControl::class,
+                    'only' => ['logout', 'signup', 'index', 'view', 'create', 'update', 'delete'],
+                    'rules' => [
+                        [
+                            'actions' => ['login', 'error'],
+                            'allow' => true,
+                        ],
+                        [
+                            'actions' => ['logout', 'index', 'view', 'create', 'update', 'delete'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
                     ],
                 ],
             ]
@@ -73,28 +93,292 @@ class ResearcherController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
+    /* public function actionCreate()
+     {
+         $this->layout = 'create';
+         $model = new Researcher();
+         $model->user_id = 1; // default to user ID 1 for testing
+
+         if ($this->request->isPost) {
+             if ($model->load($this->request->post()) && $model->save()) {
+                 return $this->redirect(['view', 'id' => $model->id]);
+             }
+         } else {
+             $model->loadDefaultValues();
+         }
+
+         //
+
+         return $this->render('create', [
+             'model' => $model,
+             'modelEducation' => [new \frontend\models\ResearcherEducation()],
+             'modelPublications' => [new \frontend\models\Publications()]
+         ]);
+     }*/
+
+
     public function actionCreate()
     {
-        $this->layout = 'create';
-        $model = new Researcher();
-        $model->user_id = 1; // default to user ID 1 for testing
+        $modelProfile = new \frontend\models\Researcher();
+        $modelEducations = [new \frontend\models\ResearcherEducation()];
+        $modelPublications = [new \frontend\models\Publications()];
+        $modelIdentifiers = [new \frontend\models\ResearcherIdentifier()];
+        $modelStatements = new \frontend\models\ResearcherStatement();
+        $modelMedia = [new \frontend\models\ResearcherMedia()];
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isPost) {
+
+            $post = Yii::$app->request->post();
+
+            // Parent model
+            $modelProfile->load($post);
+
+            // Child models
+            $modelEducations = $this->createMultipleModels(
+                \frontend\models\ResearcherEducation::class,
+                $post
+            );
+
+            $modelPublications = $this->createMultipleModels(
+                \frontend\models\Publications::class,
+                $post
+            );
+
+            $modelIdentifiers = $this->createMultipleModels(
+                \frontend\models\ResearcherIdentifier::class,
+                $post
+            );
+
+            $modelStatements = new \frontend\models\ResearcherStatement();
+
+            $modelMedia = $this->createMultipleModels(
+                \frontend\models\ResearcherMedia::class,
+                $post
+            );
+
+            // Remove completely empty rows
+            $modelEducations = $this->filterEmptyModels(
+                $modelEducations,
+                ['degree', 'institution_name']
+            );
+
+            $modelPublications = $this->filterEmptyModels(
+                $modelPublications,
+                ['title']
+            );
+
+            $modelIdentifiers = $this->filterEmptyModels(
+                $modelIdentifiers,
+                ['identifier_type', 'identifier_value']
+            );
+
+
+
+            // Validate everything
+            $modelProfile->user_id = Yii::$app->user->id; // Set user_id before validation
+            $valid = $modelProfile->validate();
+
+            $valid = Model::validateMultiple($modelEducations) && $valid;
+            $valid = Model::validateMultiple($modelPublications) && $valid;
+            $valid = Model::validateMultiple($modelIdentifiers) && $valid;
+            $valid = $modelStatements->validate() && $valid;
+            $valid = Model::validateMultiple($modelMedia) && $valid;
+
+            if ($valid) {
+
+                $transaction = Yii::$app->db->beginTransaction();
+
+                try {
+
+                    $modelProfile->save(false);
+
+                    foreach ($modelEducations as $education) {
+
+                        $education->researcher_id = $modelProfile->id;
+
+                        $education->save(false);
+                    }
+
+                    foreach ($modelPublications as $publication) {
+
+                        $publication->researcher_id = $modelProfile->id;
+
+                        $publication->save(false);
+                    }
+
+                    foreach ($modelIdentifiers as $identifier) {
+
+                        $identifier->researcher_id = $modelProfile->id;
+
+                        $identifier->save(false);
+                    }
+
+                    $modelStatements->researcher_id = $modelProfile->id;
+                    $modelStatements->save(false);
+
+
+                    foreach ($modelMedia as $media) {
+
+                        $media->researcher_id = $modelProfile->id;
+
+                        $media->save(false);
+                    }
+
+                    $transaction->commit();
+
+                    Yii::$app->session->setFlash(
+                        'success',
+                        'Researcher profile created successfully.'
+                    );
+
+                    return $this->redirect([
+                        'view',
+                        'id' => $modelProfile->id
+                    ]);
+
+                } catch (\Throwable $e) {
+
+                    $transaction->rollBack();
+
+                    $modelProfile->addError(
+                        '_form',
+                        $e->getMessage()
+                    );
+                }
             }
-        } else {
-            $model->loadDefaultValues();
+
+            // Collect validation errors for errorSummary
+            $this->collectErrors(
+                $modelProfile,
+                [
+                    'Education' => $modelEducations,
+                    'Publication' => $modelPublications,
+                    'Identifier' => $modelIdentifiers,
+                    //'Statement' => $modelStatements,
+                    'Media' => $modelMedia,
+                ]
+            );
+
+            // Prevent JS errors when all rows removed
+            if (empty($modelEducations)) {
+                $modelEducations = [new ResearcherEducation()];
+            }
+
+            if (empty($modelPublications)) {
+                $modelPublications = [new Publications()];
+            }
+
+            if (empty($modelIdentifiers)) {
+                $modelIdentifiers = [new ResearcherIdentifier()];
+            }
+
+            if (empty($modelStatements)) {
+                $modelStatements = new ResearcherStatement();
+            }
+
+            if (empty($modelMedia)) {
+                $modelMedia = [new ResearcherMedia()];
+            }
         }
 
-        //
-
         return $this->render('create', [
-            'model' => $model,
-            'modelEducation' => [new \frontend\models\ResearcherEducation()],
-            'modelPublications' => [new \frontend\models\Publications()]
+            'model' => $modelProfile,
+            'modelEducation' => $modelEducations,
+            'modelPublications' => $modelPublications,
+            'modelIdentifiers' => $modelIdentifiers,
+            'modelStatements' => $modelStatements,
+            'modelMedia' => $modelMedia,
         ]);
     }
+
+
+    protected function createMultipleModels(
+        string $className,
+        array $post
+    ): array {
+
+        $model = new $className();
+
+        $formName = $model->formName();
+
+        if (
+            !isset($post[$formName]) ||
+            !is_array($post[$formName])
+        ) {
+            return [];
+        }
+
+        $models = [];
+
+        foreach ($post[$formName] as $row) {
+
+            $instance = new $className();
+
+            $instance->load($row, '');
+
+            $models[] = $instance;
+        }
+
+        return $models;
+    }
+
+
+    protected function filterEmptyModels(
+        array $models,
+        array $attributes
+    ): array {
+
+        return array_values(
+            array_filter(
+                $models,
+                function ($model) use ($attributes) {
+
+                    foreach ($attributes as $attribute) {
+
+                        if (!empty($model->$attribute)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+            )
+        );
+    }
+
+
+    protected function collectErrors(
+        Researcher $parent,
+        array $modelGroups
+    ): void {
+
+        foreach ($modelGroups as $groupName => $models) {
+
+            foreach ($models as $index => $model) {
+
+                foreach ($model->getErrors() as $attribute => $errors) {
+
+                    foreach ($errors as $error) {
+
+                        $parent->addError(
+                            '_form',
+                            sprintf(
+                                '[%s #%s] %s: %s',
+                                $groupName,
+                                $index + 1,
+                                $attribute,
+                                $error
+                            )
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
 
     /**
      * Updates an existing Researcher model.
@@ -146,58 +430,5 @@ class ResearcherController extends Controller
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 
-    public function actionSaveEducation()
-{
-    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-    if (!Yii::$app->request->isPost && !Yii::$app->request->isPut || !Yii::$app->request->isAjax) {
-        throw new BadRequestHttpException('Invalid request.');
-    }
-
-    $body = Json::decode(Yii::$app->request->rawBody, true);
-    if (empty($body)) {
-        return ['success' => false, 'message' => 'Empty request body.'];
-    }
-
-    $id = $body['id'] ?? null;
-    if ($id) {
-        $model = ResearcherEducation::findOne($id);
-        if (!$model) {
-            return ['success' => false, 'message' => 'Record not found.'];
-        }
-    } else {
-        $model = new ResearcherEducation();
-    }
-
-    // Map attributes (adjust if your field names differ)
-    $model->setAttributes([
-        'degree'          => $body['degree'] ?? null,
-        'institution_name'=> $body['institution_name'] ?? null,
-        'field_of_study'  => $body['field_of_study'] ?? null,
-        'graduation_year' => $body['graduation_year'] ?? null,
-        'sort_order'      => $body['sort_order'] ?? 0,
-        // researcher_id will be set after main researcher is saved? For now, you may need to link:
-        // 'researcher_id' => Yii::$app->user->identity->researcher_id ?? null,
-    ]);
-
-    // If you have a researcher_id from session or logged-in user, set it
-    if (!$id && !$model->researcher_id) {
-        // Example: get from logged-in user's profile
-        $model->researcher_id = Yii::$app->user->identity->id ?? null;
-    }
-
-    if ($model->save()) {
-        return [
-            'success' => true,
-            'id'      => $model->id,
-            'message' => $id ? 'Entry updated.' : 'Entry saved.',
-        ];
-    }
-
-    return [
-        'success' => false,
-        'message' => 'Validation failed',
-        'errors'  => $model->getFirstErrors(),
-    ];
-}
 }

@@ -40,7 +40,7 @@ class ResearcherMedia extends \yii\db\ActiveRecord
     {
         return [
             [['media_type', 'file_path', 'file_name', 'mime_type', 'file_size', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'default', 'value' => null],
-            [['researcher_id'], 'required'],
+            // [['researcher_id'], 'required'],
             [['researcher_id', 'file_size', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['media_type', 'file_path', 'file_name', 'mime_type'], 'string', 'max' => 255],
             [['researcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Researcher::class, 'targetAttribute' => ['researcher_id' => 'id']],
