@@ -1028,9 +1028,7 @@ HTML;
     ';
 
     private const UPLOAD_CIRCLE_CLASS = '
-        w-24 h-24 rounded-full bg-surface-container-high border-2 border-dashed border-outline-variant
-        flex flex-col items-center justify-center text-on-surface-variant cursor-pointer
-        hover:bg-surface-variant transition-colors overflow-hidden
+       w-24 h-24 rounded-full bg-surface-container-high border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors
     ';
 
     private const SECTION_CLASS = 'bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm p-md ';

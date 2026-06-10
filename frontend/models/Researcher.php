@@ -78,6 +78,8 @@ class Researcher extends \yii\db\ActiveRecord
             // Attachment  - jpeg, jpg,png
             [['attachment'], 'file', 'mimeTypes' => ['image/jpeg', 'image/png']],
             [['attachment'], 'file', 'maxSize' => '5120'], //5mb
+
+            [['major_breakthrough','patent_filed','research_tags'],'string'],
         ];
     }
 

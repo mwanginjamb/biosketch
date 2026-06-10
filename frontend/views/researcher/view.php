@@ -70,14 +70,14 @@ use yii\bootstrap5\Html;
 
                 <div class="bg-surface p-sm border rounded">
                     <h4 class="text-secondary mb-xs">Major Breakthrough</h4>
-                    <p class="font-semibold">Pathway-01 Discovery</p>
-                    <p>Identified novel signaling pathways in mitochondrial DNA repair.</p>
+                    <!-- <p class="font-semibold">Pathway-01 Discovery</p> -->
+                    <p><?= $model->major_breakthrough ?? '' ?></p>
                 </div>
 
                 <div class="bg-surface p-sm border rounded">
                     <h4 class="text-secondary mb-xs">Patent Filed</h4>
-                    <p class="font-semibold">Synthetix-V Gene Drive</p>
-                    <p>High-precision gene editing with 99.8% accuracy.</p>
+                    <!-- <p class="font-semibold">Synthetix-V Gene Drive</p> -->
+                    <p><?= $model->patent_filed ?? '' ?></p>
                 </div>
 
             </div>
