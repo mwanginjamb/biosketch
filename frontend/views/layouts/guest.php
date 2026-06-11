@@ -32,8 +32,7 @@ AppAsset::register($this);
                 <span class="font-label-caps text-label-caps tracking-wide">All Institutional Systems Operational</span>
             </div>
             <p class="font-body-md text-body-md text-on-surface-variant opacity-70">
-                Unauthorized access is strictly prohibited. Your session is monitored in compliance with Department of
-                Biology security protocols.
+                Unauthorized access is strictly prohibited. Your session is monitored in compliance with ICT Policies.
             </p>
         </div>
     </main>
@@ -48,7 +47,7 @@ AppAsset::register($this);
     <footer
         class="w-full py-sm px-margin-desktop flex flex-col md:flex-row justify-between items-center mt-lg border-t border-outline-variant bg-surface-container-lowest">
         <div class="font-label-caps text-label-caps tracking-widest text-on-surface-variant mb-sm md:mb-0">
-            © 2024 BioSketch Institutional. All rights reserved. Clinical Grade Precision.
+            © <?= date('Y') ?> KEMRI Institutional Researcher Scientist BioSketch. All rights reserved. 
         </div>
         <div class="flex gap-md">
             <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors"

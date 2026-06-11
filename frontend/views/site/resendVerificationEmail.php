@@ -8,94 +8,60 @@ declare(strict_types=1);
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use common\library\FormUi;
 
 $this->title = 'Resend verification email';
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['meta_description'] = 'Resend the verification email to confirm your account.';
 $this->params['meta_keywords'] = 'yii, yii2, verification, email, resend, confirm account';
-$htmlIcon = <<<HTML
-{label}<div class="input-group"><span class="input-group-text" aria-hidden="true">%s</span>{input}</div>{error}{hint}
-HTML;
-$labelOptions = ['class' => 'form-label fw-semibold small'];
+
 ?>
-<div class="site-resend-verification-email d-flex align-items-center justify-content-center py-5">
-    <div class="card border-0 overflow-hidden login-split-card">
-        <div class="row g-0">
 
-            <!-- Brand panel -->
-            <div class="col-md-5 d-none d-md-flex login-brand-panel text-white">
-                <div class="d-flex flex-column justify-content-between p-4 p-lg-5 w-100">
-                    <div>
-                        <?= Html::img(
-                            Yii::getAlias('@web/images/yii3_full_white_for_dark.svg'),
-                            [
-                                'alt' => 'Yii Framework',
-                                'height' => 40,
-                                'class' => 'mb-4',
-                            ],
-                        ) ?>
-                    </div>
-                    <div>
-                        <h2 class="fw-bold mb-3 login-brand-title">
-                            Verify Your<br>Email
-                        </h2>
-                        <p class="opacity-75 mb-0 login-brand-text">
-                            We will send a new verification email to confirm your account.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Form panel -->
-            <div class="col-md-7">
-                <div class="p-4 p-lg-5">
-                    <div class="text-center mb-4">
-                        <div class="d-md-none mb-3">
-                            <?= Html::img(
-                                Yii::getAlias('@web/images/yii3_full_black_for_light.svg'),
-                                [
-                                    'alt' => 'Yii Framework',
-                                    'class' => 'login-mobile-logo',
-                                    'height' => 36,
-                                ],
-                            ) ?>
-                        </div>
-                        <h1 class="h3 fw-bold mb-1"><?= Html::encode($this->title) ?></h1>
-                        <p class="text-body-secondary small">Enter your email to receive a new verification link</p>
-                    </div>
+<!-- Brand Identity -->
+<div class="flex flex-col items-center mb-lg">
+<div class="flex items-center gap-xs mb-sm">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="biotech">biotech</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">BioSketch Professional</h1>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Clinical Grade Precision</p>
+</div>
+<!-- Sign In Heading -->
+<div class="mb-lg border-b border-outline-variant pb-sm text-center">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Resend Account Activation Email</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-base">Enter your Signup E-mail Address to Receive the Activation Link</p>
+</div>
+   
+            
+           
 
-                    <?php $form = ActiveForm::begin(['id' => 'resend-verification-email-form']); ?>
+                    <?php $form = ActiveForm::begin(FormUi::formConfig('resend-verification-email-form')); ?>
 
-                    <div class="mb-4">
-                        <?= $form->field($model, 'email', [
-                            'options' => ['class' => 'mb-0'],
-                            'template' => sprintf($htmlIcon, '&#9993;'),
-                            'inputOptions' => [
-                                'autofocus' => true,
-                                'class' => 'form-control',
-                                'placeholder' => 'email@example.com',
-                            ],
-                        ])->textInput()->label('Your Email', $labelOptions) ?>
-                    </div>
-
-                    <div class="d-grid">
-                        <?= Html::submitButton(
-                            'Send',
-                            [
-                                'class' => 'btn login-btn btn-lg rounded-3 text-white',
-                            ],
-                        ) ?>
-                    </div>
+                    
+                        <?= $form->field($model, 'email', FormUi::fieldConfig('mail'))->textInput(['class' => FormUi::inputClass(true),'placeholder' => 'user@mail.com',
+            'type'=> 'email']) ?>
+                   
+                  
+                        
+                       
+                    <?= Html::submitButton('Request', ['class' => FormUi::buttonClass('auth')]) ?>
 
                     <?php ActiveForm::end(); ?>
 
-                    <div class="text-body-secondary text-center mt-3 small">
-                        Already verified? <?= Html::a('Login', ['site/login']) ?>
-                    </div>
+                   
+                    
+                    
+                    <div class="mt-lg pt-lg border-t border-outline-variant flex flex-col items-center gap-md">
+                        <?= FormUi::divider() ?>
+                        <?= FormUi::link('Already verified?  ', ['site/login']) ?>
+                            
+                        </div>
+                        
+                    
 
-                </div>
-            </div>
+               
 
-        </div>
-    </div>
-</div>
+ 
+
+
+

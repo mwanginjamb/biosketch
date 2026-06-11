@@ -58,7 +58,12 @@ AppAsset::register($this);
 
 <div class="mt-auto space-y-1 border-t border-outline-variant pt-sm">
     
-    <?= Html::a('<span class="material-symbols-outlined">Power</span> Sign out',['site/logout'],['class' => 'flex items-center gap-xs px-sm py-xs transition-all text-on-surface-variant hover:bg-surface-container-high rounded-xl' ]) ?>
+    <?= Html::a('<span class="material-symbols-outlined">Power</span> Sign out',['site/logout'],[
+        'class' => 'flex items-center gap-xs px-sm py-xs transition-all text-on-surface-variant hover:bg-surface-container-high rounded-xl',
+        'data' =>[
+            'method' => 'POST'
+        ]
+        ]) ?>
       
 </div>
 </aside>
