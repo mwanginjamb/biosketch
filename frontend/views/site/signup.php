@@ -34,10 +34,10 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <?= $form->errorSummary($model) ?>
 
 <?= $form->field($model, 'staffID', FormUi::fieldConfig('id_card'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Staff Employee No']) ?>
-<?= $form->field($model, 'username', FormUi::fieldConfig('account_circle'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional Username']) ?>
+<?= $form->field($model, 'username', FormUi::fieldConfig('account_circle'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional Username'])->label('Scientist Username') ?>
 
 
-<?= $form->field($model, 'email', FormUi::fieldConfig('mail'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional E-mail Address', 'type' => 'email']) ?>
+<?= $form->field($model, 'email', FormUi::fieldConfig('mail'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional E-mail Address', 'type' => 'email'])->label('E-mail Address') ?>
 
 
 

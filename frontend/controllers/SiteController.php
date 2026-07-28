@@ -7,6 +7,7 @@ namespace frontend\controllers;
 use common\models\LoginForm;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
+use frontend\models\Researcher;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
@@ -90,7 +91,12 @@ class SiteController extends Controller
      */
     public function actionIndex(): string
     {
-        return $this->render('index');
+        $this->layout = 'list';
+        // Get All researcher models
+        $researchers = Researcher::find()->all();
+        return $this->render('index',[
+            'models' => $researchers
+        ]);
     }
 
     /**

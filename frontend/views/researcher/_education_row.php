@@ -18,7 +18,7 @@ use common\library\FormUi;
         <div class="p-xs bg-surface-container-low border border-outline-variant rounded relative group">
             <div class="grid grid-cols-1 gap-xs">
                 <div class="flex gap-xs">
-                        <?= $form->field($model, 'degree',FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherEducation::getDegreeOptions(), ['class' => FormUi::selectClass(), 'prompt' => 'Select Source Type']) ?>
+                        <?= $form->field($model, 'degree',FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherEducation::getDegreeOptions(), ['class' => FormUi::selectClass(), 'prompt' => 'Select Degree ..']) ?>
                         <?= $form->field($model, 'graduation_year', FormUi::fieldConfig())->textInput(['type' => 'number','pattern' => '[0-9]{4}','class' => FormUi::inputClassStandard(),'placeholder' => 'Graduation Year']) ?>
                     </div>
                 <?= $form->field($model, 'institution_name', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassStandard(),'placeholder' => 'Institution Name']) ?>

@@ -16,6 +16,7 @@ use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\helpers\ArrayHelper;
 
 /**
  * ResearcherController implements the CRUD actions for Researcher model.
@@ -77,14 +78,18 @@ class ResearcherController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id = 1)
+    public function actionView($id)
     {
-        //$model = $this->findModel($id),
-        $model = new Researcher();
-        $model->id = $id;
-        $model->avatar_url = 'https://randomuser.me/api/portraits/men/75.jpg';
+        $researcher = Researcher::find()->where(['id' => $id])->with([
+            'researcherEducations',
+            'publications',
+            'researcherIdentifiers',
+            'researcherStatement',
+            'researcherMedia'
+        ])->one();
+        $researcher->profile_photo = 'https://randomuser.me/api/portraits/men/75.jpg';
         return $this->render('view', [
-            'model' => $model,
+            'model' => $researcher,
         ]);
     }
 
@@ -119,6 +124,7 @@ class ResearcherController extends Controller
 
     public function actionCreate()
     {
+        $this->layout = 'create';
         $modelProfile = new \frontend\models\Researcher();
         $modelEducations = [new \frontend\models\ResearcherEducation()];
         $modelPublications = [new \frontend\models\Publications()];
@@ -292,35 +298,59 @@ class ResearcherController extends Controller
     }
 
 
-    protected function createMultipleModels(
-        string $className,
-        array $post
-    ): array {
+    
+protected function createMultipleModels(
+    string $className,
+    array $post,
+    array $existingModels = []
+): array {
 
-        $model = new $className();
+    $model = new $className();
 
-        $formName = $model->formName();
+    $formName = $model->formName();
+
+    if (
+        !isset($post[$formName]) ||
+        !is_array($post[$formName])
+    ) {
+        return [];
+    }
+
+    $existingMap = [];
+
+    foreach ($existingModels as $existing) {
+
+        if (!$existing->isNewRecord) {
+
+            $existingMap[$existing->id] = $existing;
+        }
+    }
+
+    $models = [];
+
+    foreach ($post[$formName] as $row) {
 
         if (
-            !isset($post[$formName]) ||
-            !is_array($post[$formName])
+            !empty($row['id']) &&
+            isset($existingMap[$row['id']])
         ) {
-            return [];
-        }
 
-        $models = [];
+            $instance = $existingMap[$row['id']];
 
-        foreach ($post[$formName] as $row) {
+        } else {
 
             $instance = new $className();
-
-            $instance->load($row, '');
-
-            $models[] = $instance;
         }
 
-        return $models;
+        $instance->load($row, '');
+
+        $models[] = $instance;
     }
+
+    return $models;
+}
+
+
 
 
     protected function filterEmptyModels(
@@ -387,7 +417,7 @@ class ResearcherController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
+   /* public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
@@ -398,7 +428,256 @@ class ResearcherController extends Controller
         return $this->render('update', [
             'model' => $model,
         ]);
+    }*/
+
+
+public function actionUpdate($id)
+{
+     $this->layout = 'create';
+    $modelProfile = $this->findModel($id);
+
+    $modelEducations = $modelProfile->researcherEducations ?: [new ResearcherEducation()];
+    $modelPublications = $modelProfile->publications ?: [new Publications()];
+    $modelIdentifiers = $modelProfile->researcherIdentifiers ?: [new ResearcherIdentifier()];
+    $modelStatements = $modelProfile->researcherStatement ?: new ResearcherStatement();
+    $modelMedia = $modelProfile->researcherMedia ?: [new ResearcherMedia()];
+
+    if (Yii::$app->request->isPost) {
+
+        $post = Yii::$app->request->post();
+
+        // Store old IDs before rebuilding arrays
+        $oldEducationIds = ArrayHelper::getColumn(
+            array_filter($modelEducations, fn($m) => !$m->isNewRecord),
+            'id'
+        );
+
+        $oldPublicationIds = ArrayHelper::getColumn(
+            array_filter($modelPublications, fn($m) => !$m->isNewRecord),
+            'id'
+        );
+
+        $oldIdentifierIds = ArrayHelper::getColumn(
+            array_filter($modelIdentifiers, fn($m) => !$m->isNewRecord),
+            'id'
+        );
+
+        $oldMediaIds = ArrayHelper::getColumn(
+            array_filter($modelMedia, fn($m) => !$m->isNewRecord),
+            'id'
+        );
+
+        // Load parent
+        $modelProfile->load($post);
+
+        // Rebuild child arrays
+        $modelEducations = $this->createMultipleModels(
+            ResearcherEducation::class,
+            $post,
+            $modelProfile->researcherEducations
+        );
+
+        $modelPublications = $this->createMultipleModels(
+            Publications::class,
+            $post,
+            $modelProfile->publications
+        );
+
+        $modelIdentifiers = $this->createMultipleModels(
+            ResearcherIdentifier::class,
+            $post,
+            $modelProfile->researcherIdentifiers
+        );
+
+        $modelMedia = $this->createMultipleModels(
+            ResearcherMedia::class,
+            $post,
+            $modelProfile->researcherMedia
+        );
+
+        $modelStatements->load($post);
+
+        // Remove empty rows
+        $modelEducations = $this->filterEmptyModels(
+            $modelEducations,
+            ['degree', 'institution_name']
+        );
+
+        $modelPublications = $this->filterEmptyModels(
+            $modelPublications,
+            ['title']
+        );
+
+        $modelIdentifiers = $this->filterEmptyModels(
+            $modelIdentifiers,
+            ['identifier_type', 'identifier_value']
+        );
+
+        // Determine deleted rows
+
+        $deletedEducationIds = array_diff(
+            $oldEducationIds,
+            ArrayHelper::getColumn(
+                array_filter($modelEducations, fn($m) => !$m->isNewRecord),
+                'id'
+            )
+        );
+
+        $deletedPublicationIds = array_diff(
+            $oldPublicationIds,
+            ArrayHelper::getColumn(
+                array_filter($modelPublications, fn($m) => !$m->isNewRecord),
+                'id'
+            )
+        );
+
+        $deletedIdentifierIds = array_diff(
+            $oldIdentifierIds,
+            ArrayHelper::getColumn(
+                array_filter($modelIdentifiers, fn($m) => !$m->isNewRecord),
+                'id'
+            )
+        );
+
+        $deletedMediaIds = array_diff(
+            $oldMediaIds,
+            ArrayHelper::getColumn(
+                array_filter($modelMedia, fn($m) => !$m->isNewRecord),
+                'id'
+            )
+        );
+
+        // Validate
+
+        $valid = $modelProfile->validate();
+
+        $valid = Model::validateMultiple($modelEducations) && $valid;
+        $valid = Model::validateMultiple($modelPublications) && $valid;
+        $valid = Model::validateMultiple($modelIdentifiers) && $valid;
+        $valid = Model::validateMultiple($modelMedia) && $valid;
+        $valid = $modelStatements->validate() && $valid;
+
+        if ($valid) {
+
+            $transaction = Yii::$app->db->beginTransaction();
+
+            try {
+
+                $modelProfile->save(false);
+
+                // Delete removed rows
+
+                if (!empty($deletedEducationIds)) {
+                    ResearcherEducation::deleteAll([
+                        'id' => $deletedEducationIds
+                    ]);
+                }
+
+                if (!empty($deletedPublicationIds)) {
+                    Publications::deleteAll([
+                        'id' => $deletedPublicationIds
+                    ]);
+                }
+
+                if (!empty($deletedIdentifierIds)) {
+                    ResearcherIdentifier::deleteAll([
+                        'id' => $deletedIdentifierIds
+                    ]);
+                }
+
+                if (!empty($deletedMediaIds)) {
+                    ResearcherMedia::deleteAll([
+                        'id' => $deletedMediaIds
+                    ]);
+                }
+
+                // Save education
+
+                foreach ($modelEducations as $education) {
+
+                    $education->researcher_id = $modelProfile->id;
+
+                    $education->save(false);
+                }
+
+                // Save publications
+
+                foreach ($modelPublications as $publication) {
+
+                    $publication->researcher_id = $modelProfile->id;
+
+                    $publication->save(false);
+                }
+
+                // Save identifiers
+
+                foreach ($modelIdentifiers as $identifier) {
+
+                    $identifier->researcher_id = $modelProfile->id;
+
+                    $identifier->save(false);
+                }
+
+                // Save statement
+
+                $modelStatements->researcher_id = $modelProfile->id;
+
+                $modelStatements->save(false);
+
+                // Save media
+
+                foreach ($modelMedia as $media) {
+
+                    $media->researcher_id = $modelProfile->id;
+
+                    $media->save(false);
+                }
+
+                $transaction->commit();
+
+                Yii::$app->session->setFlash(
+                    'success',
+                    'Researcher profile updated successfully.'
+                );
+
+                return $this->redirect([
+                    'view',
+                    'id' => $modelProfile->id
+                ]);
+
+            } catch (\Throwable $e) {
+
+                $transaction->rollBack();
+
+                $modelProfile->addError(
+                    '_form',
+                    $e->getMessage()
+                );
+            }
+        }
+
+        $this->collectErrors(
+            $modelProfile,
+            [
+                'Education' => $modelEducations,
+                'Publication' => $modelPublications,
+                'Identifier' => $modelIdentifiers,
+                'Media' => $modelMedia,
+            ]
+        );
     }
+
+    return $this->render('update', [
+        'model' => $modelProfile,
+        'modelEducation' => $modelEducations,
+        'modelPublications' => $modelPublications,
+        'modelIdentifiers' => $modelIdentifiers,
+        'modelStatements' => $modelStatements,
+        'modelMedia' => $modelMedia,
+    ]);
+}
+
+
 
     /**
      * Deletes an existing Researcher model.

@@ -3,6 +3,7 @@
 use yii\bootstrap5\Html;
 use yii\widgets\ActiveForm;
 use common\library\FormUi;
+use frontend\models\Researcher;
 use frontend\models\ResearcherStatement;
 
 /** @var yii\web\View $this */
@@ -29,7 +30,7 @@ use frontend\models\ResearcherStatement;
 
 <?php $form->field($model, 'user_id')->hiddenInput(['value' => Yii::$app->user->id]) ?>
 
-<?= $form->field($model, 'title', FormUi::fieldConfig())->dropDownList($model->titles, ['prompt' => 'Select your title', 'maxlength' => true, 'class' => FormUi::selectClass()]) ?>
+<?= $form->field($model, 'title', FormUi::fieldConfig())->dropDownList($model->titles, ['prompt' => 'Select your title', 'class' => FormUi::selectClass()]) ?>
 
 <?= $form->field($model, 'full_name', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassStandard(), 'placeholder' => 'Enter your full name.']) ?>
 
@@ -55,7 +56,9 @@ use frontend\models\ResearcherStatement;
 
 
 
-<?php $form->field($model, 'status', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
+<?= $form->field($model, 'status', FormUi::fieldConfig())->dropDownList(Researcher::statusOptions(),['prompt' => 'Select ...','class' => FormUi::selectClass()]) ?>
+
+<?= $form->field($model, 'research_tags', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassMono(),'placeholder' => 'e.g Genomics, Cell Bio, Virology']) ?>
 
 <?php $form->field($model, 'version', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
 
@@ -90,11 +93,21 @@ use frontend\models\ResearcherStatement;
 <!-- Researcher Statement -->
 <?= FormUi::beginSection('Researcher Statement', 'description') ?>
 
-<?= $form->field($modelStatements, 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(), ['prompt' => 'Select statement type', 'class' => FormUi::selectClass()]) ?>
+    <?= $form->field($modelStatements, 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(), ['prompt' => 'Select statement type', 'class' => FormUi::selectClass()]) ?>
 
-<?= $form->field($modelStatements, 'content', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Enter a brief statement about your research interests and expertise.']) ?>
+    <?= $form->field($modelStatements, 'content', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Enter a brief statement about your research interests and expertise.']) ?>
 
 <?= FormUi::endSection() ?>
+
+
+<!-- Accomplishments and Intellectual Property -->
+<?= FormUi::beginSection('Accomplishments & Intellectual Property', 'emoji_events') ?>
+
+<?= $form->field($model, 'major_breakthrough', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Describe your most significant scientific contribution...']) ?>
+
+<?= $form->field($model, 'patent_filed', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Enter patent numbers, titles, or status...']) ?>
+<?= FormUi::endSection() ?>
+
 
 
 <!-- Publications -->

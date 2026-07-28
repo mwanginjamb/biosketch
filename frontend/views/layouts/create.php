@@ -22,8 +22,8 @@ AppAsset::register($this);
 
 <header class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center px-margin-mobile h-16 border-b border-outline-variant">
     <div class="flex items-center gap-sm">
-        <span class="material-symbols-outlined text-primary" data-icon="biotech">biotech</span>
-        <h1 class="font-headline-md text-headline-md font-bold text-primary">BioSketch Professional</h1>
+         <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
+        BioSketch Professional',['site/index'],['class' => 'font-bold text-lg text-primary']) ?>
     </div>
     <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
         <img alt="Scientist profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeG1TXImo-Swo3V1Q7R_EmIEiEi2vYXzxIrJeGyBExyUi8WfGAwBZzT1NUafKFGUKz_qI81a5YhSIKWBbdLW50jLq7Crctsb0Z4IJd2HfX9-7yTdbfunxHL06MgBz7u7dcxdj14KD19w97GnVngP8tgm-6m4Tjun7u38maysRMSB66CJtcVUsamcT8ys0KoqJDIrPF1ant4RPHtQ8o16xbVqW-vWCTYvow8V0rAwJOF-nqtKgKrHPlBpJLkvrDnrmUCU9gW-sZrKT2">
