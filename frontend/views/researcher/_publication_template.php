@@ -36,7 +36,7 @@ use common\library\FormUi;
                     </div>
                 </div>
                 <div>
-                    <?= $form->field($model, '[__index__]doi', FormUi::fieldConfig())->textInput(['type' => 'url', 'class' => FormUi::inputClassMono(), 'placeholder' => 'DOI - Digital Object Identifier', 'disabled' => 'disabled']) ?>
+                    <?= $form->field($model, '[__index__]doi', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassMono(), 'placeholder' => 'DOI - Digital Object Identifier', 'disabled' => 'disabled']) ?>
                 </div>
                 <div>
                     <?= $form->field($model, '[__index__]pmid', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'PMID - PubMed Identifier', 'disabled' => 'disabled']) ?>

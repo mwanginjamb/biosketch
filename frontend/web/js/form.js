@@ -131,3 +131,72 @@ if (!publicationWrapper.querySelector('.publication-item')) {
 } else {
     updatePublicationRemoveVisibility();
 }
+
+
+// ------------------------------------------------------------------
+// IDENTIFIER ROWS
+// ------------------------------------------------------------------
+const identifierWrapper = document.getElementById('identifier-wrapper');
+const identifierTemplate = document.getElementById('identifier-template').innerHTML;
+
+function getMaxIdentifierIndex() {
+    let max = -1;
+    identifierWrapper.querySelectorAll('.identifier-item').forEach(item => {
+        const idxAttr = item.getAttribute('data-index');
+        if (idxAttr !== null) {
+            max = Math.max(max, parseInt(idxAttr, 10));
+        } else {
+            const input = item.querySelector('input[name*="[identifier_type]"]');
+            if (input && input.name) {
+                const match = input.name.match(/Identifiers\[(\d+)\]/);
+                if (match) max = Math.max(max, parseInt(match[1], 10));
+            }
+        }
+    });
+    return max;
+}
+
+function getNextIdentifierIndex() {
+    return getMaxIdentifierIndex() + 1;
+}
+
+function addIdentifierRow() {
+    const newIndex = getNextIdentifierIndex();
+    const html = identifierTemplate.replace(/__index__/g, newIndex);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const newRow = div.firstElementChild;
+    // Enable all inputs inside the new row
+    newRow.querySelectorAll('input, select, textarea').forEach(el => el.removeAttribute('disabled'));
+    newRow.setAttribute('data-index', newIndex);
+    identifierWrapper.appendChild(newRow);
+    updateIdentifierRemoveVisibility();
+}
+
+function updateIdentifierRemoveVisibility() {
+    const rows = identifierWrapper.querySelectorAll('.identifier-item');
+    const alone = rows.length === 1;
+    rows.forEach(row => {
+        const btn = row.querySelector('.remove-identifier');
+        if (btn) btn.style.visibility = alone ? 'hidden' : 'visible';
+    });
+}
+
+document.getElementById('add-identifier').addEventListener('click', addIdentifierRow);
+
+identifierWrapper.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-identifier')) {
+        if (identifierWrapper.querySelectorAll('.identifier-item').length > 1) {
+            e.target.closest('.identifier-item').remove();
+            updateIdentifierRemoveVisibility();
+        }
+
+    }
+});
+
+if (!identifierWrapper.querySelector('.identifier-item')) {
+    addIdentifierRow();
+} else {
+    updateIdentifierRemoveVisibility();
+}
+

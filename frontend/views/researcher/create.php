@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'eduLines' => $modelEducation,
         'publicationLines' => $modelPublications,
         'modelStatements' => $modelStatements,
+        'identifierLines' => $modelIdentifiers,
     ]) ?>
 
 </div>

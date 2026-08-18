@@ -5,7 +5,7 @@ use common\library\FormUi;
 ?>
 
 <div id="publication-container" class="space-y-sm">
-    <div class="publication-item" data-index="<?= $index ?>">
+    <div class="publication-item" data-index="<?= $index + 1 ?>">
         <div class="flex items-center justify-between mb-2">
 
             <button type="button"
@@ -25,21 +25,21 @@ use common\library\FormUi;
                 </div> -->
             <div class="grid grid-cols-1 gap-xs">
                 <div>
-                    <?= $form->field($model, 'title', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Neural Circuitry of Circadian Rhythms in D. melanogaster']) ?>
+                    <?= $form->field($model, "[{$index}]title", FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Neural Circuitry of Circadian Rhythms in D. melanogaster']) ?>
                 </div>
                 <div class="grid grid-cols-3 gap-xs">
                     <div class="col-span-2">
-                        <?= $form->field($model, 'journal', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Journal / Venue']) ?>
+                        <?= $form->field($model, "[{$index}]journal", FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'Journal / Venue']) ?>
                     </div>
                     <div>
-                        <?= $form->field($model, 'publication_year', FormUi::fieldConfig())->textInput(['type' => 'number', 'pattern' => '[0-9]{4}', 'class' => FormUi::inputClassMono(), 'placeholder' => 'Publication Year']) ?>
+                        <?= $form->field($model, "[{$index}]publication_year", FormUi::fieldConfig())->textInput(['type' => 'number', 'pattern' => '[0-9]{4}', 'class' => FormUi::inputClassMono(), 'placeholder' => 'Publication Year']) ?>
                     </div>
                 </div>
                 <div>
-                    <?= $form->field($model, 'doi', FormUi::fieldConfig())->textInput(['type' => 'url', 'class' => FormUi::inputClassMono(), 'placeholder' => 'DOI - Digital Object Identifier']) ?>
+                    <?= $form->field($model, "[{$index}]doi", FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassMono(), 'placeholder' => 'DOI - Digital Object Identifier']) ?>
                 </div>
                 <div>
-                    <?= $form->field($model, 'pmid', FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'PMID - PubMed Identifier']) ?>
+                    <?= $form->field($model, "[{$index}]pmid", FormUi::fieldConfig())->textInput(['maxlength' => true, 'class' => FormUi::inputClassMono(), 'placeholder' => 'PMID - PubMed Identifier']) ?>
                 </div>
             </div>
         </div>

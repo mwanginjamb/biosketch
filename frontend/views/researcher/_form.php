@@ -21,7 +21,8 @@ use frontend\models\ResearcherStatement;
 <?php $form = ActiveForm::begin(FormUi::formConfig('researcher-form', true)); ?>
 <?= FormUi::beginSection('Personal Information', 'person') ?>
 
-<?= $form->errorSummary($model) ?>
+<!-- Error Summary: tailwind styling -->
+<?= $form->errorSummary($model, ['class' => 'bg-error-container text-on-error-container rounded-md p-sm space-y-2', 'header' => '<h4 class="font-label-caps text-label-caps text-lg">Error Summary</h4>']) ?>
 <!-- Personal Information -->
 
 
@@ -56,9 +57,9 @@ use frontend\models\ResearcherStatement;
 
 
 
-<?= $form->field($model, 'status', FormUi::fieldConfig())->dropDownList(Researcher::statusOptions(),['prompt' => 'Select ...','class' => FormUi::selectClass()]) ?>
+<?= $form->field($model, 'status', FormUi::fieldConfig())->dropDownList(Researcher::statusOptions(), ['prompt' => 'Select ...', 'class' => FormUi::selectClass()]) ?>
 
-<?= $form->field($model, 'research_tags', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassMono(),'placeholder' => 'e.g Genomics, Cell Bio, Virology']) ?>
+<?= $form->field($model, 'research_tags', FormUi::fieldConfig())->textInput(['class' => FormUi::inputClassMono(), 'placeholder' => 'e.g Genomics, Cell Bio, Virology']) ?>
 
 <?php $form->field($model, 'version', FormUi::fieldConfig())->hiddenInput(['class' => FormUi::inputClassStandard()]) ?>
 
@@ -93,9 +94,9 @@ use frontend\models\ResearcherStatement;
 <!-- Researcher Statement -->
 <?= FormUi::beginSection('Researcher Statement', 'description') ?>
 
-    <?= $form->field($modelStatements, 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(), ['prompt' => 'Select statement type', 'class' => FormUi::selectClass()]) ?>
+<?= $form->field($modelStatements, 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(), ['prompt' => 'Select statement type', 'class' => FormUi::selectClass()]) ?>
 
-    <?= $form->field($modelStatements, 'content', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Enter a brief statement about your research interests and expertise.']) ?>
+<?= $form->field($modelStatements, 'content', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Enter a brief statement about your research interests and expertise.']) ?>
 
 <?= FormUi::endSection() ?>
 
@@ -137,7 +138,33 @@ use frontend\models\ResearcherStatement;
 </section>
 
 
-<!-- Publications -->
+<!--/ Publications -->
+
+<!-- Researcher Identifiers -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+
+    <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
+        <h2 class="font-headline-md text-headline-md">Researcher Identifiers</h2>
+
+        <button type="button" class="text-secondary flex items-center" id="add-identifier">
+            <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+        </button>
+    </div>
+
+    <div id="identifier-wrapper" class="space-y-4">
+        <?php
+
+        foreach ($identifierLines as $index => $identifier): ?>
+            <?= $this->render('_identifier_row', ['model' => $identifier, 'index' => $index, 'form' => $form]) ?>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- Template for new publication entries -->
+    <?= $this->render('_identifier_template', ['model' => new \frontend\models\ResearcherIdentifier(), 'form' => $form]) ?>
+
+
+</section>
+<!--/ Researcher Identifiers -->
 
 
 

@@ -22,6 +22,10 @@ use Yii;
 class ResearcherIdentifier extends \yii\db\ActiveRecord
 {
 
+    const VERIFICATION_UNVERIFIED = 0;
+    const VERIFICATION_PENDING = 1;
+    const VERIFICATION_VERIFIED = 2;
+    const VERIFICATION_REJECTED = 3;
 
     /**
      * {@inheritdoc}
@@ -80,6 +84,21 @@ class ResearcherIdentifier extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \frontend\models\query\ResearcherIdentifierQuery(get_called_class());
+    }
+
+    /**
+     * Returns an array of verification options for the dropdown list.
+     *
+     * @return array
+     */
+    public static function getVerificationOptions()
+    {
+        return [
+            self::VERIFICATION_UNVERIFIED => Yii::t('app', 'Unverified'),
+            self::VERIFICATION_PENDING => Yii::t('app', 'Pending'),
+            self::VERIFICATION_VERIFIED => Yii::t('app', 'Verified'),
+            self::VERIFICATION_REJECTED => Yii::t('app', 'Rejected'),
+        ];
     }
 
 }
