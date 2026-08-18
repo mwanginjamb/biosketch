@@ -35,7 +35,7 @@ use yii\behaviors\TimestampBehavior;
  * @property ResearcherIdentifier[] $researcherIdentifiers
  * @property ResearcherMedia[] $researcherMedia
  * @property ResearcherStatement|null $researcherStatement
- * @property Grants[] $grants
+ * @property ResearcherGrant[] $researcherGrants
  * @property User $user
  */
 class Researcher extends \yii\db\ActiveRecord
@@ -51,7 +51,7 @@ class Researcher extends \yii\db\ActiveRecord
         return 'researcher';
     }
 
-    
+
     public function behaviors()
     {
         return [
@@ -79,7 +79,7 @@ class Researcher extends \yii\db\ActiveRecord
             [['attachment'], 'file', 'mimeTypes' => ['image/jpeg', 'image/png']],
             [['attachment'], 'file', 'maxSize' => '5120'], //5mb
 
-            [['major_breakthrough','patent_filed','research_tags'],'string'],
+            [['major_breakthrough', 'patent_filed', 'research_tags'], 'string'],
         ];
     }
 
@@ -161,9 +161,9 @@ class Researcher extends \yii\db\ActiveRecord
         return $this->hasOne(ResearcherStatement::class, ['researcher_id' => 'id']);
     }
 
-    public function getGrants()
+    public function getResearcherGrants()
     {
-        return $this->hasOne(Grants::class,['researcher_id' => 'id']);
+        return $this->hasMany(ResearcherGrant::class, ['researcher_id' => 'id']);
     }
 
     /**

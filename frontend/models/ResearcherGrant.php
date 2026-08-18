@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\models;
+use common\models\User;
 
 use Yii;
 
@@ -32,7 +33,11 @@ use Yii;
 class ResearcherGrant extends \yii\db\ActiveRecord
 {
 
-
+    const ROLE_PI = 1;
+    const ROLE_CO_PI = 2;
+    const ROLE_INVESTIGATOR = 3;
+    const ROLE_COLLABORATOR = 4;
+    const ROLE_OTHER = 5;
     /**
      * {@inheritdoc}
      */
@@ -69,10 +74,10 @@ class ResearcherGrant extends \yii\db\ActiveRecord
             'researcher_id' => Yii::t('app', 'Researcher ID'),
             'grant_number' => Yii::t('app', 'Grant Number'),
             'title' => Yii::t('app', 'Title'),
-            'funding_agency_id' => Yii::t('app', 'Funding Agency ID'),
-            'grant_type_id' => Yii::t('app', 'Grant Type ID'),
-            'role_id' => Yii::t('app', 'Role ID'),
-            'amount' => Yii::t('app', 'Amount'),
+            'funding_agency_id' => Yii::t('app', 'Funding Agency'),
+            'grant_type_id' => Yii::t('app', 'Grant Type'),
+            'role_id' => Yii::t('app', 'Researcher Role'),
+            'amount' => Yii::t('app', 'Award Amount'),
             'currency' => Yii::t('app', 'Currency'),
             'start_date' => Yii::t('app', 'Start Date'),
             'end_date' => Yii::t('app', 'End Date'),
@@ -122,6 +127,124 @@ class ResearcherGrant extends \yii\db\ActiveRecord
     public static function find()
     {
         return new ResearcherGrantQuery(get_called_class());
+    }
+
+
+    // Role Options
+    public static function getRoleOptions()
+    {
+        return [
+            self::ROLE_PI => 'Principal Investigator',
+            self::ROLE_CO_PI => 'Co-Principal Investigator',
+            self::ROLE_INVESTIGATOR => 'Investigator',
+            self::ROLE_COLLABORATOR => 'Collaborator',
+            self::ROLE_OTHER => 'Other'
+        ];
+    }
+
+    // Status Options
+    public static function getStatusOptions()
+    {
+        return [
+            1 => 'Active',
+            2 => 'Completed',
+            3 => 'Pending',
+            4 => 'Terminated',
+        ];
+    }
+
+    // Currency Options
+    public static function getCurrencyOptions()
+    {
+        return [
+            'USD' => 'US Dollar',
+            'EUR' => 'Euro',
+            'GBP' => 'British Pound',
+            'INR' => 'Indian Rupee',
+            'AED' => 'UAE Dirham',
+            'AUD' => 'Australian Dollar',
+            'BRL' => 'Brazilian Real',
+            'CAD' => 'Canadian Dollar',
+            'CHF' => 'Swiss Franc',
+            'CNY' => 'Chinese Yuan',
+            'CZK' => 'Czech Koruna',
+            'DKK' => 'Danish Krone',
+            'HKD' => 'Hong Kong Dollar',
+            'HUF' => 'Hungarian Forint',
+            'IDR' => 'Indonesian Rupiah',
+            'ILS' => 'Israeli Shekel',
+            'JPY' => 'Japanese Yen',
+            'KRW' => 'South Korean Won',
+            'MXN' => 'Mexican Peso',
+            'MYR' => 'Malaysian Ringgit',
+            'NOK' => 'Norwegian Krone',
+            'NZD' => 'New Zealand Dollar',
+            'PHP' => 'Philippine Peso',
+            'PLN' => 'Polish Zloty',
+            'RUB' => 'Russian Ruble',
+            'SEK' => 'Swedish Krona',
+            'SGD' => 'Singapore Dollar',
+            'THB' => 'Thai Baht',
+            'TRY' => 'Turkish Lira',
+            'ZAR' => 'South African Rand',
+        ];
+    }
+
+    // Funding Agency Options
+    public static function getFundingAgencyOptions()
+    {
+        return [
+            1 => 'National Institutes of Health (NIH)',
+            2 => 'National Science Foundation (NSF)',
+            3 => 'Department of Defense (DoD)',
+            4 => 'Department of Energy (DOE)',
+            5 => 'Centers for Disease Control and Prevention (CDC)',
+            6 => 'Food and Drug Administration (FDA)',
+            7 => 'Environmental Protection Agency (EPA)',
+            8 => 'United States Department of Agriculture (USDA)',
+            9 => 'Department of Veterans Affairs (VA)',
+            10 => 'Department of Homeland Security (DHS)',
+            11 => 'Department of Education (ED)',
+            12 => 'Department of Transportation (DOT)',
+            13 => 'Department of Housing and Urban Development (HUD)',
+            14 => 'Department of Commerce (DOC)',
+            15 => 'Department of the Interior (DOI)',
+            16 => 'Department of Labor (DOL)',
+            17 => 'Department of State (DOS)',
+            18 => 'Department of the Treasury (USDT)',
+            19 => 'Department of Justice (DOJ)',
+            20 => 'Department of Health and Human Services (HHS)',
+            21 => 'European Research Council (ERC)',
+            22 => 'Horizon Europe',
+            23 => 'Marie Skłodowska-Curie Actions (MSCA)',
+            24 => 'European Institute of Innovation and Technology (EIT)',
+            25 => 'European Space Agency (ESA)',
+            26 => 'European Medicines Agency (EMA)',
+            27 => 'European Centre for Disease Prevention and Control (ECDC)',
+            28 => 'European Environment Agency (EEA)',
+            29 => 'European Investment Bank (EIB)',
+            30 => 'European Bank for Reconstruction and Development (EBRD)',
+            31 => 'European Defence Agency (EDA)',
+            32 => 'Bill & Melinda Gates Foundation',
+            33 => 'Wellcome Trust',
+            34 => 'Howard Hughes Medical Institute (HHMI)',
+            35 => 'Rockefeller Foundation',
+            36 => 'Ford Foundation',
+            37 => 'Carnegie Corporation of New York',
+            38 => 'Open Society Foundations',
+            39 => 'Robert Wood Johnson Foundation',
+            40 => 'W.K. Kellogg Foundation',
+            41 => 'MacArthur Foundation',
+            42 => 'David and Lucile Packard Foundation',
+            43 => 'John D. and Catherine T. MacArthur Foundation',
+            44 => 'The Kresge Foundation',
+            45 => 'The William and Flora Hewlett Foundation',
+            46 => 'The Andrew W. Mellon Foundation',
+            47 => 'The Walton Family Foundation',
+            48 => 'The Gordon and Betty Moore Foundation',
+            49 => 'The Simons Foundation',
+            50 => 'The Alfred P. Sloan Foundation',
+        ];
     }
 
 }

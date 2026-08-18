@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
         'publicationLines' => $modelPublications,
         'modelStatements' => $modelStatements,
         'identifierLines' => $modelIdentifiers,
+        'grantsLines' => $modelGrant,
     ]) ?>
 
 </div>

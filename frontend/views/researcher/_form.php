@@ -166,6 +166,32 @@ use frontend\models\ResearcherStatement;
 </section>
 <!--/ Researcher Identifiers -->
 
+<!-- Researcher Grants -->
+
+<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+    <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
+        <h2 class="font-headline-md text-headline-md">Researcher Grants</h2>
+
+        <button type="button" class="text-secondary flex items-center" id="add-grant">
+            <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+        </button>
+    </div>
+
+    <div id="grants-wrapper" class="space-y-4">
+        <?php
+        foreach ($grantsLines as $index => $grant): ?>
+            <?= $this->render('_grant_row', ['model' => $grant, 'index' => $index, 'form' => $form]) ?>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- Template for new publication entries -->
+    <?= $this->render('_grant_template', ['model' => new \frontend\models\ResearcherGrant(), 'form' => $form]) ?>
+
+
+</section>
+
+<!-- / Researcher Grants  -->
+
 
 
 

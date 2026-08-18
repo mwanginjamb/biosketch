@@ -200,3 +200,70 @@ if (!identifierWrapper.querySelector('.identifier-item')) {
     updateIdentifierRemoveVisibility();
 }
 
+// ------------------------------------------------------------------
+// GRANT ROWS
+// ------------------------------------------------------------------
+const grantWrapper = document.getElementById('grants-wrapper');
+const grantTemplate = document.getElementById('grant-template').innerHTML;
+
+function getMaxGrantIndex() {
+    let max = -1;
+    grantWrapper.querySelectorAll('.grant-item').forEach(item => {
+        const idxAttr = item.getAttribute('data-index');
+        if (idxAttr !== null) {
+            max = Math.max(max, parseInt(idxAttr, 10));
+        } else {
+            const input = item.querySelector('input[name*="[grant_type]"]');
+            if (input && input.name) {
+                const match = input.name.match(/ResearcherGrant\[(\d+)\]/);
+                if (match) max = Math.max(max, parseInt(match[1], 10));
+            }
+        }
+    });
+    return max;
+}
+
+function getNextGrantIndex() {
+    return getMaxGrantIndex() + 1;
+}
+
+function addGrantRow() {
+    const newIndex = getNextGrantIndex();
+    const html = grantTemplate.replace(/__index__/g, newIndex);
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const newRow = div.firstElementChild;
+    // Enable all inputs inside the new row
+    newRow.querySelectorAll('input, select, textarea').forEach(el => el.removeAttribute('disabled'));
+    newRow.setAttribute('data-index', newIndex);
+    grantWrapper.appendChild(newRow);
+    updateGrantRemoveVisibility();
+}
+
+function updateGrantRemoveVisibility() {
+    const rows = grantWrapper.querySelectorAll('.grant-item');
+    const alone = rows.length === 1;
+    rows.forEach(row => {
+        const btn = row.querySelector('.remove-grant');
+        if (btn) btn.style.visibility = alone ? 'hidden' : 'visible';
+    });
+}
+
+document.getElementById('add-grant').addEventListener('click', addGrantRow);
+
+grantWrapper.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-grant')) {
+        if (grantWrapper.querySelectorAll('.grant-item').length > 1) {
+            e.target.closest('.grant-item').remove();
+            updateGrantRemoveVisibility();
+        }
+
+    }
+});
+
+if (!grantWrapper.querySelector('.grant-item')) {
+    addGrantRow();
+} else {
+    updateGrantRemoveVisibility();
+}
+

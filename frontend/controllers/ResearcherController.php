@@ -9,6 +9,7 @@ use frontend\models\ResearcherIdentifier;
 use frontend\models\ResearcherMedia;
 use frontend\models\ResearcherSearch;
 use frontend\models\ResearcherStatement;
+use frontend\models\ResearcherGrant;
 use Yii;
 use yii\base\Model;
 use yii\filters\AccessControl;
@@ -131,6 +132,7 @@ class ResearcherController extends Controller
         $modelIdentifiers = [new \frontend\models\ResearcherIdentifier()];
         $modelStatements = new \frontend\models\ResearcherStatement();
         $modelMedia = [new \frontend\models\ResearcherMedia()];
+        $modelGrant = [new \frontend\models\ResearcherGrant()];
 
         if (Yii::$app->request->isPost) {
 
@@ -162,6 +164,11 @@ class ResearcherController extends Controller
                 $post
             );
 
+            $modelGrant = $this->createMultipleModels(
+                ResearcherGrant::class,
+                $post
+            );
+
             // Remove completely empty rows
             $modelEducations = $this->filterEmptyModels(
                 $modelEducations,
@@ -178,7 +185,10 @@ class ResearcherController extends Controller
                 ['identifier_type', 'identifier_value']
             );
 
-
+            $modelGrant = $this->filterEmptyModels(
+                $modelGrant,
+                ['funding_agency_id', 'grant_type_id', 'role_id']
+            );
 
             // Validate everything
             $modelProfile->user_id = Yii::$app->user->id; // Set user_id before validation
@@ -189,7 +199,7 @@ class ResearcherController extends Controller
             $valid = Model::validateMultiple($modelIdentifiers) && $valid;
             $valid = $modelStatements->validate() && $valid;
             $valid = Model::validateMultiple($modelMedia) && $valid;
-
+            $valid = Model::validateMultiple($modelGrant) && $valid;
             if ($valid) {
 
                 $transaction = Yii::$app->db->beginTransaction();
@@ -230,6 +240,11 @@ class ResearcherController extends Controller
                         $media->save(false);
                     }
 
+                    foreach ($modelGrant as $grant) {
+                        $grant->researcher_id = $modelProfile->id;
+                        $grant->save(false);
+                    }
+
                     $transaction->commit();
 
                     Yii::$app->session->setFlash(
@@ -262,6 +277,7 @@ class ResearcherController extends Controller
                     'Identifier' => $modelIdentifiers,
                     //'Statement' => $modelStatements,
                     'Media' => $modelMedia,
+                    'Grant' => $modelGrant,
                 ]
             );
 
@@ -285,6 +301,10 @@ class ResearcherController extends Controller
             if (empty($modelMedia)) {
                 $modelMedia = [new ResearcherMedia()];
             }
+
+            if (empty($modelGrant)) {
+                $modelGrant = [new ResearcherGrant()];
+            }
         }
 
         return $this->render('create', [
@@ -294,6 +314,7 @@ class ResearcherController extends Controller
             'modelIdentifiers' => $modelIdentifiers,
             'modelStatements' => $modelStatements,
             'modelMedia' => $modelMedia,
+            'modelGrant' => $modelGrant,
         ]);
     }
 
@@ -441,6 +462,7 @@ class ResearcherController extends Controller
         $modelIdentifiers = $modelProfile->researcherIdentifiers ?: [new ResearcherIdentifier()];
         $modelStatements = $modelProfile->researcherStatement ?: new ResearcherStatement();
         $modelMedia = $modelProfile->researcherMedia ?: [new ResearcherMedia()];
+        $modelGrant = $modelProfile->researcherGrants ?: [new ResearcherGrant()];
 
         if (Yii::$app->request->isPost) {
 
@@ -472,6 +494,11 @@ class ResearcherController extends Controller
                 'id'
             );
 
+            $oldGrantIds = ArrayHelper::getColumn(
+                array_filter($modelGrant, fn($m) => !$m->isNewRecord),
+                'id'
+            );
+
             // Load parent
             $modelProfile->load($post);
 
@@ -500,6 +527,12 @@ class ResearcherController extends Controller
                 $modelProfile->researcherMedia
             );
 
+            $modelGrant = $this->createMultipleModels(
+                ResearcherGrant::class,
+                $post,
+                $modelProfile->researcherGrants
+            );
+
             $modelStatements->load($post);
 
             // Remove empty rows
@@ -516,6 +549,11 @@ class ResearcherController extends Controller
             $modelIdentifiers = $this->filterEmptyModels(
                 $modelIdentifiers,
                 ['identifier_type', 'identifier_value']
+            );
+
+            $modelGrant = $this->filterEmptyModels(
+                $modelGrant,
+                ['funding_agency_id', 'grant_type_id', 'role_id']
             );
 
             // Determine deleted rows
@@ -552,6 +590,14 @@ class ResearcherController extends Controller
                 )
             );
 
+            $deletedGrantIds = array_diff(
+                $oldGrantIds,
+                ArrayHelper::getColumn(
+                    array_filter($modelGrant, fn($m) => !$m->isNewRecord),
+                    'id'
+                )
+            );
+
             // Validate
 
             $valid = $modelProfile->validate();
@@ -560,6 +606,7 @@ class ResearcherController extends Controller
             $valid = Model::validateMultiple($modelPublications) && $valid;
             $valid = Model::validateMultiple($modelIdentifiers) && $valid;
             $valid = Model::validateMultiple($modelMedia) && $valid;
+            $valid = Model::validateMultiple($modelGrant) && $valid;
             $valid = $modelStatements->validate() && $valid;
 
             if ($valid) {
@@ -593,6 +640,12 @@ class ResearcherController extends Controller
                     if (!empty($deletedMediaIds)) {
                         ResearcherMedia::deleteAll([
                             'id' => $deletedMediaIds
+                        ]);
+                    }
+
+                    if (!empty($deletedGrantIds)) {
+                        ResearcherGrant::deleteAll([
+                            'id' => $deletedGrantIds
                         ]);
                     }
 
@@ -638,6 +691,15 @@ class ResearcherController extends Controller
                         $media->save(false);
                     }
 
+                    // Save grants
+
+                    foreach ($modelGrant as $grant) {
+
+                        $grant->researcher_id = $modelProfile->id;
+
+                        $grant->save(false);
+                    }
+
                     $transaction->commit();
 
                     Yii::$app->session->setFlash(
@@ -668,6 +730,7 @@ class ResearcherController extends Controller
                     'Publication' => $modelPublications,
                     'Identifier' => $modelIdentifiers,
                     'Media' => $modelMedia,
+                    'Grant' => $modelGrant,
                 ]
             );
         }
@@ -679,6 +742,7 @@ class ResearcherController extends Controller
             'modelIdentifiers' => $modelIdentifiers,
             'modelStatements' => $modelStatements,
             'modelMedia' => $modelMedia,
+            'modelGrant' => $modelGrant,
         ]);
     }
 
