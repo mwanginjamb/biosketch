@@ -1,7 +1,8 @@
 <?php
 use yii\bootstrap5\Html;
 
- 
+
+//exit(Yii::getAlias('@frontend/web') . $model->profile_photo);
 ?>
 
 <!-- Main Content Wrapper -->
@@ -10,12 +11,13 @@ use yii\bootstrap5\Html;
     <!-- Sidebar Profile -->
     <aside class="w-full md:w-80 flex flex-col gap-md">
 
-        <div class="bg-surface-container-lowest p-md border border-outline-variant rounded-lg flex flex-col items-center text-center">
+        <div
+            class="bg-surface-container-lowest p-md border border-outline-variant rounded-lg flex flex-col items-center text-center">
             <img class="w-48 h-48 rounded-full mb-md object-cover border-4 border-surface"
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf29uY2KOEJUQSJ0BJA8WXHX4qbptUMAIuXD3Cqg7sjYrOTWYf4NtC0_UkketEA10SueZXgMgkwVoe3QjlsoNAu56aRI4zw8jQtrZCshJ8R3z1od8J01wQknNDDaM8S3zV6h0SJa3942MvYtGpKfXnRc3nMHWyZ6aSmGsrgYZHnB1YgAM5gwjTfWAyEdo8CmvJAorM0NA_xG1rOeSjklupBUGdJOeSSROl65b7s6oH2zrAF_dbu2IF5rjrxUVDOuZmz7ALybO57eJS">
+                src="<?= $model->profile_photo ? $model->profile_photo : 'https://via.placeholder.com/150' ?>">
 
             <h2 class="font-headline-lg text-headline-lg text-primary mb-base">
-                <?= ucfirst($model->title).' '.ucwords($model->full_name)  ?>
+                <?= ucfirst($model->title) . ' ' . ucwords($model->full_name) ?>
             </h2>
 
             <p class="text-on-surface-variant mb-xs"><?= $model->role_title ?? 'N/A' ?></p>
@@ -60,7 +62,8 @@ use yii\bootstrap5\Html;
 
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col gap-lg bg-surface-container-lowest p-md md:p-xl border border-outline-variant rounded-lg">
+    <div
+        class="flex-1 flex flex-col gap-lg bg-surface-container-lowest p-md md:p-xl border border-outline-variant rounded-lg">
 
         <!-- Highlights -->
         <section class="section-anchor" id="highlights">
@@ -92,43 +95,53 @@ use yii\bootstrap5\Html;
                 <?php foreach ($model->researcherEducations as $education): ?>
                     <div class="flex flex-col gap-sm">
                         <div class="flex gap-md pb-sm border-b border-surface-container">
-                            <div class="font-data-mono text-data-mono text-on-surface-variant min-w-[80px]"><?= $education->graduation_year ?? 'N/A' ?></div>
+                            <div class="font-data-mono text-data-mono text-on-surface-variant min-w-[80px]">
+                                <?= $education->graduation_year ?? 'N/A' ?>
+                            </div>
                             <div>
-                                <p class="font-body-lg text-body-lg font-bold text-primary"><?=  $education->degree ?? 'N/A' ?> </p>
-                                <p class="font-body-md text-on-surface-variant"><?= $education->institution_name ?? 'N/A'  ?> </p>
-                                <p class="font-body-md text-on-surface-variant italic mt-xs"><?= $education->field_of_study ?? 'N/A'  ?></p>
+                                <p class="font-body-lg text-body-lg font-bold text-primary">
+                                    <?= $education->degree ?? 'N/A' ?>
+                                </p>
+                                <p class="font-body-md text-on-surface-variant">
+                                    <?= $education->institution_name ?? 'N/A' ?>
+                                </p>
+                                <p class="font-body-md text-on-surface-variant italic mt-xs">
+                                    <?= $education->field_of_study ?? 'N/A' ?>
+                                </p>
                             </div>
                         </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
 
-            </div>
+                </div>
         </section>
 
 
         <!-- Publications -->
         <section class="section-anchor" id="publications">
             <div class="flex items-center gap-xs mb-md border-b border-outline-variant pb-xs">
-            <span class="material-symbols-outlined text-primary" data-icon="description">description</span>
-            <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Selected Publications</h3>
+                <span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+                <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Selected Publications</h3>
             </div>
 
             <div class="space-y-md">
 
-            <?php foreach($model->publications as $pub): ?>
+                <?php foreach ($model->publications as $pub): ?>
 
-               <div class="p-sm hover:bg-surface transition-colors border-l-4 border-primary">
-                <p class="font-body-md text-on-surface mb-xs leading-relaxed">
-                    <span class="font-bold"><?= $pub->journal ?></span> (<?= $pub->publication_year ?? 'N/A' ?>) <span class="italic"><?= $pub->title?? 'N/A' ?></span>.
-                </p>
-                <div class="flex gap-sm items-center">
-                    <span class="font-label-caps text-label-caps text-secondary"><?= Html::a(Html::encode($pub->doi??'#'),$pub->doi) ?></span>
-                  
-                </div>
-            </div>
+                    <div class="p-sm hover:bg-surface transition-colors border-l-4 border-primary">
+                        <p class="font-body-md text-on-surface mb-xs leading-relaxed">
+                            <span class="font-bold"><?= $pub->journal ?></span> (<?= $pub->publication_year ?? 'N/A' ?>)
+                            <span class="italic"><?= $pub->title ?? 'N/A' ?></span>.
+                        </p>
+                        <div class="flex gap-sm items-center">
+                            <span
+                                class="font-label-caps text-label-caps text-secondary"><?= Html::a(Html::encode($pub->doi ?? '#'), $pub->doi) ?></span>
+
+                        </div>
+                    </div>
 
                 <?php endforeach; ?>
 
-                
+
 
             </div>
         </section>
@@ -143,16 +156,19 @@ use yii\bootstrap5\Html;
 
             <div class="space-y-sm">
 
-                <div class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
+                <div
+                    class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
                     <div>
-                    <p class="font-label-caps text-label-caps text-on-surface-variant">NIH R01 GM123456</p>
-                    <p class="font-body-md font-bold text-primary">Mechanisms of CRISPR-Cas9 Target Selection</p>
-                    <p class="font-body-md text-on-surface-variant">Role: Principal Investigator | $1.2M Total Award</p>
+                        <p class="font-label-caps text-label-caps text-on-surface-variant">NIH R01 GM123456</p>
+                        <p class="font-body-md font-bold text-primary">Mechanisms of CRISPR-Cas9 Target Selection</p>
+                        <p class="font-body-md text-on-surface-variant">Role: Principal Investigator | $1.2M Total Award
+                        </p>
                     </div>
-                    <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">ACTIVE</div>
+                    <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">ACTIVE
+                    </div>
                 </div>
 
-                
+
 
             </div>
         </section>

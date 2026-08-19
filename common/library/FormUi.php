@@ -51,13 +51,19 @@ class FormUi
      *   $form = ActiveForm::begin(FormUi::formConfig());
      *   $form = ActiveForm::begin(FormUi::formConfig('patient-form'));
      */
-    public static function formConfig(string $id = 'auth-form', bool $isCreate = false): array
-    {
+    public static function formConfig(
+        string $id = 'auth-form',
+        bool $isCreate = false,
+        bool $hasFileUpload = false
+    ): array {
         $isCreateClass = $isCreate ? 'px-sm md:px-md' : '';
         return [
-            'id'      => $id,
+            'id' => $id,
             'options' => [
                 'class' => 'space-y-md ' . $isCreateClass,
+                'enctype' => $hasFileUpload
+                    ? 'multipart/form-data'
+                    : null,
             ],
             /*
              * Global default field config. Override per-field with:
@@ -143,54 +149,54 @@ class FormUi
 
 
     /**
- * ActiveField config for password fields with an inline
- * "Forgot password?" link and an interactive visibility toggle.
- *
- * @param array  $forgotUrl  Yii2 URL array for the reset link.
- * @param string $toggleId   HTML id for the toggle button (allows
- *                           multiple password fields per page).
- */
-public static function passwordFieldConfig(
-    array  $forgotUrl = ['site/request-password-reset'],
-    string $toggleId  = 'pwd-toggle'
-): array {
+     * ActiveField config for password fields with an inline
+     * "Forgot password?" link and an interactive visibility toggle.
+     *
+     * @param array  $forgotUrl  Yii2 URL array for the reset link.
+     * @param string $toggleId   HTML id for the toggle button (allows
+     *                           multiple password fields per page).
+     */
+    public static function passwordFieldConfig(
+        array $forgotUrl = ['site/request-password-reset'],
+        string $toggleId = 'pwd-toggle'
+    ): array {
 
-    $forgotLink = Html::a('Forgot password?', $forgotUrl, [
-        'class'    => self::linkClass(),
-        'tabindex' => '-1',
-    ]);
+        $forgotLink = Html::a('Forgot password?', $forgotUrl, [
+            'class' => self::linkClass(),
+            'tabindex' => '-1',
+        ]);
 
-    $toggleBtn = Html::button(
-        Html::tag('span', 'visibility', [
-            'class' => 'material-symbols-outlined text-[20px]',
-            'id'    => $toggleId . '-icon',
-        ]),
-        [
-            'id'      => $toggleId,
-            'type'    => 'button',
-            'class'   => 'absolute right-sm top-1/2 -translate-y-1/2
+        $toggleBtn = Html::button(
+            Html::tag('span', 'visibility', [
+                'class' => 'material-symbols-outlined text-[20px]',
+                'id' => $toggleId . '-icon',
+            ]),
+            [
+                'id' => $toggleId,
+                'type' => 'button',
+                'class' => 'absolute right-sm top-1/2 -translate-y-1/2
                           text-on-surface-variant hover:text-primary
                           transition-colors',
-            'encode'  => false,
-            'aria-label' => 'Show password',
-        ]
-    );
+                'encode' => false,
+                'aria-label' => 'Show password',
+            ]
+        );
 
-    return [
-        'template' =>
-            '<div class="flex justify-between items-center mb-xs">'
-          . '{label}'
-          . $forgotLink
-          . '</div>'
-          . '<div class="relative">{input}' . $toggleBtn . '</div>'
-          . "\n{error}",
+        return [
+            'template' =>
+                '<div class="flex justify-between items-center mb-xs">'
+                . '{label}'
+                . $forgotLink
+                . '</div>'
+                . '<div class="relative">{input}' . $toggleBtn . '</div>'
+                . "\n{error}",
 
 
-        'options'      => ['class' => 'space-y-xs'],
-        'labelOptions' => ['class' => 'font-label-caps text-label-caps text-on-surface-variant'],
-        'errorOptions' => ['class' => 'text-sm text-red-600 mt-1'],
-    ];
-}
+            'options' => ['class' => 'space-y-xs'],
+            'labelOptions' => ['class' => 'font-label-caps text-label-caps text-on-surface-variant'],
+            'errorOptions' => ['class' => 'text-sm text-red-600 mt-1'],
+        ];
+    }
 
 
     /*
@@ -241,7 +247,7 @@ public static function passwordFieldConfig(
         ";
     }
 
-  
+
 
     /**
      * Mono variant of the compact input (DOI fields, accession numbers, etc.).
@@ -378,10 +384,10 @@ public static function passwordFieldConfig(
     public static function secondaryButton(string $label, string $icon, array $url): string
     {
         $inner = Html::tag('span', $icon, ['class' => 'material-symbols-outlined text-[20px]'])
-               . Html::encode($label);
+            . Html::encode($label);
 
         return Html::a($inner, $url, [
-            'class'  => self::buttonSecondaryClass(),
+            'class' => self::buttonSecondaryClass(),
             'encode' => false,
         ]);
     }
@@ -442,18 +448,18 @@ public static function passwordFieldConfig(
      *   <?= FormUi::divider('New to BioSketch?') ?>
      *   <?= FormUi::divider('Or') ?>
      */
-   public static function divider(string $label = 'Or'): string
-{
-    return '
+    public static function divider(string $label = 'Or'): string
+    {
+        return '
         <div class="flex items-center gap-xs">
             <div class="h-px bg-outline-variant flex-1 self-center"></div>
             <span class="font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap shrink-0 px-xs">'
-                . Html::encode($label) . '
+            . Html::encode($label) . '
             </span>
             <div class="h-px bg-outline-variant flex-1 self-center"></div>
         </div>
     ';
-}
+    }
 
 
     /*
@@ -468,8 +474,8 @@ public static function passwordFieldConfig(
     public static function checkboxFieldConfig(): array
     {
         return [
-            'template'     => "{input}\n{error}",
-            'options'      => ['class' => 'mb-0'],
+            'template' => "{input}\n{error}",
+            'options' => ['class' => 'mb-0'],
             'errorOptions' => ['class' => 'text-sm text-red-600 mt-2'],
         ];
     }
@@ -540,8 +546,8 @@ public static function passwordFieldConfig(
     public static function gridToolbarClass(): string
     {
         return 'px-sm md:px-md pt-md pb-xs '
-             . 'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-xs '
-             . 'border-b border-outline-variant';
+            . 'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-xs '
+            . 'border-b border-outline-variant';
     }
 
     /**
@@ -553,10 +559,10 @@ public static function passwordFieldConfig(
     public static function gridSearchClass(): string
     {
         return 'w-full bg-surface-container border border-outline-variant '
-             . 'py-2 pl-10 pr-sm '
-             . 'font-body-md text-body-md text-on-surface '
-             . 'focus:border-secondary focus:ring-1 focus:ring-secondary '
-             . 'outline-none transition-all';
+            . 'py-2 pl-10 pr-sm '
+            . 'font-body-md text-body-md text-on-surface '
+            . 'focus:border-secondary focus:ring-1 focus:ring-secondary '
+            . 'outline-none transition-all';
     }
 
     /**
@@ -568,8 +574,8 @@ public static function passwordFieldConfig(
     public static function gridFooterClass(): string
     {
         return 'bg-surface-container px-sm md:px-md py-xs '
-             . 'flex flex-col sm:flex-row items-center justify-between gap-md '
-             . 'border-t border-outline-variant';
+            . 'flex flex-col sm:flex-row items-center justify-between gap-md '
+            . 'border-t border-outline-variant';
     }
 
 
@@ -592,8 +598,8 @@ public static function passwordFieldConfig(
     {
         return trim(
             'px-sm py-xs font-label-caps text-label-caps text-on-surface-variant '
-          . 'uppercase tracking-widest whitespace-nowrap '
-          . ($rightAlign ? 'text-right' : '')
+            . 'uppercase tracking-widest whitespace-nowrap '
+            . ($rightAlign ? 'text-right' : '')
         );
     }
 
@@ -625,11 +631,11 @@ public static function passwordFieldConfig(
      */
     public static function tdClass(string $variant = 'default'): string
     {
-        return 'px-sm py-xs ' . match($variant) {
+        return 'px-sm py-xs ' . match ($variant) {
             'primary' => 'font-headline-md font-bold text-primary text-body-md tracking-tight',
-            'muted'   => 'font-body-md text-body-md text-on-surface-variant whitespace-nowrap',
-            'mono'    => 'font-data-mono text-data-mono text-on-surface',
-            default   => 'font-body-md text-body-md text-on-surface',
+            'muted' => 'font-body-md text-body-md text-on-surface-variant whitespace-nowrap',
+            'mono' => 'font-data-mono text-data-mono text-on-surface',
+            default => 'font-body-md text-body-md text-on-surface',
         };
     }
 
@@ -659,12 +665,12 @@ public static function passwordFieldConfig(
      */
     public static function badge(string $label, string $variant = 'default'): string
     {
-        $colors = match($variant) {
+        $colors = match ($variant) {
             'secondary' => 'bg-secondary-container text-on-secondary-container',
-            'tertiary'  => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
-            'error'     => 'bg-error-container text-on-error-container',
-            'warning'   => 'bg-[#fff3cd] text-[#7a5c00]',
-            default     => 'bg-surface-container text-on-surface-variant',
+            'tertiary' => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
+            'error' => 'bg-error-container text-on-error-container',
+            'warning' => 'bg-[#fff3cd] text-[#7a5c00]',
+            default => 'bg-surface-container text-on-surface-variant',
         };
 
         return Html::tag('span', Html::encode($label), [
@@ -684,12 +690,12 @@ public static function passwordFieldConfig(
      */
     public static function chip(string $label, string $variant = 'default'): string
     {
-        $colors = match($variant) {
+        $colors = match ($variant) {
             'secondary' => 'bg-secondary-container text-on-secondary-container',
-            'tertiary'  => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
-            'error'     => 'bg-error-container text-on-error-container',
-            'warning'   => 'bg-[#fff3cd] text-[#7a5c00]',
-            default     => 'bg-surface-container text-on-surface',
+            'tertiary' => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
+            'error' => 'bg-error-container text-on-error-container',
+            'warning' => 'bg-[#fff3cd] text-[#7a5c00]',
+            default => 'bg-surface-container text-on-surface',
         };
 
         return Html::tag('span', Html::encode($label), [
@@ -723,14 +729,14 @@ public static function passwordFieldConfig(
      */
     public static function actionBtn(
         string $icon,
-        array  $url,
-        string $intent  = 'view',
-        array  $options = []
+        array $url,
+        string $intent = 'view',
+        array $options = []
     ): string {
-        $intentClass = match($intent) {
-            'edit'   => 'p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-all',
+        $intentClass = match ($intent) {
+            'edit' => 'p-2 text-on-surface-variant hover:text-secondary hover:bg-surface-container transition-all',
             'delete' => 'p-2 text-on-surface-variant hover:text-error hover:bg-error-container transition-all',
-            default  => 'p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all',
+            default => 'p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all',
         };
 
         $iconSpan = Html::tag('span', $icon, ['class' => 'material-symbols-outlined text-[20px]']);
@@ -740,7 +746,7 @@ public static function passwordFieldConfig(
         if ($intent === 'delete') {
             $defaults['data'] = [
                 'confirm' => 'Are you sure you want to delete this record?',
-                'method'  => 'post',
+                'method' => 'post',
             ];
         }
 
@@ -755,14 +761,14 @@ public static function passwordFieldConfig(
      */
     public static function actionBtnSm(
         string $icon,
-        array  $url,
-        string $intent  = 'view',
-        array  $options = []
+        array $url,
+        string $intent = 'view',
+        array $options = []
     ): string {
-        $intentClass = match($intent) {
-            'edit'   => 'p-1.5 text-on-surface-variant hover:text-secondary',
+        $intentClass = match ($intent) {
+            'edit' => 'p-1.5 text-on-surface-variant hover:text-secondary',
             'delete' => 'p-1.5 text-on-surface-variant hover:text-error',
-            default  => 'p-1.5 text-on-surface-variant hover:text-primary',
+            default => 'p-1.5 text-on-surface-variant hover:text-primary',
         };
 
         $iconSpan = Html::tag('span', $icon, ['class' => 'material-symbols-outlined text-[16px]']);
@@ -771,7 +777,7 @@ public static function passwordFieldConfig(
         if ($intent === 'delete') {
             $defaults['data'] = [
                 'confirm' => 'Are you sure you want to delete this record?',
-                'method'  => 'post',
+                'method' => 'post',
             ];
         }
 
@@ -801,15 +807,15 @@ public static function passwordFieldConfig(
     public static function ctaButton(string $label, string $icon, array $url): string
     {
         $inner = Html::tag('span', $icon, ['class' => 'material-symbols-outlined text-[20px]'])
-               . Html::tag('span', Html::encode($label));
+            . Html::tag('span', Html::encode($label));
 
         return Html::a($inner, $url, [
-            'class'  => 'inline-flex items-center justify-center gap-xs px-md py-xs '
-                      . 'bg-primary text-on-primary '
-                      . 'font-label-caps text-label-caps '
-                      . 'shadow-md '
-                      . 'hover:bg-primary-container active:scale-[0.98] transition-all '
-                      . 'w-full sm:w-auto',
+            'class' => 'inline-flex items-center justify-center gap-xs px-md py-xs '
+                . 'bg-primary text-on-primary '
+                . 'font-label-caps text-label-caps '
+                . 'shadow-md '
+                . 'hover:bg-primary-container active:scale-[0.98] transition-all '
+                . 'w-full sm:w-auto',
             'encode' => false,
         ]);
     }
@@ -841,7 +847,7 @@ public static function passwordFieldConfig(
         string $icon,
         string $label,
         string $value,
-        string $iconBg    = 'bg-secondary-container',
+        string $iconBg = 'bg-secondary-container',
         string $iconColor = 'text-on-secondary-container'
     ): string {
         $circle = Html::tag(
@@ -850,12 +856,20 @@ public static function passwordFieldConfig(
             ['class' => "h-10 w-10 rounded-full {$iconBg} flex items-center justify-center {$iconColor} shrink-0"]
         );
 
-        $text = Html::tag('div',
-            Html::tag('p', Html::encode($label),
-                ['class' => 'font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest'])
-          . Html::tag('p', Html::encode($value),
-                ['class' => 'font-headline-md text-headline-md font-bold text-primary']),
-        []);
+        $text = Html::tag(
+            'div',
+            Html::tag(
+                'p',
+                Html::encode($label),
+                ['class' => 'font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest']
+            )
+            . Html::tag(
+                'p',
+                Html::encode($value),
+                ['class' => 'font-headline-md text-headline-md font-bold text-primary']
+            ),
+            []
+        );
 
         return Html::tag('div', $circle . $text, [
             'class' => 'bg-surface-container-lowest p-sm border border-outline-variant flex items-center gap-sm',
@@ -880,7 +894,7 @@ public static function passwordFieldConfig(
     public static function breadcrumb(array $crumbs): string
     {
         $parts = [];
-        $last  = array_pop($crumbs);
+        $last = array_pop($crumbs);
 
         foreach ($crumbs as $crumb) {
             $parts[] = Html::tag('span', Html::encode($crumb), ['class' => 'text-on-surface-variant']);
@@ -945,13 +959,13 @@ public static function passwordFieldConfig(
     {
         $containerId = 'photo-upload-' . uniqid();
         $fileInputId = 'photo-file-' . uniqid();
-        $previewId   = 'photo-preview-' . uniqid();
+        $previewId = 'photo-preview-' . uniqid();
         $circleClass = self::UPLOAD_CIRCLE_CLASS;
         $bgStyle = $currentImage ? "background-image: url('" . Html::encode($currentImage) . "'); background-size: cover; background-position: center;" : '';
 
         return <<<HTML
 <div id="{$containerId}" class="flex flex-col items-center gap-xs mb-sm">
-    <div class="{$circleClass}" style="{$bgStyle}" onclick="document.getElementById('{$fileInputId}').click();">
+    <div class="{$circleClass} photo-upload-circle" style="{$bgStyle}" onclick="document.getElementById('{$fileInputId}').click();">
         <span class="material-symbols-outlined text-3xl" data-icon="add_a_photo">add_a_photo</span>
         <span class="text-[10px] font-bold uppercase mt-1">Upload Photo</span>
     </div>
@@ -966,7 +980,7 @@ function previewPhoto(input, previewContainerId, containerId) {
         reader.onload = function(e) {
             var container = document.getElementById(containerId);
             if (container) {
-                var uploadDiv = container.querySelector('.w-24.h-24');
+                var uploadDiv = container.querySelector('.photo-upload-circle');
                 if (uploadDiv) {
                     uploadDiv.style.backgroundImage = "url('" + e.target.result + "')";
                     uploadDiv.style.backgroundSize = "cover";
@@ -1028,36 +1042,36 @@ HTML;
     ';
 
     private const UPLOAD_CIRCLE_CLASS = '
-       w-24 h-24 rounded-full bg-surface-container-high border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors
+       w-[200px] h-[250px] rounded-full bg-surface-container-high border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant cursor-pointer hover:bg-surface-variant transition-colors
     ';
 
     private const SECTION_CLASS = 'bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm p-md ';
 
 
     /**
- * Begins a repeatable section container with a header.
- *
- * @param string $title Section title (e.g., "Personal Information").
- * @param string $icon  Material Symbol name (e.g., "person", "school", "description").
- * @return string Opening HTML for the section.
- *
- * Usage:
- *   <?= FormUi::beginSection('Personal Information', 'person') ?>
- *       ... form fields ...
- *   <?= FormUi::endSection() ?>
- */
-public static function beginSection(string $title, string $icon): string
-{
-    return '<section class="' . self::SECTION_CLASS . '">'
-         . '<div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">'
-         . '<h2 class="font-headline-md text-headline-md">' . Html::encode($title) . '</h2>'
-         . '<span class="material-symbols-outlined text-on-surface-variant" data-icon="' . Html::encode($icon) . '">' . Html::encode($icon) . '</span>'
-         . '</div>';
-}
+     * Begins a repeatable section container with a header.
+     *
+     * @param string $title Section title (e.g., "Personal Information").
+     * @param string $icon  Material Symbol name (e.g., "person", "school", "description").
+     * @return string Opening HTML for the section.
+     *
+     * Usage:
+     *   <?= FormUi::beginSection('Personal Information', 'person') ?>
+     *       ... form fields ...
+     *   <?= FormUi::endSection() ?>
+     */
+    public static function beginSection(string $title, string $icon): string
+    {
+        return '<section class="' . self::SECTION_CLASS . '">'
+            . '<div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">'
+            . '<h2 class="font-headline-md text-headline-md">' . Html::encode($title) . '</h2>'
+            . '<span class="material-symbols-outlined text-on-surface-variant" data-icon="' . Html::encode($icon) . '">' . Html::encode($icon) . '</span>'
+            . '</div>';
+    }
 
-public static function endSection(): string
-{
-    return '</section>';
-}
+    public static function endSection(): string
+    {
+        return '</section>';
+    }
 
 }
