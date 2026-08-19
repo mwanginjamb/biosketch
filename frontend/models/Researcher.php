@@ -76,9 +76,14 @@ class Researcher extends \yii\db\ActiveRecord
             [['era_commons_id', 'orcid'], 'string', 'max' => 100],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // Attachment  - jpeg, jpg,png
-            [['attachment'], 'file', 'mimeTypes' => ['image/jpeg', 'image/png']],
-            [['attachment'], 'file', 'maxSize' => '5120'], //5mb
-
+            [
+                ['attachment'],
+                'file',
+                'extensions' => 'jpg, jpeg, png',
+                'mimeTypes' => 'image/jpeg, image/png',
+                'maxSize' => 1024 * 1024 * 3, // 3MB,
+                'skipOnEmpty' => true,
+            ],
             [['major_breakthrough', 'patent_filed', 'research_tags'], 'string'],
         ];
     }

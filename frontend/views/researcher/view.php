@@ -2,6 +2,7 @@
 use yii\bootstrap5\Html;
 
 
+//exit(Yii::getAlias('@frontend/web') . $model->profile_photo);
 ?>
 
 <!-- Main Content Wrapper -->
@@ -13,7 +14,7 @@ use yii\bootstrap5\Html;
         <div
             class="bg-surface-container-lowest p-md border border-outline-variant rounded-lg flex flex-col items-center text-center">
             <img class="w-48 h-48 rounded-full mb-md object-cover border-4 border-surface"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf29uY2KOEJUQSJ0BJA8WXHX4qbptUMAIuXD3Cqg7sjYrOTWYf4NtC0_UkketEA10SueZXgMgkwVoe3QjlsoNAu56aRI4zw8jQtrZCshJ8R3z1od8J01wQknNDDaM8S3zV6h0SJa3942MvYtGpKfXnRc3nMHWyZ6aSmGsrgYZHnB1YgAM5gwjTfWAyEdo8CmvJAorM0NA_xG1rOeSjklupBUGdJOeSSROl65b7s6oH2zrAF_dbu2IF5rjrxUVDOuZmz7ALybO57eJS">
+                src="<?= $model->profile_photo ? $model->profile_photo : 'https://via.placeholder.com/150' ?>">
 
             <h2 class="font-headline-lg text-headline-lg text-primary mb-base">
                 <?= ucfirst($model->title) . ' ' . ucwords($model->full_name) ?>
@@ -95,14 +96,18 @@ use yii\bootstrap5\Html;
                     <div class="flex flex-col gap-sm">
                         <div class="flex gap-md pb-sm border-b border-surface-container">
                             <div class="font-data-mono text-data-mono text-on-surface-variant min-w-[80px]">
-                                <?= $education->graduation_year ?? 'N/A' ?></div>
+                                <?= $education->graduation_year ?? 'N/A' ?>
+                            </div>
                             <div>
                                 <p class="font-body-lg text-body-lg font-bold text-primary">
-                                    <?= $education->degree ?? 'N/A' ?> </p>
+                                    <?= $education->degree ?? 'N/A' ?>
+                                </p>
                                 <p class="font-body-md text-on-surface-variant">
-                                    <?= $education->institution_name ?? 'N/A' ?> </p>
+                                    <?= $education->institution_name ?? 'N/A' ?>
+                                </p>
                                 <p class="font-body-md text-on-surface-variant italic mt-xs">
-                                    <?= $education->field_of_study ?? 'N/A' ?></p>
+                                    <?= $education->field_of_study ?? 'N/A' ?>
+                                </p>
                             </div>
                         </div>
                     <?php endforeach; ?>

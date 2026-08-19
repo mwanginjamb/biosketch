@@ -215,4 +215,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
+
+    // get researcher profile associated with this user
+    public function getResearcher()
+    {
+        return $this->hasOne(\frontend\models\Researcher::class, ['user_id' => 'id']);
+    }
 }

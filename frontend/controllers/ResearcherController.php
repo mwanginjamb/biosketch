@@ -18,6 +18,8 @@ use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
+use yii\web\UploadedFile;
 
 /**
  * ResearcherController implements the CRUD actions for Researcher model.
@@ -88,7 +90,7 @@ class ResearcherController extends Controller
             'researcherStatement',
             'researcherMedia'
         ])->one();
-        $researcher->profile_photo = 'https://randomuser.me/api/portraits/men/75.jpg';
+        //$researcher->profile_photo = 'https://randomuser.me/api/portraits/men/75.jpg';
         return $this->render('view', [
             'model' => $researcher,
         ]);
@@ -126,13 +128,13 @@ class ResearcherController extends Controller
     public function actionCreate()
     {
         $this->layout = 'create';
-        $modelProfile = new \frontend\models\Researcher();
-        $modelEducations = [new \frontend\models\ResearcherEducation()];
-        $modelPublications = [new \frontend\models\Publications()];
-        $modelIdentifiers = [new \frontend\models\ResearcherIdentifier()];
-        $modelStatements = new \frontend\models\ResearcherStatement();
-        $modelMedia = [new \frontend\models\ResearcherMedia()];
-        $modelGrant = [new \frontend\models\ResearcherGrant()];
+        $modelProfile = new Researcher();
+        $modelEducations = [new ResearcherEducation()];
+        $modelPublications = [new Publications()];
+        $modelIdentifiers = [new ResearcherIdentifier()];
+        $modelStatements = new ResearcherStatement();
+        $modelMedia = [new ResearcherMedia()];
+        $modelGrant = [new ResearcherGrant()];
 
         if (Yii::$app->request->isPost) {
 
@@ -141,26 +143,39 @@ class ResearcherController extends Controller
             // Parent model
             $modelProfile->load($post);
 
+            // Handle file upload for profile photo
+            $modelProfile->attachment = UploadedFile::getInstanceByName('attachment');
+
+            if ($modelProfile->attachment instanceof UploadedFile) {
+                $newPhotoPath = $this->saveProfilePhoto(
+                    $modelProfile,
+                    $modelProfile->attachment
+                );
+                $modelProfile->profile_photo = $newPhotoPath;
+                $modelProfile->save(false); // persist the profile photo path before validation of child models
+            }
+
+
             // Child models
             $modelEducations = $this->createMultipleModels(
-                \frontend\models\ResearcherEducation::class,
+                ResearcherEducation::class,
                 $post
             );
 
             $modelPublications = $this->createMultipleModels(
-                \frontend\models\Publications::class,
+                Publications::class,
                 $post
             );
 
             $modelIdentifiers = $this->createMultipleModels(
-                \frontend\models\ResearcherIdentifier::class,
+                ResearcherIdentifier::class,
                 $post
             );
 
-            $modelStatements = new \frontend\models\ResearcherStatement();
+            $modelStatements = new ResearcherStatement();
 
             $modelMedia = $this->createMultipleModels(
-                \frontend\models\ResearcherMedia::class,
+                ResearcherMedia::class,
                 $post
             );
 
@@ -260,6 +275,11 @@ class ResearcherController extends Controller
                 } catch (\Throwable $e) {
 
                     $transaction->rollBack();
+
+                    // role back even file system activity if profile photo was uploaded
+                    if ($newPhotoPath !== null) {
+                        $this->deleteProfilePhoto($newPhotoPath);
+                    }
 
                     $modelProfile->addError(
                         '_form',
@@ -473,6 +493,10 @@ class ResearcherController extends Controller
              echo '</pre>';
              exit;*/
 
+            $modelProfile->attachment = UploadedFile::getInstanceByName('attachment');
+            $oldProfilePhoto = $modelProfile->profile_photo;
+            $newProfilePhoto = null;
+
             // Store old IDs before rebuilding arrays
             $oldEducationIds = ArrayHelper::getColumn(
                 array_filter($modelEducations, fn($m) => !$m->isNewRecord),
@@ -617,6 +641,18 @@ class ResearcherController extends Controller
 
                     $modelProfile->save(false);
 
+                    if ($modelProfile->attachment instanceof UploadedFile) {
+
+                        $newProfilePhoto = $this->saveProfilePhoto(
+                            $modelProfile,
+                            $modelProfile->attachment
+                        );
+
+                        $modelProfile->profile_photo = $newProfilePhoto;
+
+                        $modelProfile->save(false);
+                    }
+
                     // Delete removed rows
 
                     if (!empty($deletedEducationIds)) {
@@ -702,6 +738,15 @@ class ResearcherController extends Controller
 
                     $transaction->commit();
 
+                    // cleanup old profile photo if a new one was uploaded
+                    if (
+                        $newProfilePhoto !== null &&
+                        $oldProfilePhoto &&
+                        $oldProfilePhoto !== $newProfilePhoto
+                    ) {
+                        $this->deleteProfilePhoto($oldProfilePhoto);
+                    }
+
                     Yii::$app->session->setFlash(
                         'success',
                         'Researcher profile updated successfully.'
@@ -715,6 +760,11 @@ class ResearcherController extends Controller
                 } catch (\Throwable $e) {
 
                     $transaction->rollBack();
+
+                    // role back even file system activity if profile photo was uploaded
+                    if ($newProfilePhoto !== null) {
+                        $this->deleteProfilePhoto($newProfilePhoto);
+                    }
 
                     $modelProfile->addError(
                         '_form',
@@ -776,6 +826,55 @@ class ResearcherController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+
+    /**
+     * File operations helper (upload and delete) for profile photo.
+     * @param int $id Researcher ID
+     */
+
+    protected function saveProfilePhoto(Researcher $model, UploadedFile $file): string
+    {
+
+        $uploadDir = Yii::getAlias('@frontend/web/uploads/researchers/profile');
+
+        if (!is_dir($uploadDir)) {
+            //mkdir($uploadDir, 0777, true);
+            FileHelper::createDirectory($uploadDir, 0775, true);
+        }
+
+        $extension = strtolower($file->extension);
+
+        // $fileName = 'researcher_' . $model->id . '_' . time() . '.' . $file->extension;
+        $filename = sprintf(
+            'researcher_%d_%s.%s',
+            $model->id,
+            Yii::$app->security->generateRandomString(6),
+            $extension
+        );
+
+        $absolutePath = $uploadDir . DIRECTORY_SEPARATOR . $filename;
+
+
+        if (!$file->saveAs($absolutePath)) {
+            throw new \RuntimeException(
+                'Unable to save researcher profile photo.'
+            );
+        }
+
+        return '/uploads/researchers/profile/' . $filename;
+    }
+
+    protected function deleteProfilePhoto(?string $photoPath): void
+    {
+        if ($photoPath) {
+            $absolutePath = Yii::getAlias('@frontend/web') . $photoPath;
+            if (is_file($absolutePath)) {
+                unlink($absolutePath);
+            }
+        }
+
+        return;
     }
 
 

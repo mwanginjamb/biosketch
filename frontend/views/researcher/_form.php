@@ -18,7 +18,7 @@ use frontend\models\ResearcherStatement;
         Entry</span>
 </div>
 
-<?php $form = ActiveForm::begin(FormUi::formConfig('researcher-form', true)); ?>
+<?php $form = ActiveForm::begin(FormUi::formConfig('researcher-form', true, true)); ?>
 <?= FormUi::beginSection('Personal Information', 'person') ?>
 
 <!-- Error Summary: tailwind styling -->
