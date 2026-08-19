@@ -99,6 +99,13 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionHome(): string
+    {
+        $this->layout = 'plain';
+        
+        return $this->render('home');
+    }
+
     /**
      * Logs in a user.
      *
