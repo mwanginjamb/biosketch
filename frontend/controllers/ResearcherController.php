@@ -88,11 +88,63 @@ class ResearcherController extends Controller
             'publications',
             'researcherIdentifiers',
             'researcherStatement',
-            'researcherMedia'
+            'researcherMedia',
+            'researcherGrants'
         ])->one();
         //$researcher->profile_photo = 'https://randomuser.me/api/portraits/men/75.jpg';
         return $this->render('view', [
             'model' => $researcher,
+        ]);
+    }
+
+    // Report Generation
+
+    public function actionReport($id)
+    {
+        $researcher = Researcher::find()->where(['id' => $id])->with([
+            'researcherEducations',
+            'publications',
+            'researcherIdentifiers',
+            'researcherStatement',
+            'researcherMedia',
+            'researcherGrants'
+        ])->one();
+
+        if (!$researcher) {
+            throw new NotFoundHttpException('Researcher BioSketch not found.');
+        }
+
+        $content = $this->renderPartial('_report', [
+            'biosketch' => $researcher,
+        ]);
+
+        $title = $researcher->full_name . ' - Researcher BioSketch';
+
+        $pdf = Yii::$app->pdf;
+
+        $pdf->content = $content;
+
+        $pdf->cssFile = Yii::getAlias('@webroot/css/report.css');
+
+        $pdf->methods = [
+            'SetHeader' => [$title . ' Generated On: ' . date("r")],
+            'SetFooter' => ['{PAGENO} of {nb} || Powered By - ' . env('DEVELOPER')],
+
+            'SetAuthor' => env('DEVELOPER'),
+            'SetCreator' => Yii::$app->name,
+
+            'SetTitle' => $researcher->full_name .
+                ' - Researcher BioSketch',
+        ];
+
+        $binary = $pdf->render();
+
+        $base64Content = chunk_split(
+            base64_encode($binary)
+        );
+
+        return $this->renderAjax('_report_render', [
+            'content' => $base64Content,
         ]);
     }
 

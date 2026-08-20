@@ -81,47 +81,8 @@ $this->beginPage();
     </button>
 
 
-    <!-- SCRIPT -->
-    <script>
->>>>>>> b256926f84a16bcca2e22fdc3b064bb2d4d75d2e
-        const sections = document.querySelectorAll('.section-anchor');
-
-        const observer = new IntersectionObserver((entries) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('opacity-100', 'translate-y-0');
-                entry.target.classList.remove('opacity-50', 'translate-y-4');
-            }
-        });
-<<<<<<< HEAD
-}, {
-            threshold: 0.3
-        });
-
-        sections.forEach(section => {
-            section.classList.add(
-                'transition-all',
-                'duration-500',
-                'opacity-50',
-                'translate-y-4'
-            );
-            observer.observe(section);
-        });
-JS);
-    ?>
-
-            <?php $this->endBody() ?>
-
-=======
-}, { threshold: 0.3 });
-
-sections.forEach(section => {
-    section.classList.add('transition-all','duration-500','opacity-50','translate-y-4');
-    observer.observe(section);
-});
-    </script>
 
     <?php $this->endBody(); ?>
-    >>>>>>> b256926f84a16bcca2e22fdc3b064bb2d4d75d2e
 </body>
 
 </html>
