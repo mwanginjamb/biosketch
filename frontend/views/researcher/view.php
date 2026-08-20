@@ -156,17 +156,29 @@ use yii\bootstrap5\Html;
 
             <div class="space-y-sm">
 
-                <div
-                    class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
-                    <div>
-                        <p class="font-label-caps text-label-caps text-on-surface-variant">NIH R01 GM123456</p>
-                        <p class="font-body-md font-bold text-primary">Mechanisms of CRISPR-Cas9 Target Selection</p>
-                        <p class="font-body-md text-on-surface-variant">Role: Principal Investigator | $1.2M Total Award
-                        </p>
+
+                <?php foreach ($model->researcherGrants as $grant): ?>
+
+                    <div
+                        class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
+                        <div>
+                            <p class="font-label-caps text-label-caps text-on-surface-variant">
+                                <?= Html::encode($grant->grant_number ?? 'N/A') ?>
+                            </p>
+                            <p class="font-body-md font-bold text-primary">
+                                <?= Html::encode($grant->title ?? 'N/A') ?>
+                            </p>
+                            <p class="font-body-md text-on-surface-variant">Role:
+                                <?= Html::encode($grant->roleOptions[$grant->role_id] ?? 'N/A') ?> |
+                                <?= Html::encode(Yii::$app->formatter->asCurrency($grant->amount, $grant->currency) ?? 'N/A') ?>
+                            </p>
+                        </div>
+                        <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">
+                            <?= $grant->statusOptions[$grant->status_id] ?? 'N/A' ?>
+                        </div>
                     </div>
-                    <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">ACTIVE
-                    </div>
-                </div>
+
+                <?php endforeach; ?>
 
 
 
