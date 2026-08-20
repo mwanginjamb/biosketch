@@ -45,9 +45,11 @@ $this->beginPage();
                 <a href="#" class="font-bold border-b-2 border-primary">Public Profile</a>
                 <a href="<?= Url::toRoute(['researcher/create']) ?>">Data Entry</a>
             </div>
+            <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
+                <img alt="Scientist profile"
+                    src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher->profile_photo) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
+            </div>
 
-            <img class="w-10 h-10 rounded-full border object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmDS_35xhZTEhGVnpqDyladtXgq9lspOIeNlKI1td7_zTuY4HefWm4e2XVmxRIrc0qBhRGyxi9GpA5z6EkeVdFmUovQpTs9O1s_6qFYEBt70H30xC61FaiWuLVyzH34kcRvLki4XFykrV_gWEt0oGO7Qn5jqvD1LvWezwT5TInvH7ubXFVwo5hAzE_Rr8Rgl_Mi4GCCxRdRAJhA4kyZ2YjX5_w2YjfHgAioMJEvRJBVhTA14pmF6PLvnI65eFweLd3a_ZQg3AqOKah">
         </div>
     </nav>
 

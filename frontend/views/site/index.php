@@ -198,36 +198,7 @@ $this->title = 'List of Pulished BioSketches';
 
 
 
-<!-- Stats/Summary Bento-ish Section -->
-<div class="mt-lg grid grid-cols-1 md:grid-cols-3 gap-md">
-    <div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
-        <div class="flex justify-between items-start mb-sm">
-            <span class="material-symbols-outlined text-secondary bg-secondary-container p-2 rounded-lg">verified</span>
-            <span class="text-data-mono text-xs text-on-surface-variant">+12% vs last month</span>
-        </div>
-        <div class="text-display font-display text-primary">08</div>
-        <div class="font-label-caps text-label-caps text-on-surface-variant">Published Biosketches</div>
-    </div>
-    <div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
-        <div class="flex justify-between items-start mb-sm">
-            <span
-                class="material-symbols-outlined text-primary bg-primary-container/20 p-2 rounded-lg text-primary">pending_actions</span>
-            <span class="text-data-mono text-xs text-on-surface-variant">4 active drafts</span>
-        </div>
-        <div class="text-display font-display text-primary">04</div>
-        <div class="font-label-caps text-label-caps text-on-surface-variant">Work in Progress</div>
-    </div>
-    <div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl">
-        <div class="flex justify-between items-start mb-sm">
-            <span
-                class="material-symbols-outlined text-on-primary-fixed-variant bg-tertiary-fixed p-2 rounded-lg">history</span>
-            <span class="text-data-mono text-xs text-on-surface-variant">Last activity 2h ago</span>
-        </div>
-        <div class="text-display font-display text-primary">24</div>
-        <div class="font-label-caps text-label-caps text-on-surface-variant">Annual Revisions</div>
-    </div>
-</div>
-</div>
+
 
 
 
