@@ -37,7 +37,12 @@ use yii\bootstrap5\Html;
 
                 <div class="flex items-center gap-sm">
                     <span class="material-symbols-outlined">language</span>
-                    <span class="font-data-mono"><?= $model->website ?? 'N/A' ?></span>
+                    <span class="font-data-mono">
+                        <?=
+                            // remove scheme (http:// or https://)  and "www" from website if present
+                            str_replace(['http://', 'https://', 'www.'], '', $model->website) ?? 'N/A'
+                            ?>
+                    </span>
                 </div>
 
                 <div class="flex items-center gap-sm">
@@ -53,9 +58,18 @@ use yii\bootstrap5\Html;
             <p class="font-data-mono text-primary font-bold"><?= $model->orcid ?? 'N/A' ?></p>
 
             <div class="mt-md flex flex-wrap gap-xs">
-                <span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">GENOMICS</span>
-                <span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">CELL BIO</span>
-                <span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">CRISPR</span>
+                <!-- Get research tags as array of tags -->
+                <?php
+                $tags = explode(',', $model->research_tags);
+                if (!is_array($tags)) {
+                    echo '<span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">No tags available</span>';
+
+                }
+                foreach ($tags as $tag) {
+                    echo '<span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">' . trim($tag) . '</span>';
+                }
+                ?>
+
             </div>
         </div>
     </aside>
@@ -74,7 +88,7 @@ use yii\bootstrap5\Html;
                 <div class="bg-surface p-sm border rounded">
                     <h4 class="text-secondary mb-xs">Major Breakthrough</h4>
                     <!-- <p class="font-semibold">Pathway-01 Discovery</p> -->
-                    <p><?= $model->major_breakthrough ?? '' ?></p>
+                    <p><?= ucfirst($model->major_breakthrough) ?? '' ?></p>
                 </div>
 
                 <div class="bg-surface p-sm border rounded">
@@ -156,17 +170,29 @@ use yii\bootstrap5\Html;
 
             <div class="space-y-sm">
 
-                <div
-                    class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
-                    <div>
-                        <p class="font-label-caps text-label-caps text-on-surface-variant">NIH R01 GM123456</p>
-                        <p class="font-body-md font-bold text-primary">Mechanisms of CRISPR-Cas9 Target Selection</p>
-                        <p class="font-body-md text-on-surface-variant">Role: Principal Investigator | $1.2M Total Award
-                        </p>
+
+                <?php foreach ($model->researcherGrants as $grant): ?>
+
+                    <div
+                        class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
+                        <div>
+                            <p class="font-label-caps text-label-caps text-on-surface-variant">
+                                <?= Html::encode($grant->grant_number ?? 'N/A') ?>
+                            </p>
+                            <p class="font-body-md font-bold text-primary">
+                                <?= Html::encode($grant->title ?? 'N/A') ?>
+                            </p>
+                            <p class="font-body-md text-on-surface-variant">Role:
+                                <?= Html::encode($grant->roleOptions[$grant->role_id] ?? 'N/A') ?> |
+                                <?= Html::encode(Yii::$app->formatter->asCurrency($grant->amount, $grant->currency) ?? 'N/A') ?>
+                            </p>
+                        </div>
+                        <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">
+                            <?= $grant->statusOptions[$grant->status_id] ?? 'N/A' ?>
+                        </div>
                     </div>
-                    <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">ACTIVE
-                    </div>
-                </div>
+
+                <?php endforeach; ?>
 
 
 

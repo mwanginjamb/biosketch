@@ -1,0 +1,806 @@
+/* ============================================================
+   RESEARCHER BIOSKETCH
+   PDF / PRINT STYLESHEET
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. PAGE SETUP
+   ------------------------------------------------------------ */
+
+@page {
+    margin: 20mm 18mm 20mm 18mm;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: DejaVu Sans, Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+    line-height: 1.55;
+    color: #263238;
+    background: #ffffff;
+}
+
+/* ------------------------------------------------------------
+   2. GLOBAL RESET
+   ------------------------------------------------------------ */
+
+* {
+    box-sizing: border-box;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+ul,
+ol {
+    margin-top: 0;
+}
+
+p {
+    margin-bottom: 8px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* Prevent ugly splits in common elements */
+table,
+tr,
+.biosketch-card,
+.grant-card,
+.publication,
+.identifier-row,
+.education-row {
+    page-break-inside: avoid;
+}
+
+/* ------------------------------------------------------------
+   3. MAIN REPORT CONTAINER
+   ------------------------------------------------------------ */
+
+.biosketch {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.biosketch-content {
+    width: 100%;
+}
+
+/* ------------------------------------------------------------
+   4. PROFILE HEADER
+   ------------------------------------------------------------ */
+
+.biosketch-header {
+    width: 100%;
+    margin: 0 0 28px 0;
+    padding: 0 0 18px 0;
+    border-bottom: 1px solid #cfd6d9;
+}
+
+.biosketch-header-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.biosketch-header-table td {
+    vertical-align: top;
+    padding: 0;
+}
+
+/* ------------------------------------------------------------
+   Profile photograph
+   ------------------------------------------------------------ */
+
+.biosketch-photo-cell {
+    width: 125px;
+    padding-right: 20px !important;
+}
+
+.biosketch-profile-photo {
+    width: 110px;
+    height: 110px;
+    display: block;
+    object-fit: cover;
+    border-radius: 55px;
+    border: 1px solid #d5dcdf;
+}
+
+/* Fallback when no photograph exists */
+
+.biosketch-profile-placeholder {
+    width: 110px;
+    height: 110px;
+    display: block;
+    border-radius: 55px;
+    background: #eef2f3;
+    border: 1px solid #d5dcdf;
+    text-align: center;
+    line-height: 110px;
+    font-size: 28pt;
+    color: #829096;
+}
+
+/* ------------------------------------------------------------
+   Profile identity
+   ------------------------------------------------------------ */
+
+.biosketch-profile-info {
+    padding-left: 0;
+}
+
+.biosketch-name {
+    margin: 0 0 5px 0;
+    padding: 0;
+    font-size: 21pt;
+    line-height: 1.2;
+    font-weight: bold;
+    color: #1f2d33;
+}
+
+.biosketch-role {
+    margin: 0 0 7px 0;
+    font-size: 12pt;
+    line-height: 1.4;
+    font-weight: 600;
+    color: #46565d;
+}
+
+.biosketch-institution {
+    margin: 0 0 3px 0;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    font-weight: 600;
+    color: #263238;
+}
+
+.biosketch-department {
+    margin: 0 0 10px 0;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    color: #596970;
+}
+
+/* ------------------------------------------------------------
+   Contact information
+   ------------------------------------------------------------ */
+
+.biosketch-contact {
+    margin-top: 9px;
+    font-size: 8.8pt;
+    line-height: 1.6;
+    color: #596970;
+}
+
+.contact-row {
+    margin: 0 0 3px 0;
+}
+
+.contact-label {
+    display: inline-block;
+    width: 60px;
+    font-weight: bold;
+    color: #37474f;
+}
+
+.contact-value {
+    color: #596970;
+}
+
+/* ------------------------------------------------------------
+   5. SECTION STRUCTURE
+   ------------------------------------------------------------ */
+
+.biosketch-section {
+    width: 100%;
+    margin: 0 0 24px 0;
+    padding: 0;
+}
+
+.biosketch-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Section title */
+
+.biosketch-section-title {
+    margin: 0 0 11px 0;
+    padding: 0 0 6px 0;
+
+    font-size: 12.5pt;
+    line-height: 1.35;
+    font-weight: bold;
+
+    color: #263238;
+
+    border-bottom: 1px solid #cfd6d9;
+}
+
+.biosketch-section-content {
+    margin: 0;
+    padding: 0;
+}
+
+/* Optional section subtitle */
+
+.biosketch-section-subtitle {
+    margin: -3px 0 10px 0;
+    font-size: 8.8pt;
+    line-height: 1.45;
+    color: #718087;
+}
+
+/* ------------------------------------------------------------
+   6. RESEARCH PROFILE
+   ------------------------------------------------------------ */
+
+.research-profile {
+    font-size: 10pt;
+    line-height: 1.65;
+    color: #37474f;
+}
+
+.research-profile p {
+    margin-bottom: 9px;
+}
+
+/* ------------------------------------------------------------
+   7. RESEARCH AREAS / TAGS
+   ------------------------------------------------------------ */
+
+.research-tags {
+    margin: 7px 0 0 0;
+    padding: 0;
+}
+
+.research-tag {
+    display: inline-block;
+
+    margin: 0 5px 6px 0;
+    padding: 5px 9px;
+
+    background: #eef2f3;
+    border: 1px solid #d9e0e2;
+    border-radius: 4px;
+
+    font-size: 8.5pt;
+    line-height: 1.35;
+    color: #455a64;
+}
+
+/* ------------------------------------------------------------
+   8. EDUCATION & TRAINING
+   ------------------------------------------------------------ */
+
+.biosketch-table {
+    width: 100%;
+    margin: 8px 0 0 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.biosketch-table th {
+    padding: 8px 9px;
+
+    text-align: left;
+    vertical-align: middle;
+
+    font-size: 8.5pt;
+    line-height: 1.35;
+    font-weight: bold;
+
+    color: #37474f;
+
+    background: #f4f6f7;
+    border-bottom: 1.5px solid #9da8ad;
+}
+
+.biosketch-table td {
+    padding: 9px;
+
+    vertical-align: top;
+
+    font-size: 9.2pt;
+    line-height: 1.45;
+
+    color: #37474f;
+
+    border-bottom: 1px solid #e1e6e8;
+}
+
+.biosketch-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Education column sizing */
+
+.education-table th:nth-child(1),
+.education-table td:nth-child(1) {
+    width: 17%;
+}
+
+.education-table th:nth-child(2),
+.education-table td:nth-child(2) {
+    width: 31%;
+}
+
+.education-table th:nth-child(3),
+.education-table td:nth-child(3) {
+    width: 36%;
+}
+
+.education-table th:nth-child(4),
+.education-table td:nth-child(4) {
+    width: 16%;
+}
+
+/* ------------------------------------------------------------
+   9. IDENTIFIERS
+   ------------------------------------------------------------ */
+
+.identifier-list {
+    width: 100%;
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+
+.identifier-row {
+    width: 100%;
+    margin: 0;
+    padding: 8px 0;
+
+    border-bottom: 1px solid #e1e6e8;
+
+    font-size: 9pt;
+    line-height: 1.45;
+}
+
+.identifier-row:last-child {
+    border-bottom: none;
+}
+
+.identifier-type {
+    display: inline-block;
+    width: 30%;
+    font-weight: bold;
+    color: #37474f;
+}
+
+.identifier-value {
+    display: inline-block;
+    width: 45%;
+    color: #455a64;
+}
+
+.identifier-status {
+    display: inline-block;
+    width: 24%;
+    text-align: right;
+
+    font-size: 7.5pt;
+    line-height: 1.3;
+    font-weight: bold;
+    text-transform: uppercase;
+
+    color: #66777d;
+}
+
+/* ------------------------------------------------------------
+   10. STATUS BADGES
+   ------------------------------------------------------------ */
+
+.status {
+    display: inline-block;
+
+    padding: 3px 7px;
+
+    border-radius: 3px;
+
+    font-size: 7.5pt;
+    line-height: 1.2;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #e6f1eb;
+    color: #286044;
+}
+
+.status-completed {
+    background: #edf0f2;
+    color: #52636a;
+}
+
+.status-pending {
+    background: #f7f0df;
+    color: #806b2b;
+}
+
+.status-unverified {
+    background: #f0f1f2;
+    color: #68777d;
+}
+
+.status-verified {
+    background: #e6f1eb;
+    color: #286044;
+}
+
+/* ------------------------------------------------------------
+   11. GRANTS & FUNDING
+   ------------------------------------------------------------ */
+
+.grants-list {
+    width: 100%;
+    margin: 7px 0 0 0;
+    padding: 0;
+}
+
+.grant-card {
+    width: 100%;
+
+    margin: 0 0 14px 0;
+    padding: 13px 15px;
+
+    background: #f7f9fa;
+    border: 1px solid #d9e0e3;
+    border-radius: 5px;
+}
+
+.grant-card:last-child {
+    margin-bottom: 0;
+}
+
+.grant-header {
+    width: 100%;
+    margin: 0 0 6px 0;
+}
+
+.grant-header-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.grant-header-table td {
+    padding: 0;
+    vertical-align: top;
+}
+
+.grant-code {
+    font-size: 8.5pt;
+    line-height: 1.35;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #53656c;
+}
+
+.grant-status {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.grant-title {
+    margin: 0 0 7px 0;
+
+    font-size: 10.5pt;
+    line-height: 1.45;
+    font-weight: bold;
+
+    color: #263238;
+}
+
+.grant-meta {
+    margin: 0;
+
+    font-size: 8.8pt;
+    line-height: 1.5;
+
+    color: #5d6d73;
+}
+
+.grant-meta strong {
+    color: #37474f;
+}
+
+/* ------------------------------------------------------------
+   12. PUBLICATIONS
+   ------------------------------------------------------------ */
+
+.publications-list {
+    width: 100%;
+    margin: 7px 0 0 0;
+    padding: 0;
+}
+
+.publication {
+    width: 100%;
+
+    margin: 0 0 18px 0;
+    padding: 0 0 14px 0;
+
+    border-bottom: 1px solid #e1e6e8;
+}
+
+.publication:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.publication-title {
+    margin: 0 0 6px 0;
+
+    font-size: 10pt;
+    line-height: 1.5;
+    font-weight: bold;
+
+    color: #263238;
+}
+
+.publication-number {
+    font-weight: bold;
+    color: #455a64;
+}
+
+.publication-journal {
+    margin: 0 0 5px 0;
+
+    font-size: 9pt;
+    line-height: 1.45;
+
+    color: #53656c;
+}
+
+.publication-year {
+    font-weight: bold;
+}
+
+.publication-meta {
+    margin: 0;
+
+    font-size: 8.2pt;
+    line-height: 1.55;
+
+    color: #6a797f;
+}
+
+.publication-meta-row {
+    margin: 0 0 2px 0;
+}
+
+.publication-meta-label {
+    font-weight: bold;
+    color: #52636a;
+}
+
+/* ------------------------------------------------------------
+   13. RESEARCHER STATEMENT
+   ------------------------------------------------------------ */
+
+.statement {
+    margin: 0;
+    padding: 13px 15px;
+
+    background: #f7f9fa;
+    border-left: 3px solid #87979d;
+}
+
+.statement-type {
+    margin: 0 0 7px 0;
+
+    font-size: 8pt;
+    line-height: 1.35;
+    font-weight: bold;
+    text-transform: uppercase;
+
+    color: #68777d;
+}
+
+.statement-content {
+    margin: 0;
+
+    font-size: 10pt;
+    line-height: 1.65;
+
+    color: #37474f;
+}
+
+/* ------------------------------------------------------------
+   14. GENERAL INFORMATION CARDS
+   ------------------------------------------------------------ */
+
+.biosketch-card {
+    width: 100%;
+
+    margin: 0 0 12px 0;
+    padding: 12px 14px;
+
+    background: #f8fafb;
+    border: 1px solid #dfe5e7;
+    border-radius: 4px;
+}
+
+.biosketch-card:last-child {
+    margin-bottom: 0;
+}
+
+.card-label {
+    margin: 0 0 4px 0;
+
+    font-size: 7.8pt;
+    line-height: 1.35;
+    font-weight: bold;
+    text-transform: uppercase;
+
+    color: #718087;
+}
+
+.card-value {
+    margin: 0;
+
+    font-size: 10pt;
+    line-height: 1.5;
+
+    color: #37474f;
+}
+
+/* ------------------------------------------------------------
+   15. EMPTY STATES
+   ------------------------------------------------------------ */
+
+.empty-section {
+    margin: 0;
+    padding: 10px 0;
+
+    font-size: 9pt;
+    line-height: 1.5;
+    font-style: italic;
+
+    color: #7b898e;
+}
+
+/* ------------------------------------------------------------
+   16. LINKS
+   ------------------------------------------------------------ */
+
+a {
+    color: #455a64;
+    text-decoration: none;
+}
+
+.external-link {
+    word-break: break-all;
+}
+
+/* ------------------------------------------------------------
+   17. FOOTER
+   ------------------------------------------------------------ */
+
+.biosketch-footer {
+    margin-top: 30px;
+    padding-top: 10px;
+
+    border-top: 1px solid #d7dde0;
+
+    font-size: 7.5pt;
+    line-height: 1.45;
+
+    color: #7a878c;
+}
+
+.footer-left {
+    text-align: left;
+}
+
+.footer-right {
+    text-align: right;
+}
+
+/* ------------------------------------------------------------
+   18. GENERATED INFORMATION
+   ------------------------------------------------------------ */
+
+.generated-on {
+    margin-top: 4px;
+
+    font-size: 7.5pt;
+    line-height: 1.4;
+
+    color: #89959a;
+}
+
+/* ------------------------------------------------------------
+   19. PAGE BREAK CONTROL
+   ------------------------------------------------------------ */
+
+.biosketch-section-title {
+    page-break-after: avoid;
+}
+
+.biosketch-header {
+    page-break-after: avoid;
+}
+
+.grant-card,
+.publication,
+.biosketch-card,
+.statement {
+    page-break-inside: avoid;
+}
+
+/* Don't leave a section heading stranded at bottom of page */
+.biosketch-section {
+    page-break-before: auto;
+}
+
+/* ------------------------------------------------------------
+   20. PRINT OVERRIDES
+   ------------------------------------------------------------ */
+
+@media print {
+
+    body {
+        background: #ffffff;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+}
+
+/* ------------------------------------------------------------
+   21. OPTIONAL COMPACT MODE
+   ------------------------------------------------------------ */
+
+/*
+ * Useful for researchers with very long publication lists.
+ *
+ * Apply:
+ *
+ * <body class="biosketch biosketch-compact">
+ */
+
+.biosketch-compact {
+    font-size: 9.5pt;
+}
+
+.biosketch-compact .biosketch-section {
+    margin-bottom: 18px;
+}
+
+.biosketch-compact .publication {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+}
+
+.biosketch-compact .grant-card {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+}
+
+.biosketch-compact .biosketch-table td {
+    padding: 7px 8px;
+}

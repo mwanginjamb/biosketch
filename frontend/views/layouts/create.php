@@ -28,7 +28,7 @@ AppAsset::register($this);
             <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
         BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-primary']) ?>
         </div>
-        <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+        <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
             <img alt="Scientist profile"
                 src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher->profile_photo) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
         </div>

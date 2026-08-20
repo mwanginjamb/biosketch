@@ -1,7 +1,6 @@
 <?php
-
 declare(strict_types=1);
-
+use kartik\mpdf\Pdf;
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -26,7 +25,7 @@ return [
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
-             'name' => 'advanced-frontend',
+            'name' => 'advanced-frontend',
             'class' => 'yii\web\Session',
             'timeout' => 3600, // 60 min
             'useCookies' => true,
@@ -46,10 +45,16 @@ return [
                 ],
             ],
         ],
+        'pdf' => [
+            'class' => Pdf::class,
+            'mode' => Pdf::MODE_CORE,
+            'format' => Pdf::FORMAT_LEGAL,
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'destination' => Pdf::DEST_STRING
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,

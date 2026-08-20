@@ -25,6 +25,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string|null $profile_photo
  * @property int|null $status
  * @property int|null $version
+ * @property string|null $research_tags
  * @property int|null $created_at
  * @property int|null $updated_at
  * @property int|null $created_by
