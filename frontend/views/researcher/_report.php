@@ -42,27 +42,53 @@ $identifiers = $researcher->researcherIdentifiers ?? [];
 $media = $researcher->researcherMedia ?? [];
 $grants = $researcher->researcherGrants ?? [];
 
+
+/*
+ * =========================================================
+ * REUSABLE INLINE STYLES
+ * (kept as PHP variables purely to avoid retyping the same
+ * inline CSS everywhere — NOT external classes. mPDF still
+ * only ever sees plain inline style="" attributes.)
+ * ========================================================= */
+
+$colorHeading = '#1a365d';
+$colorText = '#2d3748';
+$colorMuted = '#4a5568';
+$colorBorder = '#cbd5e0';
+$colorBorderLt = '#e2e8f0';
+$colorBgSoft = '#edf2f7';
+
+$sSection = 'margin-top:16px; margin-bottom:3em;';
+$sSectionTitle = "font-size:13px; font-weight:bold; color:{$colorHeading}; text-transform:uppercase; letter-spacing:0.5px; padding-bottom:4px; margin-bottom:8px; border-bottom:1.5px solid {$colorHeading};";
+
+$sTable = 'width:100%; border-collapse:collapse; font-size:12.5px; color:' . $colorText . ';';
+$sTh = 'text-align:left; background-color:' . $colorBgSoft . '; color:' . $colorHeading . '; padding:6px 8px; border:1px solid ' . $colorBorder . '; font-size:9.5px; text-transform:uppercase; letter-spacing:0.3px;';
+$sTd = 'padding:6px 8px; border:1px solid ' . $colorBorderLt . '; vertical-align:top; font-size:11.5px;';
+$sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
+
 ?>
 
-<div class="biosketch">
+<div style="font-family: Helvetica, Arial, sans-serif; color: <?= $colorText ?>; font-size: 11.5px;">
 
     <!-- =========================================================
          HEADER
     ========================================================== -->
 
-    <table class="profile-header">
+    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
         <tr>
 
-            <td class="profile-photo-cell">
+            <td style="width:90px; padding-right:14px; vertical-align:top;">
 
                 <?php if ($profilePhoto): ?>
 
-                    <img src="<?= Yii::getAlias('@webroot') . $profilePhoto ?>" class="profile-photo"
+                    <img src="<?= Yii::getAlias('@webroot') . $profilePhoto ?>"
+                        style="width:80px; height:80px; border:1px solid <?= $colorBorder ?>; object-fit:cover;"
                         alt="Researcher photograph">
 
                 <?php else: ?>
 
-                    <div class="profile-photo-placeholder">
+                    <div
+                        style="width:80px; height:80px; border:1px solid <?= $colorBorder ?>; background-color:<?= $colorBgSoft ?>; color:<?= $colorHeading ?>; font-size:28px; font-weight:bold; text-align:center; line-height:80px;">
                         <?= Html::encode(
                             strtoupper(
                                 mb_substr(
@@ -78,42 +104,43 @@ $grants = $researcher->researcherGrants ?? [];
 
             </td>
 
-            <td class="profile-identity">
+            <td style="vertical-align:top;">
 
-                <div class="profile-name">
+                <div style="font-size:16px; font-weight:bold; color:<?= $colorHeading ?>; margin-bottom:2px;">
                     <?= $value($fullName) ?>
                 </div>
 
                 <?php if ($researcher->role_title): ?>
-                    <div class="profile-role">
+                    <div style="font-size:11px; color:<?= $colorMuted ?>; margin-bottom:2px;">
                         <?= $value($researcher->role_title) ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($researcher->primary_institution): ?>
-                    <div class="profile-institution">
+                    <div style="font-size:10.5px; color:<?= $colorText ?>; margin-bottom:1px;">
                         <?= $value($researcher->primary_institution) ?>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($researcher->department): ?>
-                    <div class="profile-department">
+                    <div style="font-size:10.5px; color:<?= $colorMuted ?>; margin-bottom:6px;">
                         <?= $value($researcher->department) ?>
                     </div>
                 <?php endif; ?>
 
-                <table class="contact-table">
+                <table
+                    style="width:100%; border-collapse:collapse; font-size:9.5px; color:<?= $colorMuted ?>; margin-top:4px;">
                     <tr>
 
                         <?php if ($researcher->email): ?>
-                            <td>
+                            <td style="padding:2px 0;">
                                 <strong>Email:</strong>
                                 <?= $value($researcher->email) ?>
                             </td>
                         <?php endif; ?>
 
                         <?php if ($researcher->location): ?>
-                            <td>
+                            <td style="padding:2px 0;">
                                 <strong>Location:</strong>
                                 <?= $value($researcher->location) ?>
                             </td>
@@ -123,7 +150,7 @@ $grants = $researcher->researcherGrants ?? [];
 
                     <?php if ($researcher->website): ?>
                         <tr>
-                            <td colspan="2">
+                            <td colspan="2" style="padding:2px 0;">
                                 <strong>Web:</strong>
                                 <?= $value($researcher->website) ?>
                             </td>
@@ -144,15 +171,16 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if ($statement): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Research Profile
-            </h2>
+            </div>
 
             <?php if (!empty($statement->statement_type)): ?>
 
-                <div class="statement-type">
+                <div
+                    style="font-size:10px; font-weight:bold; color:<?= $colorMuted ?>; margin-bottom:4px; text-transform:capitalize;">
                     <?= Html::encode(
                         ucwords(
                             str_replace(
@@ -168,13 +196,13 @@ $grants = $researcher->researcherGrants ?? [];
 
             <?php if (!empty($statement->content)): ?>
 
-                <div class="statement-content">
+                <div style="font-size:10.5px; line-height:1.5; color:<?= $colorText ?>; text-align:justify;">
                     <?= nl2br(Html::encode($statement->content)) ?>
                 </div>
 
             <?php endif; ?>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -185,13 +213,13 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($researcher->research_tags)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Research Areas
-            </h2>
+            </div>
 
-            <div class="research-tags">
+            <div>
                 <?php
 
                 $tags = array_filter(
@@ -205,14 +233,15 @@ $grants = $researcher->researcherGrants ?? [];
 
                     ?>
 
-                    <span class="research-tag">
+                    <span
+                        style="display:inline-block; background-color:<?= $colorBgSoft ?>; color:<?= $colorHeading ?>; font-size:9.5px; padding:3px 8px; margin:0 4px 4px 0; border:1px solid <?= $colorBorder ?>;">
                         <?= Html::encode($tag) ?>
                     </span>
 
                 <?php endforeach; ?>
             </div>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -223,20 +252,20 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($educations)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Education &amp; Training
-            </h2>
+            </div>
 
-            <table class="data-table education-table">
+            <table style="<?= $sTable ?>">
 
                 <thead>
                     <tr>
-                        <th>Degree</th>
-                        <th>Field of Study</th>
-                        <th>Institution</th>
-                        <th>Year</th>
+                        <th style="<?= $sTh ?>">Degree</th>
+                        <th style="<?= $sTh ?>">Field of Study</th>
+                        <th style="<?= $sTh ?>">Institution</th>
+                        <th style="<?= $sTh ?> text-align:center;">Year</th>
                     </tr>
                 </thead>
 
@@ -246,19 +275,19 @@ $grants = $researcher->researcherGrants ?? [];
 
                         <tr>
 
-                            <td class="strong">
+                            <td style="<?= $sTd ?> font-weight:bold;">
                                 <?= $value($education->degree) ?>
                             </td>
 
-                            <td>
+                            <td style="<?= $sTd ?>">
                                 <?= $value($education->field_of_study) ?>
                             </td>
 
-                            <td>
+                            <td style="<?= $sTd ?>">
                                 <?= $value($education->institution_name) ?>
                             </td>
 
-                            <td class="year">
+                            <td style="<?= $sTdYear ?>">
                                 <?= $value($education->graduation_year) ?>
                             </td>
 
@@ -270,7 +299,7 @@ $grants = $researcher->researcherGrants ?? [];
 
             </table>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -281,25 +310,25 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($identifiers)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Researcher Identifiers
-            </h2>
+            </div>
 
-            <table class="identifier-table">
+            <table style="<?= $sTable ?>">
 
                 <?php foreach ($identifiers as $identifier): ?>
 
                     <tr>
 
-                        <td class="identifier-type">
+                        <td style="<?= $sTd ?> width:35%; font-weight:bold; color:<?= $colorHeading ?>;">
                             <?= $value(
                                 $identifier->identifier_type
                             ) ?>
                         </td>
 
-                        <td class="identifier-value">
+                        <td style="<?= $sTd ?>">
                             <?= $value(
                                 $identifier->identifier_value
                             ) ?>
@@ -309,19 +338,19 @@ $grants = $researcher->researcherGrants ?? [];
                             isset($identifier->verification_status)
                         ): ?>
 
-                            <td class="identifier-status">
+                            <td style="<?= $sTd ?> width:20%; text-align:center;">
 
                                 <?php if (
                                     (int) $identifier->verification_status === 1
                                 ): ?>
 
-                                    <span class="verified">
+                                    <span style="color:#2f855a; font-weight:bold; font-size:9.5px;">
                                         Verified
                                     </span>
 
                                 <?php else: ?>
 
-                                    <span class="unverified">
+                                    <span style="color:#a0aec0; font-size:9.5px;">
                                         Unverified
                                     </span>
 
@@ -337,7 +366,7 @@ $grants = $researcher->researcherGrants ?? [];
 
             </table>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -348,102 +377,97 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($grants)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Grants &amp; Research Funding
-            </h2>
+            </div>
 
             <?php foreach ($grants as $grant): ?>
 
-                <div class="grant-item">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border:1px solid <?= $colorBorderLt ?>;">
 
-                    <table class="grant-table">
+                    <tr>
 
-                        <tr>
+                        <td style="padding:8px 10px; vertical-align:top;">
 
-                            <td class="grant-main">
+                            <?php if (!empty($grant->grant_number)): ?>
 
-                                <?php if (!empty($grant->grant_number)): ?>
+                                <div style="font-size:9px; color:<?= $colorMuted ?>; margin-bottom:2px;">
+                                    <?= $value(
+                                        $grant->grant_number
+                                    ) ?>
+                                </div>
 
-                                    <div class="grant-number">
-                                        <?= $value(
-                                            $grant->grant_number
-                                        ) ?>
-                                    </div>
+                            <?php endif; ?>
+
+                            <div style="font-size:11px; font-weight:bold; color:<?= $colorHeading ?>; margin-bottom:4px;">
+                                <?= $value($grant->title) ?>
+                            </div>
+
+                            <div style="font-size:9.5px; color:<?= $colorText ?>;">
+
+                                <?php if (!empty($grant->role_id)): ?>
+
+                                    <span style="margin-right:12px;">
+                                        <strong>Role:</strong>
+                                        <?= Html::encode($grant->roleOptions[$grant->role_id] ?? 'N/A') ?>
+                                    </span>
 
                                 <?php endif; ?>
 
-                                <div class="grant-title">
-                                    <?= $value($grant->title) ?>
-                                </div>
+                                <?php if (
+                                    isset($grant->amount)
+                                    && $grant->amount !== null
+                                ): ?>
 
-                                <div class="grant-details">
+                                    <span style="margin-right:12px;">
+                                        <strong>
+                                            Award Amount:
+                                        </strong>
 
-                                    <?php if (!empty($grant->role)): ?>
+                                        <?= \Yii::$app->formatter->asCurrency($grant->amount, $grant->currency) ?>
+                                    </span>
 
-                                        <span>
-                                            <strong>Role:</strong>
-                                            <?= $value($grant->role) ?>
-                                        </span>
+                                <?php endif; ?>
 
-                                    <?php endif; ?>
+                                <?php if (!empty($grant->funding_agency)): ?>
 
-                                    <?php if (
-                                        isset($grant->total_award)
-                                        && $grant->total_award !== null
-                                    ): ?>
-
-                                        <span>
-                                            <strong>
-                                                Total Award:
-                                            </strong>
-
-                                            <?= Yii::$app->formatter->asCurrency(
-                                                $grant->total_award
-                                            ) ?>
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                    <?php if (!empty($grant->funding_agency)): ?>
-
-                                        <span>
-                                            <strong>Funder:</strong>
-                                            <?= $value(
-                                                $grant->funding_agency
-                                            ) ?>
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                </div>
-
-                            </td>
-
-                            <td class="grant-status-cell">
-
-                                <?php if (!empty($grant->status)): ?>
-
-                                    <span class="grant-status">
-                                        <?= Html::encode(
-                                            strtoupper($grant->status)
+                                    <span>
+                                        <strong>Funder:</strong>
+                                        <?= $value(
+                                            $grant->funding_agency
                                         ) ?>
                                     </span>
 
                                 <?php endif; ?>
 
-                            </td>
+                            </div>
 
-                        </tr>
+                        </td>
 
-                    </table>
+                        <td style="width:90px; padding:8px 10px; text-align:right; vertical-align:top;">
 
-                </div>
+                            <?php if (!empty($grant->status)): ?>
+
+                                <span
+                                    style="display:inline-block; background-color:<?= $colorBgSoft ?>; color:<?= $colorHeading ?>; font-size:8.5px; font-weight:bold; padding:3px 7px; border:1px solid <?= $colorBorder ?>;">
+                                    <?= Html::encode(
+                                        strtoupper($grant->status)
+                                    ) ?>
+                                </span>
+
+                            <?php endif; ?>
+
+                        </td>
+
+                    </tr>
+
+                </table>
 
             <?php endforeach; ?>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -454,78 +478,79 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($publications)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Selected Publications
-            </h2>
+            </div>
 
             <?php foreach ($publications as $index => $publication): ?>
 
-                <div class="publication-item">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+                    <tr>
 
-                    <div class="publication-number">
-                        <?= $index + 1 ?>.
-                    </div>
+                        <td
+                            style="width:20px; padding-top:1px; vertical-align:top; font-size:10.5px; font-weight:bold; color:<?= $colorHeading ?>;">
+                            <?= $index + 1 ?>.
+                        </td>
 
-                    <div class="publication-content">
+                        <td style="vertical-align:top;">
 
-                        <div class="publication-title">
+                            <div style="font-size:10.5px; font-weight:bold; color:<?= $colorText ?>; margin-bottom:2px;">
+                                <?= $value($publication->title) ?>
+                            </div>
 
-                            <?= $value($publication->title) ?>
+                            <div style="font-size:9.5px; color:<?= $colorMuted ?>; font-style:italic; margin-bottom:2px;">
 
-                        </div>
+                                <?php if (!empty($publication->journal)): ?>
 
-                        <div class="publication-meta">
+                                    <span>
+                                        <?= $value($publication->journal) ?>
+                                    </span>
 
-                            <?php if (!empty($publication->journal)): ?>
+                                <?php endif; ?>
 
-                                <span class="journal">
-                                    <?= $value($publication->journal) ?>
-                                </span>
+                                <?php if (
+                                    !empty($publication->publication_year)
+                                ): ?>
+
+                                    <span>
+                                        (
+                                        <?= $value(
+                                            $publication->publication_year
+                                        ) ?>)
+                                    </span>
+
+                                <?php endif; ?>
+
+                            </div>
+
+                            <?php if (!empty($publication->doi)): ?>
+
+                                <div style="font-size:9px; color:<?= $colorMuted ?>;">
+                                    DOI:
+                                    <?= $value($publication->doi) ?>
+                                </div>
 
                             <?php endif; ?>
 
-                            <?php if (
-                                !empty($publication->publication_year)
-                            ): ?>
+                            <?php if (!empty($publication->pmid)): ?>
 
-                                <span>
-                                    (
-                                    <?= $value(
-                                        $publication->publication_year
-                                    ) ?>)
-                                </span>
+                                <div style="font-size:9px; color:<?= $colorMuted ?>;">
+                                    PMID:
+                                    <?= $value($publication->pmid) ?>
+                                </div>
 
                             <?php endif; ?>
 
-                        </div>
+                        </td>
 
-                        <?php if (!empty($publication->doi)): ?>
-
-                            <div class="publication-identifier">
-                                DOI:
-                                <?= $value($publication->doi) ?>
-                            </div>
-
-                        <?php endif; ?>
-
-                        <?php if (!empty($publication->pmid)): ?>
-
-                            <div class="publication-identifier">
-                                PMID:
-                                <?= $value($publication->pmid) ?>
-                            </div>
-
-                        <?php endif; ?>
-
-                    </div>
-
-                </div>
+                    </tr>
+                </table>
 
             <?php endforeach; ?>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -539,21 +564,21 @@ $grants = $researcher->researcherGrants ?? [];
         !empty($researcher->patent_filed)
     ): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Research Highlights
-            </h2>
+            </div>
 
             <?php if (!empty($researcher->major_breakthrough)): ?>
 
-                <div class="highlight-item">
+                <div style="margin-bottom:8px;">
 
-                    <div class="highlight-heading">
+                    <div style="font-size:10px; font-weight:bold; color:<?= $colorHeading ?>; margin-bottom:2px;">
                         Major Research Breakthrough
                     </div>
 
-                    <div>
+                    <div style="font-size:10.5px; line-height:1.5; color:<?= $colorText ?>;">
                         <?= nl2br(
                             Html::encode(
                                 $researcher->major_breakthrough
@@ -568,13 +593,13 @@ $grants = $researcher->researcherGrants ?? [];
 
             <?php if (!empty($researcher->patent_filed)): ?>
 
-                <div class="highlight-item">
+                <div style="margin-bottom:8px;">
 
-                    <div class="highlight-heading">
+                    <div style="font-size:10px; font-weight:bold; color:<?= $colorHeading ?>; margin-bottom:2px;">
                         Patents &amp; Intellectual Property
                     </div>
 
-                    <div>
+                    <div style="font-size:10.5px; line-height:1.5; color:<?= $colorText ?>;">
                         <?= nl2br(
                             Html::encode(
                                 $researcher->patent_filed
@@ -586,7 +611,7 @@ $grants = $researcher->researcherGrants ?? [];
 
             <?php endif; ?>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
@@ -597,19 +622,19 @@ $grants = $researcher->researcherGrants ?? [];
 
     <?php if (!empty($media)): ?>
 
-        <section class="report-section">
+        <div style="<?= $sSection ?>">
 
-            <h2 class="section-title">
+            <div style="<?= $sSectionTitle ?>">
                 Research Outputs &amp; Media
-            </h2>
+            </div>
 
             <?php foreach ($media as $item): ?>
 
-                <div class="media-item">
+                <div style="margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid <?= $colorBorderLt ?>;">
 
                     <?php if (!empty($item->title)): ?>
 
-                        <div class="media-title">
+                        <div style="font-size:10.5px; font-weight:bold; color:<?= $colorText ?>; margin-bottom:2px;">
                             <?= $value($item->title) ?>
                         </div>
 
@@ -617,7 +642,7 @@ $grants = $researcher->researcherGrants ?? [];
 
                     <?php if (!empty($item->description)): ?>
 
-                        <div class="media-description">
+                        <div style="font-size:10px; line-height:1.5; color:<?= $colorText ?>; margin-bottom:2px;">
                             <?= nl2br(
                                 Html::encode($item->description)
                             ) ?>
@@ -627,7 +652,7 @@ $grants = $researcher->researcherGrants ?? [];
 
                     <?php if (!empty($item->url)): ?>
 
-                        <div class="media-url">
+                        <div style="font-size:9px; color:<?= $colorMuted ?>;">
                             <?= $value($item->url) ?>
                         </div>
 
@@ -637,26 +662,10 @@ $grants = $researcher->researcherGrants ?? [];
 
             <?php endforeach; ?>
 
-        </section>
+        </div>
 
     <?php endif; ?>
 
 
-    <!-- =========================================================
-         REPORT FOOTER
-    ========================================================== -->
-
-    <div class="report-end">
-
-        <div>
-            Researcher BioSketch
-        </div>
-
-        <div>
-            Generated
-            <?= date('d M Y') ?>
-        </div>
-
-    </div>
 
 </div>

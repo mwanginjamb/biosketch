@@ -5,20 +5,21 @@ namespace frontend\controllers;
 use frontend\models\Publications;
 use frontend\models\Researcher;
 use frontend\models\ResearcherEducation;
+use frontend\models\ResearcherGrant;
 use frontend\models\ResearcherIdentifier;
 use frontend\models\ResearcherMedia;
 use frontend\models\ResearcherSearch;
 use frontend\models\ResearcherStatement;
-use frontend\models\ResearcherGrant;
 use Yii;
 use yii\base\Model;
+use yii\bootstrap5\Html;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\helpers\ArrayHelper;
-use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 
 /**
@@ -110,6 +111,18 @@ class ResearcherController extends Controller
             'researcherGrants'
         ])->one();
 
+        $footerHtml = '
+    <table style="width:100%; border-collapse:collapse;">
+        <tr>
+            <td style="text-align:left; font-size:9px; color:#4a5568; padding-top:5px;">
+                Researcher BioSketch &nbsp;|&nbsp; Page {PAGENO} of {nb}
+            </td>
+            <td style="text-align:right; font-size:9px; color:#4a5568; padding-top:5px;">
+                 &nbsp;|&nbsp; Powered by ' . Html::encode(env('DEVELOPER')) . '
+            </td>
+        </tr>
+    </table>';
+
         if (!$researcher) {
             throw new NotFoundHttpException('Researcher BioSketch not found.');
         }
@@ -124,11 +137,14 @@ class ResearcherController extends Controller
 
         $pdf->content = $content;
 
-        $pdf->cssFile = Yii::getAlias('@webroot/css/report.css');
+        $pdf->marginBottom = 25;   // room reserved above the physical footer
+        $pdf->marginFooter = 10;   // gap between footer content and page edge
+
+        //$pdf->cssFile = Yii::getAlias('@webroot/css/report.css');
 
         $pdf->methods = [
             'SetHeader' => [$title . ' Generated On: ' . date("r")],
-            'SetFooter' => ['{PAGENO} of {nb} || Powered By - ' . env('DEVELOPER')],
+            'SetFooter' => [$footerHtml],
 
             'SetAuthor' => env('DEVELOPER'),
             'SetCreator' => Yii::$app->name,
