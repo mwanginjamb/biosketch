@@ -81,7 +81,22 @@ use yii\bootstrap5\Html;
 
         <!-- Highlights -->
         <section class="section-anchor" id="highlights">
+
+            <!-- Add a div, within it there is a link to view the biosketch pdf report, link should be to the furthest right -->
+            <div class="flex justify-between mb-sm">
+                <div> </div>
+                <?= Html::a('View BioSketch PDF', ['researcher/report', 'id' => $model->id], ['class' => 'px-md py-xs bg-primary text-on-primary rounded hover:bg-primary-container transition-all']) ?>
+            </div>
+
+
+
+            <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Research Highlights</h3>
+
+
+
             <h3 class="font-headline-md uppercase mb-md">Research Highlights</h3>
+
+
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
 

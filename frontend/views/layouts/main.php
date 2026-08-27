@@ -43,7 +43,8 @@ $this->beginPage();
         <div class="flex items-center gap-6">
             <div class="hidden md:flex gap-4">
                 <a href="#" class="font-bold border-b-2 border-primary">Public Profile</a>
-                <a href="<?= Url::toRoute(['researcher/create']) ?>">Data Entry</a>
+                <a href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
+                    BioSketch</a>
             </div>
             <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
                 <img alt="Scientist profile"
@@ -67,11 +68,11 @@ $this->beginPage();
             © <?= date('Y') ?> BioSketch Institutional. All rights reserved.
         </p>
 
-        <div class="flex gap-6 text-sm">
+        <!-- <div class="flex gap-6 text-sm">
             <a href="#">Compliance</a>
             <a href="#">Research Guidelines</a>
             <a href="#">Help Desk</a>
-        </div>
+        </div> -->
     </footer>
 
 

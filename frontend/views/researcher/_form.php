@@ -200,7 +200,7 @@ use frontend\models\ResearcherStatement;
 <!-- Save Actions -->
 <div class="pt-sm pb-lg space-y-sm">
     <?= Html::submitButton('Save Progress', ['class' => FormUi::buttonClass('auth')]) ?>
-    <?= ($model->id) ? FormUi::secondaryButton('Preview BioSketch', 'visibility', ['biosketch/preview', 'id' => $model->id ?? null]) : '' ?>
+    <?= ($model->id) ? FormUi::secondaryButton('Preview BioSketch', 'visibility', ['researcher/view', 'id' => $model->id ?? null]) : '' ?>
 </div>
 
 <!-- End composite form -->

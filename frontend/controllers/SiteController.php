@@ -17,6 +17,7 @@ use yii\base\InvalidArgumentException;
 use yii\captcha\CaptchaAction;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\mail\MailerInterface;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -89,20 +90,25 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex(): string
+    public function actionIndex(): string|Response
     {
-        $this->layout = 'list';
-        // Get All researcher models
-        $researchers = Researcher::find()->all();
-        return $this->render('index',[
-            'models' => $researchers
-        ]);
+        // Admin role access the list of all researcher bio sketches, while a researcher can only access their own bio sketch.
+        if (\Yii::$app->user->can('admin')) {
+            $this->layout = 'list';
+            // Get All researcher models
+            $researchers = Researcher::find()->all();
+            return $this->render('index', [
+                'models' => $researchers
+            ]);
+        } else { // Access home route
+            return $this->redirect(Url::toRoute(['site/home']));
+        }
     }
 
     public function actionHome(): string
     {
         $this->layout = 'plain';
-        
+
         return $this->render('home');
     }
 
