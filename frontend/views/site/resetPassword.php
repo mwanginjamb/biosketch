@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use common\library\FormUi;
 
 $this->title = 'Set your new password';
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,57 +18,10 @@ $htmlIcon = <<<HTML
 {label}<div class="input-group"><span class="input-group-text" aria-hidden="true">%s</span>{input}</div>{error}{hint}
 HTML;
 $labelOptions = ['class' => 'form-label fw-semibold small'];
-?>
-<div class="site-reset-password d-flex align-items-center justify-content-center py-5">
-    <div class="card border-0 overflow-hidden login-split-card">
-        <div class="row g-0">
 
-            <!-- Brand panel -->
-            <div class="col-md-5 d-none d-md-flex login-brand-panel text-white">
-                <div class="d-flex flex-column justify-content-between p-4 p-lg-5 w-100">
-                    <div>
-                        <?= Html::img(
-                            Yii::getAlias('@web/images/yii3_full_white_for_dark.svg'),
-                            [
-                                'alt' => 'Yii Framework',
-                                'class' => 'mb-4',
-                                'height' => 40,
-                            ],
-                        ) ?>
-                    </div>
-                    <div>
-                        <h2 class="fw-bold mb-3 login-brand-title">
-                            New<br>Password
-                        </h2>
-                        <p class="opacity-75 mb-0 login-brand-text">
-                            Choose a strong password to keep your account secure.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Form panel -->
-            <div class="col-md-7">
-                <div class="p-4 p-lg-5">
-                    <div class="text-center mb-4">
-                        <div class="d-md-none mb-3">
-                            <?= Html::img(
-                                Yii::getAlias('@web/images/yii3_full_black_for_light.svg'),
-                                [
-                                    'alt' => 'Yii Framework',
-                                    'class' => 'login-mobile-logo',
-                                    'height' => 36,
-                                ],
-                            ) ?>
-                        </div>
-                        <h1 class="h3 fw-bold mb-1"><?= Html::encode($this->title) ?></h1>
-                        <p class="text-body-secondary small">Please choose a new password for your account</p>
-                    </div>
 
-                    <?php $form = ActiveForm::begin(['id' => 'reset-password-form']); ?>
-
-                    <div class="mb-4">
-                        <?= $form->field($model, 'password', [
+ /*$form->field($model, 'password', [
                             'options' => ['class' => 'mb-0'],
                             'template' => sprintf($htmlIcon, '&#128274;'),
                             'inputOptions' => [
@@ -75,23 +29,56 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
                                 'class' => 'form-control',
                                 'placeholder' => 'Password',
                             ],
-                        ])->passwordInput()->label('New Password', $labelOptions) ?>
-                    </div>
+                        ])->passwordInput()->label('New Password', $labelOptions); */
 
-                    <div class="d-grid">
-                        <?= Html::submitButton(
-                            'Save',
-                            [
-                                'class' => 'btn login-btn btn-lg rounded-3 text-white',
-                            ],
-                        ) ?>
-                    </div>
+?>
+
+<!-- Brand Identity -->
+<div class="flex flex-col items-center mb-lg">
+<div class="flex items-center gap-xs mb-sm">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="biotech">biotech</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">BioSketch Professional</h1>
+</div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Clinical Grade Precision</p>
+</div>
+
+
+<!-- Sign In Heading -->
+<div class="mb-lg border-b border-outline-variant pb-sm text-center">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Password Reset</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-base">Reset Your Password Below:</p>
+</div>
+
+           
+              
+                   
+
+                    <?php $form = ActiveForm::begin(FormUi::formConfig('reset-password-form')); ?>
+
+                   
+                        <?= $form->field($model, 'password',FormUi::passwordFieldConfig() )->passwordInput([
+                            'class' => FormUi::inputClass(true),
+                            'placeholder' => '••••••••',
+                            'autocomplete'=> 'current-password',
+                            'id'          => 'passwordresetform-password'
+                            ])->label('New Password', $labelOptions) ?>
+
+
+ <?= $form->field($model, 'passwordConfirm',FormUi::passwordFieldConfig() )->passwordInput([
+                            'class' => FormUi::inputClass(true),
+                            'placeholder' => '••••••••',
+                            'autocomplete'=> 'current-password',
+                            'id'          => 'passwordresetform-password'
+                            ])->label('New Password', $labelOptions) ?>
+              
+
+                    
+                       <?= Html::submitButton('Reset Password', ['class' => FormUi::buttonClass('auth')]) ?>
+                
 
                     <?php ActiveForm::end(); ?>
 
-                </div>
-            </div>
+            
+          
 
-        </div>
-    </div>
-</div>
+

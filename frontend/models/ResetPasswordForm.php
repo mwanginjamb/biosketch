@@ -16,6 +16,7 @@ class ResetPasswordForm extends Model
 {
     public string $password = '';
     private User|null $_user = null;
+    public string $passwordConfirm = '';
     /**
      * Creates a form model given a token.
      *
@@ -43,6 +44,7 @@ class ResetPasswordForm extends Model
         return [
             ['password', 'required'],
             ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+            ['passwordConfirm','compare', 'compareAttribute' => 'password', 'message' => 'Passwords do not match.']
         ];
     }
 

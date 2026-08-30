@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use common\library\FormUi;
 
 $this->title = 'Reset your password';
 $this->params['breadcrumbs'][] = $this->title;
@@ -18,75 +19,28 @@ $htmlIcon = <<<HTML
 HTML;
 $labelOptions = ['class' => 'form-label fw-semibold small'];
 ?>
-<div class="site-request-password-reset d-flex align-items-center justify-content-center py-5">
-    <div class="card border-0 overflow-hidden login-split-card">
-        <div class="row g-0">
 
-            <!-- Brand panel -->
-            <div class="col-md-5 d-none d-md-flex login-brand-panel text-white">
-                <div class="d-flex flex-column justify-content-between p-4 p-lg-5 w-100">
-                    <div>
-                        <?= Html::img(
-                            Yii::getAlias('@web/images/yii3_full_white_for_dark.svg'),
-                            [
-                                'alt' => 'Yii Framework',
-                                'class' => 'mb-4',
-                                'height' => 40,
-                            ],
-                        ) ?>
-                    </div>
-                    <div>
-                        <h2 class="fw-bold mb-3 login-brand-title">
-                            Forgot Your<br>Password?
-                        </h2>
-                        <p class="opacity-75 mb-0 login-brand-text">
-                            No worries. Enter your email and we will send you a reset link.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Form panel -->
-            <div>
-                <div class="p-4 p-lg-5">
-                    <div class="text-center mb-4">
-                        <div class="d-md-none mb-3">
-                            <?= Html::img(
-                                Yii::getAlias('@web/images/yii3_full_black_for_light.svg'),
-                                [
-                                    'alt' => 'Yii Framework',
-                                    'class' => 'login-mobile-logo',
-                                    'height' => 36,
-                                ],
-                            ) ?>
-                        </div>
-                        <h1 class="h3 fw-bold mb-1"><?= Html::encode($this->title) ?></h1>
-                        <p class="text-body-secondary small">A link to reset your password will be sent to your email
-                        </p>
-                    </div>
+            
+<div class="mb-lg text-center">
+    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs"><?= Html::encode($this->title) ?></h2>
+    <p class="font-body-md text-body-md text-on-surface-variant">Make Password Reset Request.</p>
+</div>
+         
+                    
 
-                    <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
+                    <?php $form = ActiveForm::begin(FormUi::formConfig('signup-form')); ?>
 
-                    <div class="mb-4">
-                        <?= $form->field($model, 'email', [
-                            'options' => ['class' => 'mb-0'],
-                            'template' => sprintf($htmlIcon, '&#9993;'),
-                            'inputOptions' => [
-                                'autofocus' => true,
-                                'class' => 'form-control',
-                                'placeholder' => 'email@example.com',
-                            ],
-                        ])->textInput()->label('Your Email', $labelOptions) ?>
-                    </div>
+                    <?= $form->errorSummary($model) ?>
 
-                    <div class="d-grid">
-                        <?= Html::submitButton(
-                            'Send',
-                            [
-                                'class' => 'btn login-btn btn-lg rounded-3 text-white',
-                            ],
-                        ) ?>
-                    </div>
+                    
+                    <?= $form->field($model, 'email',FormUi::fieldConfig('mail') )->textInput(['class' => FormUi::inputClass(true)])->label('Your Email', $labelOptions) ?>
+                    
+
+                    <?= Html::submitButton('Request Reset', ['class' => FormUi::buttonClass('auth')]) ?>
+
+                        
+                    
 
                     <?php ActiveForm::end(); ?>
 
@@ -94,9 +48,4 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
                         Remember your password? <?= Html::a('Login', ['site/login']) ?>
                     </div>
 
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
+                
