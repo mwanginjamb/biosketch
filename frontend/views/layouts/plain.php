@@ -40,7 +40,7 @@ $this->render('_head');
             <div
                 class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer flex items-center justify-center">
                 <img alt="Scientist profile"
-                    src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher->profile_photo) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
+                    src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity?->researcher) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
             </div>
         </div>
     </header>
