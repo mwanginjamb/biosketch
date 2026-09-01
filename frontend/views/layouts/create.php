@@ -30,7 +30,7 @@ AppAsset::register($this);
         </div>
         <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
             <img alt="Scientist profile"
-                src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher->profile_photo) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
+                src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity?->researcher) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
         </div>
     </header>
 
