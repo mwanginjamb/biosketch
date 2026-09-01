@@ -8,6 +8,7 @@ use frontend\assets\AppAsset;
 
 AppAsset::register($this);
 
+
 $this->registerCsrfMetaTags();
 $this->registerMetaTag(
     ['charset' => Yii::$app->charset],

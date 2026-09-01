@@ -9,6 +9,7 @@ $this->render('_head');
 <html class="h-full" lang="en">
 
 <head>
+    <?= Html::csrfMetaTags() ?>
     <?php $this->head() ?>
     <title>Welcome - Researcher BioSketch Pro</title>
 </head>
@@ -55,7 +56,8 @@ $this->render('_head');
             © <?= date('Y') . ' ' . Yii::$app->name ?> . All rights reserved.
         </div>
         <!-- <div class="flex gap-md mt-md md:mt-0 font-label-caps text-label-caps">
-            <a class="text-on-surface-variant opacity-80 hover:text-primary transition-colors" href="#">Compliance
+
+        <a class="text-on-surface-variant opacity-80 hover:text-primary transition-colors" href="#">Compliance
                 Policy</a>
             <a class="text-on-surface-variant opacity-80 hover:text-primary transition-colors" href="#">Research
                 Guidelines</a>
