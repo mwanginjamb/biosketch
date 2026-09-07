@@ -130,22 +130,23 @@ class FormUi
      * For an interactive icon (password visibility toggle) build the
      * wrapper in the view and use a plain fieldConfig() instead.
      */
-    private static function iconTemplate(string $icon): string
-    {
-        $iconHtml = Html::tag(
-            'span',
-            Html::encode($icon),
-            ['class' => self::iconClass()]
-        );
+    /* private static function iconTemplate(string $icon): string
+     {
+         $iconHtml = Html::tag(
+             'span',
+             Html::encode($icon),
+             ['class' => self::iconClass()]
+         );
 
-        $inputWrapper = Html::tag(
-            'div',
-            "\n{input}\n" . $iconHtml,
-            ['class' => 'relative']
-        );
+         $inputWrapper = Html::tag(
+             'div',
+             "\n{input}\n" . $iconHtml,
+             ['class' => 'relative w-full']
+         );
 
-        return "{label}\n" . $inputWrapper . "\n{error}";
-    }
+         return "{label}\n" . $inputWrapper . "\n{error}";
+     }
+         */
 
 
     /**
@@ -160,7 +161,6 @@ class FormUi
         array $forgotUrl = ['site/request-password-reset'],
         string $toggleId = 'pwd-toggle'
     ): array {
-
         $forgotLink = Html::a('Forgot password?', $forgotUrl, [
             'class' => self::linkClass(),
             'tabindex' => '-1',
@@ -174,9 +174,7 @@ class FormUi
             [
                 'id' => $toggleId,
                 'type' => 'button',
-                'class' => 'absolute right-sm top-1/2 -translate-y-1/2
-                          text-on-surface-variant hover:text-primary
-                          transition-colors',
+                'class' => 'text-on-surface-variant hover:text-primary transition-colors shrink-0',
                 'encode' => false,
                 'aria-label' => 'Show password',
             ]
@@ -185,13 +183,9 @@ class FormUi
         return [
             'template' =>
                 '<div class="flex justify-between items-center mb-xs">'
-                . '{label}'
-                . $forgotLink
-                . '</div>'
-                . '<div class="relative">{input}' . $toggleBtn . '</div>'
+                . '{label}' . $forgotLink . '</div>'
+                . '<div class="' . self::inputRowClass() . '">{input}' . $toggleBtn . '</div>'
                 . "\n{error}",
-
-
             'options' => ['class' => 'space-y-xs'],
             'labelOptions' => ['class' => 'font-label-caps text-label-caps text-on-surface-variant'],
             'errorOptions' => ['class' => 'text-sm text-red-600 mt-1'],
@@ -225,7 +219,7 @@ class FormUi
      */
     public static function inputClass(bool $hasIcon = false): string
     {
-        $trailing = $hasIcon ? 'pr-sm' : 'pr-sm';   // keep symmetric; icon is absolute
+        $trailing = $hasIcon ? 'pr-12' : 'pr-sm';   // keep symmetric; icon is absolute
 
         return "
             w-full
@@ -274,18 +268,19 @@ class FormUi
      *   material-symbols-outlined absolute right-sm top-1/2 -translate-y-1/2
      *   text-on-surface-variant
      */
-    public static function iconClass(): string
-    {
-        return '
-            material-symbols-outlined
-            absolute
-            right-sm
-            top-1/2
-            -translate-y-1/2
-            text-on-surface-variant
-            pointer-events-none
-        ';
-    }
+    /* public static function iconClass(): string
+     {
+         return '
+             material-symbols-outlined
+             absolute
+             right-3
+             top-1/2
+             -translate-y-1/2
+             text-[22px]
+             text-on-surface-variant
+             pointer-events-none
+         ';
+     }*/
 
 
     /*
@@ -1072,6 +1067,54 @@ HTML;
     public static function endSection(): string
     {
         return '</section>';
+    }
+
+
+
+
+
+    /**
+     * FIXES:
+     */
+
+    /**
+     * Visible "input row" — border/bg/height live here now.
+     * The real <input> becomes transparent and borderless.
+     */
+    public static function inputRowClass(): string
+    {
+        return '
+        w-full h-12 px-sm
+        flex items-center gap-xs
+        bg-surface-container-low
+        border border-outline-variant
+        focus-within:border-secondary focus-within:ring-1 focus-within:ring-secondary
+        transition-all
+    ';
+    }
+
+    /** Use on ->textInput()/->passwordInput() instead of inputClass(true) */
+    public static function inputClassBare(): string
+    {
+        return '
+        w-full h-full min-w-0
+        bg-transparent border-0 p-0
+        outline-none ring-0
+        font-body-md text-body-md text-on-surface
+        placeholder:text-on-surface-variant/50
+    ';
+    }
+
+    public static function iconClass(): string
+    {
+        return 'material-symbols-outlined text-[20px] text-on-surface-variant pointer-events-none shrink-0';
+    }
+
+    private static function iconTemplate(string $icon): string
+    {
+        $iconHtml = Html::tag('span', Html::encode($icon), ['class' => self::iconClass()]);
+        $row = Html::tag('div', "\n{input}\n" . $iconHtml, ['class' => self::inputRowClass()]);
+        return "{label}\n" . $row . "\n{error}";
     }
 
 }
