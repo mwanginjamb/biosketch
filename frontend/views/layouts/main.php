@@ -1,6 +1,4 @@
 <?php
-use yii\helpers\Html;
-
 $this->render('_head');
 
 $this->beginPage();

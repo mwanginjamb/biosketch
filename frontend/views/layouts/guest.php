@@ -1,5 +1,6 @@
 <?php
-use yii\helpers\Html;
+
+/** @var yii\web\View $this */
 $this->render('_head');
 ?>
 <?php $this->beginPage(); ?>
@@ -8,7 +9,6 @@ $this->render('_head');
 
 <head>
     <title><?= Html::encode($this->title) ?></title>
-    <?= Html::csrfMetaTags() ?>
     <?php $this->head() ?>
 </head>
 

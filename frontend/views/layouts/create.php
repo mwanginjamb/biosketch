@@ -1,5 +1,6 @@
 <?php
-use yii\helpers\Html;
+
+/** @var yii\web\View $this */
 $this->render('_head');
 ?>
 <?php $this->beginPage(); ?>
@@ -7,7 +8,6 @@ $this->render('_head');
 <html lang="<?= Yii::$app->language ?>" class="light">
 
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
