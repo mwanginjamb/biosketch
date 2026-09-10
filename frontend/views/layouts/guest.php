@@ -1,17 +1,14 @@
 <?php
 use yii\helpers\Html;
-use frontend\assets\AppAsset;
-AppAsset::register($this);
+$this->render('_head');
 ?>
 <?php $this->beginPage(); ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="light">
 
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Html::encode($this->title) ?></title>
-      <?= Html::csrfMetaTags() ?>
+    <?= Html::csrfMetaTags() ?>
     <?php $this->head() ?>
 </head>
 
@@ -47,7 +44,7 @@ AppAsset::register($this);
     <footer
         class="w-full py-sm px-margin-desktop flex flex-col md:flex-row justify-between items-center mt-lg border-t border-outline-variant bg-surface-container-lowest">
         <div class="font-label-caps text-label-caps tracking-widest text-on-surface-variant mb-sm md:mb-0">
-            © <?= date('Y') ?> KEMRI Institutional Researcher Scientist BioSketch. All rights reserved. 
+            © <?= date('Y') ?> KEMRI Institutional Researcher Scientist BioSketch. All rights reserved.
         </div>
         <div class="flex gap-md">
             <a class="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors"

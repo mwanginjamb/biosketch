@@ -1,10 +1,7 @@
 <?php
 use yii\bootstrap5\Html;
 
-/* @var $this \yii\web\View */
-/* @var $content string */
-use frontend\assets\AppAsset;
-AppAsset::register($this);
+$this->render('_head');
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

@@ -9,7 +9,6 @@ $this->render('_head');
 <html class="h-full" lang="en">
 
 <head>
-    <?= Html::csrfMetaTags() ?>
     <?php $this->head() ?>
     <title>Welcome - Researcher BioSketch Pro</title>
 </head>

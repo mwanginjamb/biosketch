@@ -1,9 +1,7 @@
 <?php
 use yii\helpers\Html;
-use frontend\assets\AppAsset;
-use yii\helpers\Url;
 
-AppAsset::register($this);
+$this->render('_head');
 
 $this->beginPage();
 ?>
@@ -12,14 +10,7 @@ $this->beginPage();
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="light">
 
-
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
-
-    <?= Html::csrfMetaTags() ?>
-
-
-
     <style>
         body {
             min-height: max(884px, 100dvh);
