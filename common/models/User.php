@@ -205,7 +205,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function generateEmailVerificationToken(): void
     {
-        $this->verification_token = Yii::$app->security->generateRandomString() . '_' . time();
+        $this->verification_token = Yii::$app->security->generateRandomString(16) . '_' . time();
     }
 
     /**

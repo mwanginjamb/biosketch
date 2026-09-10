@@ -19,6 +19,7 @@ $this->beginPage();
     <?= Html::csrfMetaTags() ?>
 
 
+
     <style>
         body {
             min-height: max(884px, 100dvh);
@@ -65,7 +66,7 @@ $this->beginPage();
     <footer
         class="w-full py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mt-10 bg-gray-100 border-t no-print">
         <p class="text-sm text-gray-600 mb-2 md:mb-0">
-            © <?= date('Y') ?> BioSketch Institutional. All rights reserved.
+            © <?= date('Y') ?> <?= \Yii::$app->name ?>. All rights reserved.
         </p>
 
         <!-- <div class="flex gap-6 text-sm">
