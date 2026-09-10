@@ -43,9 +43,12 @@ $this->beginPage();
 
         <div class="flex items-center gap-6">
             <div class="hidden md:flex gap-4">
-                <a href="#" class="font-bold border-b-2 border-primary">Public Profile</a>
-                <a href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
-                    BioSketch</a>
+                <?php if (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher): ?>
+                    <a href="<?= Url::toRoute(['researcher/report', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
+                        class="font-bold border-b-2 border-primary">Public Profile</a>
+                    <a href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
+                        BioSketch</a>
+                <?php endif; ?>
             </div>
             <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
                 <img alt="Scientist profile"
