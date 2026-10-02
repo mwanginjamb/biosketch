@@ -3,6 +3,10 @@ use yii\bootstrap5\Html;
 use yii\helpers\Url;
 /** @var yii\web\View $this */
 $this->render('_head');
+
+$placeholderText = !empty(Yii::$app->user->identity->username) ? \Yii::$app->user->identity->username : 'User';
+$placeholderImage = "https://placehold.co/150/cccccc/FFFFFF.webp/?text=" . $placeholderText;
+
 ?>
 <?php $this->beginPage(); ?>
 <!DOCTYPE html>
@@ -30,7 +34,7 @@ $this->render('_head');
         </div>
         <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
             <img alt="Scientist profile"
-                src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity?->researcher) ? Yii::$app->user->identity->researcher->profile_photo : 'https://via.placeholder.com/150' ?>">
+                src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity?->researcher) ? Yii::$app->user->identity->researcher->profile_photo : $placeholderImage ?>">
         </div>
     </header>
 
