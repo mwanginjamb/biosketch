@@ -2,7 +2,6 @@
 
 namespace frontend\models;
 use common\models\User;
-use Override;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;

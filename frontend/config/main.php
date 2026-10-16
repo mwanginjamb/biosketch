@@ -17,6 +17,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
+            'parsers' => ['application/json' => 'yii\web\JsonParser']
         ],
         'user' => [
             'identityClass' => \common\models\User::class,
@@ -58,10 +59,47 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            //'enableStrictParsing' => false,
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['apiv1/researchers' => 'apiv1/researcher'],
+                    'extraPatterns' => ['POST {id}/photo' => 'upload-photo']
+                ],
+                // nested resources: researcher_id is passed to the child controller
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
+                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/educations' => 'apiv1/researcher-education']
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
+                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/identifiers' => 'apiv1/researcher-identifier']
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
+                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/media' => 'apiv1/researcher-media']
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
+                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/grants' => 'apiv1/researcher-grant']
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize' => false,
+                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/publications' => 'apiv1/publications']
+                ],
             ],
         ],
 
+    ],
+    'modules' => [
+        'apiv1' => [
+            'class' => \frontend\modules\apiv1\Module::class,
+        ],
     ],
     'params' => $params,
 ];
