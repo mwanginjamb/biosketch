@@ -51,10 +51,35 @@ class SignupForm extends Model
                 'unique',
                 'targetClass' => User::class,
                 'targetAttribute' => 'staff_id',
-                'message' => 'An account already exists for this employee number.',
+                'message' => self::DUPLICATE_ACCOUNT_MESSAGE,
             ],
             ['email', 'validateEmailMatchesDirectory', 'skipOnError' => true],
         ];
+    }
+
+    public const DUPLICATE_ACCOUNT_MESSAGE =
+        'An account already exists for this employee number. Sign in, or use "Forgot password" if you cannot remember it.';
+
+    /**
+     * When the employee number already has an account (e.g. a second click on a slow
+     * submit), show one clear message instead of three separate "already taken" errors.
+     */
+    public function afterValidate(): void
+    {
+        parent::afterValidate();
+
+        if ($this->getFirstError('staffID') === self::DUPLICATE_ACCOUNT_MESSAGE) {
+            foreach (['username', 'email'] as $attribute) {
+                $remaining = array_filter(
+                    $this->getErrors($attribute),
+                    static fn(string $error) => !str_contains($error, 'has already been taken'),
+                );
+                $this->clearErrors($attribute);
+                foreach ($remaining as $error) {
+                    $this->addError($attribute, $error);
+                }
+            }
+        }
     }
 
     /**
