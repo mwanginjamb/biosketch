@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\modules\apiv1\controllers;
 
+use common\components\RbacHelper;
 use frontend\components\ProfilePhotoStorage;
 use frontend\modules\apiv1\components\BaseController;
 use frontend\modules\apiv1\models\Researcher;
@@ -55,6 +56,10 @@ class ResearcherController extends BaseController
 
     public function actionCreate()
     {
+        if (!Yii::$app->user->can(RbacHelper::PERM_CREATE)) {
+            throw new ForbiddenHttpException('You are not allowed to create a biosketch.');
+        }
+
         $userId = (int) Yii::$app->user->id;
         if (Researcher::find()->where(['user_id' => $userId])->exists()) {
             throw new ConflictHttpException('You already have a researcher profile.');
@@ -108,7 +113,8 @@ class ResearcherController extends BaseController
             return;
         }
 
-        if (!$this->ownsOrAdmin($model)) {
+        $permission = $action === 'delete' ? RbacHelper::PERM_DELETE : RbacHelper::PERM_UPDATE;
+        if (!$this->can($permission, $model)) {
             throw new ForbiddenHttpException('You do not own this profile.');
         }
     }

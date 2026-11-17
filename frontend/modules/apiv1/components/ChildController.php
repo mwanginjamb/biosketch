@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\modules\apiv1\components;
 
+use common\components\RbacHelper;
 use frontend\models\Researcher;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -94,11 +95,14 @@ abstract class ChildController extends BaseController
 
     /**
      * Reads follow the parent researcher's visibility (checked in beforeAction);
-     * writes require owning the researcher profile, or the admin role.
+     * writes are edits to the biosketch, so they need updateBiosketch (owner or admin).
      */
     public function checkAccess($action, $model = null, $params = [])
     {
-        if (in_array($action, ['create', 'update', 'delete'], true) && !$this->ownsOrAdmin($this->researcher)) {
+        if (
+            in_array($action, ['create', 'update', 'delete'], true)
+            && !$this->can(RbacHelper::PERM_UPDATE, $this->researcher)
+        ) {
             throw new ForbiddenHttpException('You do not own this profile.');
         }
     }

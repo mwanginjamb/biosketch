@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\components\RbacHelper;
 use frontend\components\ProfilePhotoStorage;
 use frontend\models\Publications;
 use frontend\models\Researcher;
@@ -45,7 +46,7 @@ class ResearcherController extends Controller
                 'access' => [
                     'class' => AccessControl::class,
                     // Every action requires an authenticated user; per-record
-                    // ownership is enforced in findAccessibleModel().
+                    // per-record permissions are enforced in findAccessibleModel().
                     'rules' => [
                         [
                             'allow' => true,
@@ -67,7 +68,7 @@ class ResearcherController extends Controller
         $searchModel = new ResearcherSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        if (!$this->isAdmin()) {
+        if (!Yii::$app->user->can(RbacHelper::PERM_VIEW_LIST)) {
             $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
         }
 
@@ -85,7 +86,7 @@ class ResearcherController extends Controller
      */
     public function actionView($id)
     {
-        $researcher = $this->findAccessibleModel($id, withRelations: true);
+        $researcher = $this->findAccessibleModel($id, RbacHelper::PERM_VIEW, withRelations: true);
 
         return $this->render('view', [
             'model' => $researcher,
@@ -96,7 +97,7 @@ class ResearcherController extends Controller
 
     public function actionReport($id)
     {
-        $researcher = $this->findAccessibleModel($id, withRelations: true);
+        $researcher = $this->findAccessibleModel($id, RbacHelper::PERM_VIEW, withRelations: true);
 
         $footerHtml = '
     <table style="width:100%; border-collapse:collapse;">
@@ -178,6 +179,10 @@ class ResearcherController extends Controller
 
     public function actionCreate()
     {
+        if (!Yii::$app->user->can(RbacHelper::PERM_CREATE)) {
+            throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to create a biosketch.'));
+        }
+
         $this->layout = 'create';
         $modelProfile = new Researcher();
         $modelEducations = [new ResearcherEducation()];
@@ -529,7 +534,7 @@ class ResearcherController extends Controller
     public function actionUpdate($id)
     {
         $this->layout = 'create';
-        $modelProfile = $this->findAccessibleModel($id);
+        $modelProfile = $this->findAccessibleModel($id, RbacHelper::PERM_UPDATE);
 
         $modelEducations = $modelProfile->researcherEducations ?: [new ResearcherEducation()];
         $modelPublications = $modelProfile->publications ?: [new Publications()];
@@ -861,7 +866,7 @@ class ResearcherController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findAccessibleModel($id)->delete();
+        $this->findAccessibleModel($id, RbacHelper::PERM_DELETE)->delete();
 
         return $this->redirect(['index']);
     }
@@ -883,14 +888,18 @@ class ResearcherController extends Controller
     }
 
     /**
-     * Finds a Researcher the current user may access: their own profile, or any
-     * profile when they hold the `admin` role.
+     * Finds a Researcher and checks $permission against it. The RBAC owner rule
+     * grants researchers their own biosketch; drd/admin hold the unrestricted
+     * permissions (see RbacHelper).
      *
      * @throws NotFoundHttpException if the record does not exist
-     * @throws ForbiddenHttpException if the user neither owns it nor is an admin
+     * @throws ForbiddenHttpException if the user lacks $permission for this biosketch
      */
-    protected function findAccessibleModel($id, bool $withRelations = false): Researcher
-    {
+    protected function findAccessibleModel(
+        $id,
+        string $permission = RbacHelper::PERM_VIEW,
+        bool $withRelations = false
+    ): Researcher {
         $query = Researcher::find()->where(['id' => $id]);
         if ($withRelations) {
             $query->with([
@@ -908,16 +917,11 @@ class ResearcherController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
 
-        if ((int) $model->user_id !== (int) Yii::$app->user->id && !$this->isAdmin()) {
+        if (!Yii::$app->user->can($permission, ['researcher' => $model])) {
             throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to access this profile.'));
         }
 
         return $model;
-    }
-
-    protected function isAdmin(): bool
-    {
-        return Yii::$app->user->can('admin');
     }
 
 

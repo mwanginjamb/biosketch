@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\models;
 
+use common\components\RbacHelper;
 use common\models\User;
 use Yii;
 use yii\base\Model;
@@ -89,7 +90,14 @@ class SignupForm extends Model
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
 
-        return $user->save() && $this->sendEmail($mailer, $user, $supportEmail, $appName);
+        if (!$user->save()) {
+            return false;
+        }
+
+        // Every new account starts with the default `researcher` role.
+        RbacHelper::assignDefaultRole((int) $user->id);
+
+        return $this->sendEmail($mailer, $user, $supportEmail, $appName);
     }
 
     /**

@@ -173,6 +173,21 @@ final class SignupFormTest extends Unit
         ]);
     }
 
+    public function testSignupAssignsDefaultResearcherRole(): void
+    {
+        $model = $this->formWithDirectory([
+            'username' => 'new_researcher',
+            'email' => 'new_researcher@example.com',
+            'password' => 'some_password',
+            'passwordConfirm' => 'some_password',
+        ]);
+
+        verify($model->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->true();
+
+        $user = User::findOne(['username' => 'new_researcher']);
+        verify(array_keys(Yii::$app->authManager->getRolesByUser($user->id)))->equals(['researcher']);
+    }
+
     public function testSignupStoresNullDepartmentWhenDirectoryHasNone(): void
     {
         $model = $this->formWithDirectory([

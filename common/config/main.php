@@ -17,7 +17,6 @@ return [
         ],
         'authManager' => [
             'class' => \yii\rbac\DbManager::class,
-            'cache' => 'cache',
         ],
         'db' => [
             'class' => \yii\db\Connection::class,

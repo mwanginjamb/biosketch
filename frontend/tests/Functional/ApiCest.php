@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\tests\Functional;
 
+use common\components\RbacHelper;
 use common\models\User;
 use common\models\UserApiToken;
 use frontend\models\Researcher;
@@ -58,15 +59,19 @@ final class ApiCest
         $this->otherToken = UserApiToken::issue(User::findOne($this->otherId))[1];
     }
 
+    /** Creates an active account with the default `researcher` role, as signup does. */
     private function haveUser(FunctionalTester $I, string $username): int
     {
-        return $I->haveRecord(User::class, [
+        $id = $I->haveRecord(User::class, [
             'username' => $username,
             'email' => $username . '@example.com',
             'auth_key' => Yii::$app->security->generateRandomString(),
             'password_hash' => Yii::$app->security->generatePasswordHash('password_0'),
             'status' => User::STATUS_ACTIVE,
         ]);
+        RbacHelper::assignDefaultRole($id);
+
+        return $id;
     }
 
     private function json(FunctionalTester $I): mixed
@@ -225,6 +230,29 @@ final class ApiCest
             $I->seeResponseCodeIs(200);
             verify($this->json($I))->arrayHasKey('items');
         }
+    }
+
+    public function drdCanReadDraftsButNotWrite(FunctionalTester $I): void
+    {
+        $drdId = $I->haveRecord(User::class, [
+            'username' => 'api_drd',
+            'email' => 'api_drd@example.com',
+            'auth_key' => Yii::$app->security->generateRandomString(),
+            'password_hash' => Yii::$app->security->generatePasswordHash('password_0'),
+            'status' => User::STATUS_ACTIVE,
+        ]);
+        RbacHelper::assign(RbacHelper::ROLE_DRD, $drdId);
+        $this->as($I, UserApiToken::issue(User::findOne($drdId))[1]);
+
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/' . $this->otherDraftProfileId);
+        $I->seeResponseCodeIs(200);
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/' . $this->otherDraftProfileId . '/educations');
+        $I->seeResponseCodeIs(200);
+
+        $I->sendAjaxRequest('PATCH', self::BASE . '/researchers/' . $this->otherDraftProfileId, ['full_name' => 'X']);
+        $I->seeResponseCodeIs(403);
+        $I->sendAjaxPostRequest(self::BASE . '/researchers', ['full_name' => 'DRD Profile']);
+        $I->seeResponseCodeIs(403);   // drd alone has no createBiosketch
     }
 
     public function apiIndexIsPublic(FunctionalTester $I): void

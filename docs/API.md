@@ -89,7 +89,15 @@ If `items` is empty, there is **no published profile** for that staff ID. Either
 
 Tokens belong to a BioSketch user account. For a system-to-system integration, ask a BioSketch administrator to create a **dedicated account** for your system (for example `hr-portal-sync`) rather than using a person's login. The account must have completed email verification, because only active accounts can obtain tokens.
 
-Read access to published profiles needs no special role. Admins (granted with `php yii rbac/assign-admin <username>`) can additionally read drafts by ID and edit any profile, so don't give integration accounts admin unless they need it.
+Read access to published profiles needs no special role. Roles change what else an account can do:
+
+| Role | API effect |
+|---|---|
+| `researcher` (every new account) | Create and manage **their own** profile |
+| `drd` | Also read **draft** profiles by ID, including their nested collections (read-only) |
+| `admin` | Read, edit and delete any profile |
+
+An administrator assigns roles under **RBAC Mgt → User Role Assignment** in the web app, or with `php yii rbac/assign <role> <username>`. A read-only integration needs no extra role. Give it `drd` only if it must see drafts, and never give it `admin`.
 
 ### Issue a token
 
@@ -179,7 +187,7 @@ Paging details are in `_meta` (`totalCount`, `pageCount`, `currentPage`, `perPag
 
 ### Fetch by BioSketch ID
 
-`GET /apiv1/researchers/{id}`. Once you know a researcher's BioSketch `id` (from a search), you can fetch them directly. A draft profile returns `404` unless you own it or are an admin.
+`GET /apiv1/researchers/{id}`. Once you know a researcher's BioSketch `id` (from a search), you can fetch them directly. A draft profile returns `404` unless you own it or have the `drd` or `admin` role.
 
 ### Nested collections
 
@@ -194,7 +202,7 @@ GET /apiv1/researchers/{id}/media
 GET /apiv1/researchers/{id}/{collection}/{record_id}
 ```
 
-These follow the parent profile's visibility. A draft profile's collections return `404` to anyone but its owner or an admin.
+These follow the parent profile's visibility. A draft profile's collections return `404` to anyone but its owner, `drd` or `admin`.
 
 ---
 
@@ -287,7 +295,7 @@ Errors use standard HTTP status codes and this body:
 |---|---|
 | `400` | Malformed request (e.g. missing required parameter or file) |
 | `401` | Missing, invalid, expired or revoked token; or wrong credentials at `/auth/token` |
-| `403` | Authenticated, but you don't own the profile you're trying to change |
+| `403` | Authenticated, but your roles don't allow this (e.g. changing someone else's profile) |
 | `404` | Not found, or a draft profile you're not allowed to see |
 | `405` | HTTP method not allowed on this endpoint |
 | `409` | Creating a second profile for the same account |
@@ -303,7 +311,7 @@ These are for clients acting **as a researcher** (for example a mobile app), usi
 
 | Method & path | Who | Notes |
 |---|---|---|
-| `POST /apiv1/researchers` | any account | Creates the caller's profile. The owner is always the token's account, and any `user_id` in the body is ignored. One profile per account; a second returns `409`. `full_name` is required. |
+| `POST /apiv1/researchers` | `researcher` role | Creates the caller's profile. The owner is always the token's account, and any `user_id` in the body is ignored. One profile per account; a second returns `409`. `full_name` is required. |
 | `PUT` / `PATCH /apiv1/researchers/{id}` | owner, admin | `user_id`, `profile_photo` and audit fields cannot be changed. |
 | `DELETE /apiv1/researchers/{id}` | owner, admin | Deletes the profile. Returns `204`. |
 | `POST /apiv1/researchers/{id}/photo` | owner, admin | `multipart/form-data` with the image in field `attachment`. JPG/PNG, max 3 MB. |
