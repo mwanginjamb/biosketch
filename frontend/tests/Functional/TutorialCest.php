@@ -42,6 +42,14 @@ final class TutorialCest
         $I->seeElement('a[href$="/tutorial"]');
     }
 
+    public function brandLinksHomeWithLogo(FunctionalTester $I): void
+    {
+        foreach (['/index-test.php/site/login', '/index-test.php/tutorial'] as $page) {   // guest + plain layouts
+            $I->amOnPage($page);
+            $I->seeElement('a[href$="/site/home"] img[src$="/icons/icon-144x144.png"]');
+        }
+    }
+
     public function loginLinksToTutorial(FunctionalTester $I): void
     {
         $I->amOnPage('/index-test.php/site/login');

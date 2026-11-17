@@ -23,7 +23,8 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <!-- Brand Identity -->
 <div class="flex flex-col items-center mb-lg">
     <div class="flex items-center gap-xs mb-sm">
-        <span class="material-symbols-outlined text-primary text-[32px]" data-icon="biotech">biotech</span>
+        <img src="<?= \yii\helpers\Url::to('@web/icons/icon-144x144.png') ?>" alt="KEMRI" width="48" height="48"
+            class="h-12 w-12 object-contain">
         <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">BioSketch Professional</h1>
     </div>
     <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Clinical Grade
