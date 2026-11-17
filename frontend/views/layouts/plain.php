@@ -21,7 +21,7 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
     <title><?= Html::encode($this->title ?: 'Welcome') ?> - Researcher BioSketch Pro</title>
 </head>
 
-<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col pt-16">
+<body class="bg-surface text-on-surface font-body-md min-h-dvh flex flex-col pt-16">
     <?php $this->beginBody() ?>
     <!-- TopNavBar (Rendered from JSON structure) -->
     <header
@@ -38,12 +38,12 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
     </header>
     <!-- Main Content Area -->
     <main
-        class="flex-grow flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop py-xl bg-surface">
+        class="flex-grow flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop py-md bg-surface">
         <?= $content ?>
     </main>
     <!-- Footer (Rendered from JSON structure) -->
     <footer
-        class="w-full mt-auto py-lg px-gutter flex flex-col md:flex-row justify-between items-center bg-surface-container-low border-t border-outline-variant">
+        class="w-full mt-auto py-sm px-gutter flex flex-col md:flex-row justify-between items-center bg-surface-container-low border-t border-outline-variant">
         <div class="font-label-caps text-label-caps text-on-surface-variant">
             © <?= date('Y') . ' ' . Yii::$app->name ?> . All rights reserved.
         </div>

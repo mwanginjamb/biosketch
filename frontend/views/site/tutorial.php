@@ -9,17 +9,19 @@ use yii\helpers\Url;
 $user = Yii::$app->user;
 $researcher = $user->isGuest ? null : $user->identity->researcher;
 ?>
-<div class="max-w-4xl w-full space-y-lg">
-    <div class="text-center space-y-sm">
-        <h1 class="font-display text-display text-primary">How to use BioSketch Pro</h1>
-        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto">
+<div class="max-w-4xl w-full space-y-md">
+    <div class="text-center space-y-xs">
+        <h1 class="font-headline-lg text-headline-lg text-primary">How to use BioSketch Pro</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">
             A three-minute walkthrough: signing up, building each section of your biosketch, and exporting it as a PDF.
         </p>
     </div>
 
-    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-md">
+    <!-- Width follows the viewport height (16:9), so title, player and buttons fit without scrolling.
+         27rem ≈ header + title + buttons + footer + padding. -->
+    <div class="mx-auto w-full max-w-[min(100%,calc((100dvh_-_27rem)*16/9))] min-w-[min(100%,20rem)] bg-surface-container-lowest border border-outline-variant rounded-xl p-sm shadow-md">
         <?php if ($videoUrl !== null): ?>
-            <video class="w-full aspect-video rounded-lg bg-primary" controls playsinline preload="metadata"
+            <video class="w-full aspect-video rounded-lg bg-black" controls playsinline preload="metadata"
                 controlslist="nodownload">
                 <source src="<?= Html::encode($videoUrl) ?>" type="video/mp4">
                 Your browser cannot play this video.
