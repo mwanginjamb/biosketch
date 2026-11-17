@@ -96,9 +96,37 @@ final class ProfileViewCest
         Researcher::updateAll(['research_tags' => 'Malaria Epidemiology, Antimalarial Drug Resistance'], ['id' => $this->profileId]);
 
         $I->amLoggedInAs($this->userId);
+
+        // The PDF itself, inline.
+        $I->amOnRoute('researcher/report-pdf', ['id' => $this->profileId]);
+        $I->seeResponseCodeIs(200);
+        verify($I->grabResponseHeader('Content-Type'))->stringStartsWith('application/pdf');
+        verify($I->grabResponseHeader('Content-Disposition'))->stringStartsWith('inline;');
+        verify(substr($I->grabPageSource(), 0, 5))->equals('%PDF-');
+
+        // Download: attachment with a readable filename.
+        $I->amOnRoute('researcher/report-pdf', ['id' => $this->profileId, 'download' => 1]);
+        $disposition = $I->grabResponseHeader('Content-Disposition');
+        verify($disposition)->stringStartsWith('attachment;');
+        verify($disposition)->stringContainsString('BioSketch-faith-mwangi.pdf');
+    }
+
+    public function reportPageHasNavigationAndEmbedsThePdf(FunctionalTester $I): void
+    {
+        $I->amLoggedInAs($this->userId);
         $I->amOnRoute('researcher/report', ['id' => $this->profileId]);
         $I->seeResponseCodeIs(200);
-        $I->seeElement('iframe[src^="data:application/pdf;base64,"]');
+
+        // Rendered inside the app layout, with ways back.
+        $I->seeElement('details[data-account-menu]');
+        $I->seeLink('Back to my BioSketch');
+        $I->seeLink('Home');
+        $I->seeLink('Download PDF');
+        $I->dontSeeLink('BioSketch List');   // researchers only see their own
+
+        $src = $I->grabAttributeFrom('iframe', 'src');
+        verify($src)->stringContainsString('researcher/report-pdf');
+        verify($src)->stringNotContainsString('data:');
     }
 
     public function headerLinksToProfileAndOffersAccountMenu(FunctionalTester $I): void
