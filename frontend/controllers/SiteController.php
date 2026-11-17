@@ -46,10 +46,11 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'index', 'view', 'create', 'update', 'delete'],
+                'only' => ['logout', 'signup', 'lookup-employee', 'index', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        // Employee lookup only exists to prefill the signup form.
+                        'actions' => ['signup', 'lookup-employee'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -333,6 +334,14 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
+        if (!$this->allowLookup()) {
+            Yii::$app->response->statusCode = 429;
+            return [
+                'success' => false,
+                'message' => 'Too many lookups. Please wait a few minutes and try again.'
+            ];
+        }
+
         $employee = (new SignupForm())->findEmployee((string) $employeeNumber);
 
         if ($employee === null) {
@@ -342,14 +351,36 @@ class SiteController extends Controller
             ];
         }
 
+        // Return only what the signup form prefills, to limit directory exposure.
         return [
             'success' => true,
             'username' => strtolower((string) strstr($employee['email'], '@', true)),
             'email' => $employee['email'],
-            'displayName' => $employee['displayName'],
-            'fullNames' => $employee['fullNames'],
-            'department' => $employee['department'],
-            'departmentCode' => $employee['departmentCode'],
         ];
+    }
+
+    /** Max employee lookups per client IP within LOOKUP_WINDOW seconds. */
+    private const LOOKUP_LIMIT = 20;
+    private const LOOKUP_WINDOW = 600;
+
+    /**
+     * Per-IP rate limit backed by the application cache. The counter expires
+     * LOOKUP_WINDOW seconds after the last allowed lookup.
+     */
+    private function allowLookup(): bool
+    {
+        $cache = Yii::$app->cache;
+        if ($cache === null) {
+            return true;
+        }
+
+        $key = ['lookup-employee', Yii::$app->request->userIP];
+        $hits = (int) $cache->get($key);
+        if ($hits >= self::LOOKUP_LIMIT) {
+            return false;
+        }
+        $cache->set($key, $hits + 1, self::LOOKUP_WINDOW);
+
+        return true;
     }
 }

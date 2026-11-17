@@ -1,8 +1,22 @@
 <?php
 use yii\bootstrap5\Html;
 
+/** @var \frontend\models\Researcher $model */
 
-//exit(Yii::getAlias('@frontend/web') . $model->profile_photo);
+// Only link DOIs that are bare DOIs or http(s) URLs; anything else (e.g. javascript:) is shown as text.
+$doiUrl = static function (?string $doi): ?string {
+    $doi = trim((string) $doi);
+    if ($doi === '') {
+        return null;
+    }
+    if (preg_match('~^https?://~i', $doi)) {
+        return $doi;
+    }
+    if (preg_match('~^10\.\d{4,9}/\S+$~', $doi)) {
+        return 'https://doi.org/' . $doi;
+    }
+    return null;
+};
 ?>
 
 <!-- Main Content Wrapper -->
@@ -14,17 +28,17 @@ use yii\bootstrap5\Html;
         <div
             class="bg-surface-container-lowest p-md border border-outline-variant rounded-lg flex flex-col items-center text-center">
             <img class="w-48 h-48 rounded-full mb-md object-cover border-4 border-surface"
-                src="<?= $model->profile_photo ? $model->profile_photo : 'https://via.placeholder.com/150' ?>">
+                src="<?= Html::encode($model->profile_photo ?: 'https://via.placeholder.com/150') ?>">
 
             <h2 class="font-headline-lg text-headline-lg text-primary mb-base">
-                <?= ucfirst($model->title) . ' ' . ucwords($model->full_name) ?>
+                <?= Html::encode(ucfirst((string) $model->title) . ' ' . ucwords((string) $model->full_name)) ?>
             </h2>
 
-            <p class="text-on-surface-variant mb-xs"><?= $model->role_title ?? 'N/A' ?></p>
+            <p class="text-on-surface-variant mb-xs"><?= Html::encode($model->role_title ?? 'N/A') ?></p>
 
             <div class="inline-flex items-center gap-xs px-sm py-xs bg-tertiary-fixed rounded-full mb-sm">
                 <span class="material-symbols-outlined text-[16px]">account_balance</span>
-                <span class="text-label-caps"><?= $model->department ?? 'N/A' ?></span>
+                <span class="text-label-caps"><?= Html::encode($model->department ?? 'N/A') ?></span>
             </div>
 
             <div class="w-full h-[1px] bg-outline-variant my-sm"></div>
@@ -32,7 +46,7 @@ use yii\bootstrap5\Html;
             <div class="w-full flex flex-col gap-sm text-left">
                 <div class="flex items-center gap-sm">
                     <span class="material-symbols-outlined">mail</span>
-                    <span class="font-data-mono"><?= $model->email ?? 'N/A' ?></span>
+                    <span class="font-data-mono"><?= Html::encode($model->email ?? 'N/A') ?></span>
                 </div>
 
                 <div class="flex items-center gap-sm">
@@ -40,14 +54,14 @@ use yii\bootstrap5\Html;
                     <span class="font-data-mono">
                         <?=
                             // remove scheme (http:// or https://)  and "www" from website if present
-                            str_replace(['http://', 'https://', 'www.'], '', $model->website) ?? 'N/A'
+                            Html::encode($model->website ? str_replace(['http://', 'https://', 'www.'], '', $model->website) : 'N/A')
                             ?>
                     </span>
                 </div>
 
                 <div class="flex items-center gap-sm">
                     <span class="material-symbols-outlined">location_on</span>
-                    <span class="font-data-mono"><?= $model->location ?? 'N/A' ?></span>
+                    <span class="font-data-mono"><?= Html::encode($model->location ?? 'N/A') ?></span>
                 </div>
             </div>
         </div>
@@ -55,18 +69,17 @@ use yii\bootstrap5\Html;
         <!-- ORCID -->
         <div class="bg-surface-container-low p-md border border-outline-variant rounded-lg scientific-grid">
             <h3 class="text-label-caps text-on-surface-variant mb-sm">ORCID IDENTITY</h3>
-            <p class="font-data-mono text-primary font-bold"><?= $model->orcid ?? 'N/A' ?></p>
+            <p class="font-data-mono text-primary font-bold"><?= Html::encode($model->orcid ?? 'N/A') ?></p>
 
             <div class="mt-md flex flex-wrap gap-xs">
                 <!-- Get research tags as array of tags -->
                 <?php
-                $tags = explode(',', $model->research_tags);
-                if (!is_array($tags)) {
+                $tags = array_filter(array_map('trim', explode(',', (string) $model->research_tags)));
+                if (!$tags) {
                     echo '<span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">No tags available</span>';
-
                 }
                 foreach ($tags as $tag) {
-                    echo '<span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">' . trim($tag) . '</span>';
+                    echo '<span class="px-xs py-[2px] bg-secondary-container text-[11px] font-bold rounded">' . Html::encode($tag) . '</span>';
                 }
                 ?>
 
@@ -103,13 +116,13 @@ use yii\bootstrap5\Html;
                 <div class="bg-surface p-sm border rounded">
                     <h4 class="text-secondary mb-xs">Major Breakthrough</h4>
                     <!-- <p class="font-semibold">Pathway-01 Discovery</p> -->
-                    <p><?= ucfirst($model->major_breakthrough) ?? '' ?></p>
+                    <p><?= nl2br(Html::encode(ucfirst((string) $model->major_breakthrough))) ?></p>
                 </div>
 
                 <div class="bg-surface p-sm border rounded">
                     <h4 class="text-secondary mb-xs">Patent Filed</h4>
                     <!-- <p class="font-semibold">Synthetix-V Gene Drive</p> -->
-                    <p><?= $model->patent_filed ?? '' ?></p>
+                    <p><?= nl2br(Html::encode((string) $model->patent_filed)) ?></p>
                 </div>
 
             </div>
@@ -125,17 +138,17 @@ use yii\bootstrap5\Html;
                     <div class="flex flex-col gap-sm">
                         <div class="flex gap-md pb-sm border-b border-surface-container">
                             <div class="font-data-mono text-data-mono text-on-surface-variant min-w-[80px]">
-                                <?= $education->graduation_year ?? 'N/A' ?>
+                                <?= Html::encode($education->graduation_year ?? 'N/A') ?>
                             </div>
                             <div>
                                 <p class="font-body-lg text-body-lg font-bold text-primary">
-                                    <?= $education->degree ?? 'N/A' ?>
+                                    <?= Html::encode($education->degree ?? 'N/A') ?>
                                 </p>
                                 <p class="font-body-md text-on-surface-variant">
-                                    <?= $education->institution_name ?? 'N/A' ?>
+                                    <?= Html::encode($education->institution_name ?? 'N/A') ?>
                                 </p>
                                 <p class="font-body-md text-on-surface-variant italic mt-xs">
-                                    <?= $education->field_of_study ?? 'N/A' ?>
+                                    <?= Html::encode($education->field_of_study ?? 'N/A') ?>
                                 </p>
                             </div>
                         </div>
@@ -158,12 +171,14 @@ use yii\bootstrap5\Html;
 
                     <div class="p-sm hover:bg-surface transition-colors border-l-4 border-primary">
                         <p class="font-body-md text-on-surface mb-xs leading-relaxed">
-                            <span class="font-bold"><?= $pub->journal ?></span> (<?= $pub->publication_year ?? 'N/A' ?>)
-                            <span class="italic"><?= $pub->title ?? 'N/A' ?></span>.
+                            <span class="font-bold"><?= Html::encode($pub->journal) ?></span> (<?= Html::encode($pub->publication_year ?? 'N/A') ?>)
+                            <span class="italic"><?= Html::encode($pub->title ?? 'N/A') ?></span>.
                         </p>
                         <div class="flex gap-sm items-center">
                             <span
-                                class="font-label-caps text-label-caps text-secondary"><?= Html::a(Html::encode($pub->doi ?? '#'), $pub->doi) ?></span>
+                                class="font-label-caps text-label-caps text-secondary"><?= $doiUrl($pub->doi) !== null
+                                    ? Html::a(Html::encode($pub->doi), $doiUrl($pub->doi), ['target' => '_blank', 'rel' => 'noopener noreferrer'])
+                                    : Html::encode($pub->doi ?? '') ?></span>
 
                         </div>
                     </div>
@@ -203,7 +218,7 @@ use yii\bootstrap5\Html;
                             </p>
                         </div>
                         <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">
-                            <?= $grant->statusOptions[$grant->status_id] ?? 'N/A' ?>
+                            <?= Html::encode($grant->statusOptions[$grant->status_id] ?? 'N/A') ?>
                         </div>
                     </div>
 

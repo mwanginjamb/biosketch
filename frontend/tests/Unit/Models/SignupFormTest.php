@@ -208,6 +208,35 @@ final class SignupFormTest extends Unit
         $this->tester->seeRecord(User::class, ['username' => 'unknown_staff', 'staff_id' => null]);
     }
 
+    public function testSignupRejectsEmailThatDoesNotMatchDirectory(): void
+    {
+        $model = $this->formWithDirectory([
+            'staffID' => '90296',
+            'username' => 'impostor',
+            'email' => 'impostor@example.com',
+            'password' => 'some_password',
+            'passwordConfirm' => 'some_password',
+        ]);
+
+        verify($model->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->empty();
+        verify($model->getFirstError('email'))
+            ->equals('Email must match the staff directory record for this employee number.');
+        $this->tester->dontSeeRecord(User::class, ['username' => 'impostor']);
+    }
+
+    public function testSignupAcceptsDirectoryEmailInDifferentCase(): void
+    {
+        $model = $this->formWithDirectory([
+            'staffID' => '90296',
+            'username' => 'jlangat',
+            'email' => 'JLangat@KEMRI.go.ke',
+            'password' => 'some_password',
+            'passwordConfirm' => 'some_password',
+        ]);
+
+        verify($model->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->true();
+    }
+
     public function testSignupRejectsDuplicateStaffId(): void
     {
         $first = $this->formWithDirectory([
