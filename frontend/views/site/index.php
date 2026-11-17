@@ -1,5 +1,6 @@
 <?php
 
+use common\components\RbacHelper;
 use yii\bootstrap5\Html;
 
 use frontend\assets\DtAsset;
@@ -17,7 +18,9 @@ $this->title = 'List of Pulished BioSketches';
                 profiles.</p>
         </div>
 
+        <?php if (Yii::$app->user->can(RbacHelper::PERM_CREATE)): ?>
         <?= Html::a(' <span class="material-symbols-outlined">add_circle</span> Create New', ['researcher/create'], ['title' => 'Create Your Bio Sketch', 'class' => 'flex items-center justify-center gap-xs bg-primary text-on-primary px-lg py-3 rounded-lg font-bold shadow-md hover:shadow-lg transition-all']) ?>
+        <?php endif; ?>
 
     </div>
     <!-- Table Controls -->
@@ -154,6 +157,7 @@ $this->title = 'List of Pulished BioSketches';
                                         ]
                                     ) ?>
 
+                                    <?php if (Yii::$app->user->can(RbacHelper::PERM_UPDATE, ['researcher' => $model])): ?>
                                     <?= Html::a(
                                         '<span class="material-symbols-outlined">edit</span>',
                                         ['researcher/update', 'id' => $model->id],
@@ -162,6 +166,7 @@ $this->title = 'List of Pulished BioSketches';
                                             'title' => 'Edit'
                                         ]
                                     ) ?>
+                                    <?php endif; ?>
 
                                     <!-- report button -->
                                     <?= Html::a(

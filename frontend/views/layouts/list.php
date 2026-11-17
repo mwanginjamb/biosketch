@@ -1,4 +1,5 @@
 <?php
+use common\components\RbacHelper;
 use yii\bootstrap5\Html;
 use yii\helpers\Url;
 
@@ -64,13 +65,94 @@ $this->render('_head');
     <!-- SideNavBar -->
     <aside
         class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col p-sm z-40 bg-surface border-r border-outline-variant hidden md:flex">
-        <nav class="flex-1 space-y-1">
-            <!-- Bio Sketch List -->
-            <a class="flex items-center gap-xs px-sm py-xs my-1 text-on-surface-variant" href="#">
-                <span class="material-symbols-outlined">list</span>
-                <span class="font-body-md">BioSketch List</span>
-            </a>
+        <nav class="flex-1 space-y-1 overflow-y-auto">
+            <?php
+            $user = Yii::$app->user;
+            $menuItems = [
+                [
+                    'label' => 'BioSketch List',
+                    'url' => ['/site/index'],
+                    'icon' => 'list',
+                    'visible' => $user->can(RbacHelper::PERM_VIEW_LIST),
+                ],
+                [
+                    'label' => 'My BioSketch',
+                    'url' => ['/site/home'],
+                    'icon' => 'person',
+                    'visible' => !$user->isGuest,
+                ],
+                // ── Nested group: 'children' key, no 'url' ──
+                [
+                    'label' => 'RBAC Mgt',
+                    'icon' => 'admin_panel_settings',
+                    'group' => true,
+                    'children' => [
+                        ['label' => 'User Role Assignment', 'url' => ['/rbac/user-roles'], 'icon' => 'manage_accounts'],
+                        ['label' => 'Roles', 'url' => ['/rbac/index'], 'icon' => 'security_update_good'],
+                        ['label' => 'Permissions', 'url' => ['/rbac/permissions'], 'icon' => 'security'],
+                        ['label' => 'System Users', 'url' => ['/site/users'], 'icon' => 'group'],
+                    ],
+                    'visible' => $user->can(RbacHelper::PERM_MANAGE_RBAC),
+                ],
+            ];
 
+            $currentRoute = Yii::$app->controller->route;
+            // Sub-pages (e.g. rbac/update-role) highlight their section's menu entry.
+            $sectionOf = static fn(string $route): string => match (true) {
+                in_array($route, ['rbac/create-role', 'rbac/update-role', 'rbac/manage-hierarchy'], true) => 'rbac/index',
+                in_array($route, ['rbac/create-permission', 'rbac/update-permission'], true) => 'rbac/permissions',
+                $route === 'rbac/assign-role' => 'rbac/user-roles',
+                default => $route,
+            };
+            $isActive = static fn(array $item): bool => isset($item['url'])
+                && ltrim($item['url'][0], '/') === $sectionOf($currentRoute);
+
+            $linkClass = 'flex items-center gap-xs px-sm py-xs my-1 rounded-xl transition-all hover:bg-surface-container-high';
+            $renderLink = static function (array $item, bool $nested = false) use ($isActive, $linkClass): string {
+                $active = $isActive($item);
+                return Html::a(
+                    Html::tag('span', $item['icon'] ?? 'chevron_right', [
+                        'class' => 'material-symbols-outlined' . ($nested ? ' text-[20px]' : ''),
+                        'aria-hidden' => 'true',
+                    ])
+                    . ' ' . Html::tag('span', Html::encode($item['label']), ['class' => 'font-body-md']),
+                    $item['url'],
+                    [
+                        'class' => $linkClass . ($nested ? ' pl-lg' : '')
+                            . ($active ? ' bg-secondary-container text-on-secondary-container font-bold' : ' text-on-surface-variant'),
+                        'aria-current' => $active ? 'page' : null,
+                    ],
+                );
+            };
+
+            foreach ($menuItems as $item) {
+                if (($item['visible'] ?? true) === false) {
+                    continue;
+                }
+                if (!empty($item['group'])) {
+                    $open = array_filter($item['children'], $isActive) !== [];
+                    echo Html::beginTag('details', ['class' => 'group', 'open' => $open]);
+                    echo Html::tag(
+                        'summary',
+                        Html::tag('span', $item['icon'] ?? 'folder', ['class' => 'material-symbols-outlined', 'aria-hidden' => 'true'])
+                        . ' ' . Html::tag('span', Html::encode($item['label']), ['class' => 'font-body-md flex-1'])
+                        . Html::tag('span', 'expand_more', [
+                            'class' => 'material-symbols-outlined transition-transform group-open:rotate-180',
+                            'aria-hidden' => 'true',
+                        ]),
+                        ['class' => $linkClass . ' text-on-surface-variant cursor-pointer list-none select-none'],
+                    );
+                    foreach ($item['children'] as $child) {
+                        if (($child['visible'] ?? true) !== false) {
+                            echo $renderLink($child, true);
+                        }
+                    }
+                    echo Html::endTag('details');
+                    continue;
+                }
+                echo $renderLink($item);
+            }
+            ?>
         </nav>
 
         <div class="mt-auto space-y-1 border-t border-outline-variant pt-sm">
@@ -87,6 +169,9 @@ $this->render('_head');
 
     <!-- Main Content Area -->
     <main class="md:ml-64 mt-16 flex-1 flex flex-col min-h-[calc(100vh-64px)]">
+        <div class="px-gutter pt-md max-w-[1280px] w-full mx-auto">
+            <?= $this->render('_alerts') ?>
+        </div>
         <?= $content ?>
     </main>
 

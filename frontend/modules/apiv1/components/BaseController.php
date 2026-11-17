@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\modules\apiv1\components;
 
+use common\components\RbacHelper;
 use frontend\models\Researcher;
 use Yii;
 use yii\filters\auth\CompositeAuth;
@@ -50,19 +51,18 @@ abstract class BaseController extends ActiveController
         return $behaviors;
     }
 
-    protected function isAdmin(): bool
+    /**
+     * RBAC check against a biosketch. Owners pass the *Own* permissions via the
+     * isBiosketchOwner rule; drd/admin hold the unrestricted ones.
+     */
+    protected function can(string $permission, Researcher $researcher): bool
     {
-        return Yii::$app->user->can('admin');
+        return Yii::$app->user->can($permission, ['researcher' => $researcher]);
     }
 
-    protected function ownsOrAdmin(Researcher $researcher): bool
-    {
-        return (int) $researcher->user_id === (int) Yii::$app->user->id || $this->isAdmin();
-    }
-
-    /** Active profiles are readable by any API user; drafts only by their owner or an admin. */
+    /** Active profiles are readable by any API user; drafts need the viewBiosketch permission (owner, drd, admin). */
     protected function canRead(Researcher $researcher): bool
     {
-        return (int) $researcher->status === 1 || $this->ownsOrAdmin($researcher);
+        return (int) $researcher->status === 1 || $this->can(RbacHelper::PERM_VIEW, $researcher);
     }
 }

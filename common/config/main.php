@@ -17,6 +17,7 @@ return [
         ],
         'authManager' => [
             'class' => \yii\rbac\DbManager::class,
+            // Roles/permissions/rules are cached; DbManager invalidates the cache on every change it makes.
             'cache' => 'cache',
         ],
         'db' => [
