@@ -18,7 +18,7 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
 
 <head>
     <?php $this->head() ?>
-    <title>Welcome - Researcher BioSketch Pro</title>
+    <title><?= Html::encode($this->title ?: 'Welcome') ?> - Researcher BioSketch Pro</title>
 </head>
 
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col pt-16">
