@@ -52,6 +52,7 @@ class SignupForm extends Model
                 'targetAttribute' => 'staff_id',
                 'message' => 'An account already exists for this employee number.',
             ],
+            ['email', 'validateEmailMatchesDirectory', 'skipOnError' => true],
         ];
     }
 
@@ -77,7 +78,7 @@ class SignupForm extends Model
 
         // Persist employee details only when verified against the staff directory,
         // never from values posted by the browser.
-        $employee = $this->staffID !== '' ? $this->findEmployee($this->staffID) : null;
+        $employee = $this->resolveEmployee();
         if ($employee !== null) {
             $user->staff_id = $employee['staffID'];
             $user->department = $employee['department'];
@@ -116,42 +117,88 @@ class SignupForm extends Model
 
 
 
-    /* Make a Get request for assignes
-     * The JSON format is:
-     * {
-     *   "90254 - melvineobuya@gmail.com": "OBUYA",
-     *  "90252 - lauraombogo@gmail.com": "LORRAINE",
-     * }
-     */
+    /** How long a successful staff directory download is cached, in seconds. */
+    private const DIRECTORY_CACHE_TTL = 600;
+    private const DIRECTORY_CACHE_KEY = 'staff-directory';
 
+    /** @var array|null memoized result of the directory lookup for $staffID */
+    private ?array $employee = null;
+    private bool $employeeResolved = false;
+
+    /**
+     * Fetches the staff directory (cached).
+     *
+     * The JSON format is an object of
+     *   "<staff no> - <email> - <full name>": "<staff no> - <full name> - <department> - <department code>"
+     *
+     * TLS certificates are verified unless ASSIGNEE_VERIFY_SSL=false (local development only).
+     * Set ASSIGNEE_CA_BUNDLE to a PEM file path when the endpoint uses an internal CA.
+     *
+     * @return array|null the directory, or null when it could not be fetched.
+     */
     public function fetchAssignees()
     {
-        $endpoint = env('ASSIGNEE_ENDPOINT');
+        $cache = Yii::$app->cache;
+        $cached = $cache?->get(self::DIRECTORY_CACHE_KEY);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $verifySsl = filter_var(env('ASSIGNEE_VERIFY_SSL', 'true'), FILTER_VALIDATE_BOOLEAN);
+        $curlOptions = [
+            CURLOPT_SSL_VERIFYPEER => $verifySsl,
+            CURLOPT_SSL_VERIFYHOST => $verifySsl ? 2 : 0,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+        ];
+        $caBundle = env('ASSIGNEE_CA_BUNDLE');
+        if ($verifySsl && $caBundle) {
+            $curlOptions[CURLOPT_CAINFO] = $caBundle;
+        }
+
         $client = new Client([
             'transport' => CurlTransport::class,
         ]);
 
-        $request = $client->createRequest()
+        $response = $client->createRequest()
             ->setMethod('GET')
-            ->setUrl($endpoint)
-            ->addHeaders(['Content-Type' => 'application/json'])
-            ->setFormat(Client::FORMAT_JSON)  // Ensures JSON encoding for request
-            ->setOptions([
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => false
-            ]);
+            ->setUrl(env('ASSIGNEE_ENDPOINT'))
+            ->addHeaders(['Accept' => 'application/json'])
+            ->setOptions($curlOptions)
+            ->send();
 
-        $response = $request->send();
-        Yii::info('Raw response content: ' . $response->content, 'api_debug');
-        if ($response->isOk) { // Check if the response status is 200-299
-            return $response->data; // Return the relevant response data
-        } else {
-            // Log error details if needed and return a clear message
-            return [
-                'status' => $response->statusCode,
-                'error' => $response->data ?? 'Unexpected error occurred'
-            ];
+        if (!$response->isOk || !is_array($response->data)) {
+            Yii::warning('Staff directory returned HTTP ' . $response->statusCode, __METHOD__);
+            return null;
         }
+
+        $cache?->set(self::DIRECTORY_CACHE_KEY, $response->data, self::DIRECTORY_CACHE_TTL);
+
+        return $response->data;
+    }
+
+    /**
+     * Inline validator: when the employee number is found in the directory, the
+     * email must be the one on that staff record. This stops someone claiming
+     * another employee's number with their own email address.
+     */
+    public function validateEmailMatchesDirectory(string $attribute): void
+    {
+        $employee = $this->resolveEmployee();
+        if ($employee !== null && strcasecmp($employee['email'], $this->email) !== 0) {
+            $this->addError($attribute, 'Email must match the staff directory record for this employee number.');
+        }
+    }
+
+    /** Looks up $staffID once per form instance. */
+    private function resolveEmployee(): ?array
+    {
+        if (!$this->employeeResolved) {
+            $this->employee = $this->staffID !== '' ? $this->findEmployee($this->staffID) : null;
+            $this->employeeResolved = true;
+        }
+
+        return $this->employee;
     }
 
     /**
