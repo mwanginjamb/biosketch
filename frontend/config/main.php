@@ -33,8 +33,8 @@ return [
             'cookieParams' => [
                 'httponly' => true,
                 'lifetime' => 3600, // one hour
-                'samesite' => YII_ENV === 'dev' ? 'Lax' : 'None', // Allow cross-origin requests only in dev
-                'secure' => YII_ENV === 'dev' ? false : true,     // Ensure secure (HTTPS) transmission only on dev
+                'samesite' => 'Lax',             // same-site app: no need to send the session cookie cross-site
+                'secure' => YII_ENV !== 'dev',   // HTTPS-only cookie everywhere except local dev
             ],
         ],
         'log' => [
