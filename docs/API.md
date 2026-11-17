@@ -173,7 +173,7 @@ By default only the profile fields are returned. Add related sections with `expa
 
 Example: `?staff_id=90296&expand=education,publications,grants`
 
-`expand` also works on `GET /apiv1/researchers/{id}`.
+`expand` also works on `GET /apiv1/researchers/{id}` and `GET /apiv1/researchers/by-username/{username}`.
 
 ### Paging and sorting
 
@@ -188,6 +188,22 @@ Paging details are in `_meta` (`totalCount`, `pageCount`, `currentPage`, `perPag
 ### Fetch by BioSketch ID
 
 `GET /apiv1/researchers/{id}`. Once you know a researcher's BioSketch `id` (from a search), you can fetch them directly. A draft profile returns `404` unless you own it or have the `drd` or `admin` role.
+
+### Fetch by username
+
+`GET /apiv1/researchers/by-username/{username}` returns the same researcher object as `GET /apiv1/researchers/{id}`, looked up by the profile owner's BioSketch username (usually the part of their institutional email before the `@`, e.g. `jlangat`):
+
+```bash
+curl "https://<biosketch-host>/apiv1/researchers/by-username/jlangat?expand=education,publications" \
+  -H "Authorization: Bearer <token>"
+```
+
+- Same response shape, `expand` support and draft rules as `/researchers/{id}`.
+- `404` if the username doesn't exist, the account has no biosketch, or the profile is a draft you may not see.
+- Works for any username, including all-digit ones. `{id}` and `{username}` are separate paths, so they never clash.
+- The username is also the last part of the profile's web address: `https://<biosketch-host>/researcher/{username}`.
+
+For system integrations, the **staff ID** lookup (`?staff_id=`) remains the recommended identifier. Usernames are convenient but less stable than employee numbers.
 
 ### Nested collections
 

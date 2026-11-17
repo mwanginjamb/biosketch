@@ -80,7 +80,13 @@ return [
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['apiv1/researchers' => 'apiv1/researcher'],
-                    'extraPatterns' => ['POST {id}/photo' => 'upload-photo']
+                    'extraPatterns' => [
+                        'POST {id}/photo' => 'upload-photo',
+                        // Lookup by owner's username. A separate path segment keeps {id}
+                        // (digits only) unambiguous, so all-digit usernames work too.
+                        'GET,HEAD by-username/<username:[^/]+>' => 'view-by-username',
+                        'OPTIONS by-username/<username:[^/]+>' => 'options',
+                    ]
                 ],
                 // Nested resources: /apiv1/researchers/<researcher_id>/<resource>[/<id>].
                 // The placeholder must live in `prefix`: rest\UrlRule matches controller keys

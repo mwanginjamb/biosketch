@@ -160,6 +160,73 @@ final class ApiCest
         verify($this->json($I)['items'][0])->arrayHasNotKey('created_by');
     }
 
+    // ---- lookup by username -----------------------------------------------
+
+    public function byUsernameReturnsTheSameResourceAsById(FunctionalTester $I): void
+    {
+        $this->as($I, $this->ownerToken);
+
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/' . $this->otherActiveProfileId);
+        $I->seeResponseCodeIs(200);
+        $byId = $this->json($I);
+
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_other');
+        $I->seeResponseCodeIs(200);
+        verify($this->json($I))->equals($byId);
+
+        // ?expand= works the same way.
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_other?expand=education,statement');
+        $I->seeResponseCodeIs(200);
+        verify($this->json($I))->arrayHasKey('education');
+        verify($this->json($I))->arrayHasKey('statement');
+    }
+
+    public function byUsernameFollowsDraftVisibility(FunctionalTester $I): void
+    {
+        $this->as($I, $this->ownerToken);
+
+        // Own draft: visible. Someone else's draft: hidden as 404.
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_owner');
+        $I->seeResponseCodeIs(200);
+        verify($this->json($I)['id'])->equals($this->ownProfileId);
+
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_other2');
+        $I->seeResponseCodeIs(404);
+    }
+
+    public function byUsernameNotFoundAndAuth(FunctionalTester $I): void
+    {
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_other');
+        $I->seeResponseCodeIs(401);   // token required
+
+        $this->as($I, $this->ownerToken);
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/no.such.user');
+        $I->seeResponseCodeIs(404);
+
+        $this->haveUser($I, 'api_noprofile');   // account without a biosketch
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/api_noprofile');
+        $I->seeResponseCodeIs(404);
+    }
+
+    public function byUsernameWorksForAllDigitUsernames(FunctionalTester $I): void
+    {
+        // An all-digit username must not be confused with a numeric {id}.
+        $numericUserId = $this->haveUser($I, '90296');
+        $profileId = $I->haveRecord(Researcher::class, [
+            'user_id' => $numericUserId, 'full_name' => 'Numeric Username', 'status' => 1,
+        ]);
+
+        $this->as($I, $this->ownerToken);
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/by-username/90296');
+        $I->seeResponseCodeIs(200);
+        verify($this->json($I)['id'])->equals($profileId);
+
+        // GET /researchers/{id} is unchanged.
+        $I->sendAjaxGetRequest(self::BASE . '/researchers/' . $profileId);
+        $I->seeResponseCodeIs(200);
+        verify($this->json($I)['full_name'])->equals('Numeric Username');
+    }
+
     public function draftsAreVisibleOnlyToTheirOwner(FunctionalTester $I): void
     {
         $this->as($I, $this->ownerToken);
