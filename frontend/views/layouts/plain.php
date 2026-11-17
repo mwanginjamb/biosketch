@@ -5,7 +5,8 @@ use yii\helpers\Url;
 $this->render('_head');
 
 $placeholderText = !empty(Yii::$app->user->identity->username) ? \Yii::$app->user->identity->username : 'User';
-$placeholderImage = "https://placehold.co/150/cccccc/FFFFFF.webp/?text=" . $placeholderText;
+$placeholderImage = "https://placehold.co/150/cccccc/FFFFFF.webp/?text=" . rawurlencode($placeholderText);
+$profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->researcher?->profile_photo : null) ?: $placeholderImage;
 
 
 
@@ -46,7 +47,7 @@ $placeholderImage = "https://placehold.co/150/cccccc/FFFFFF.webp/?text=" . $plac
             <div
                 class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer flex items-center justify-center">
                 <img alt="Scientist profile"
-                    src="<?= (!\Yii::$app->user->isGuest && Yii::$app->user->identity?->researcher) ? Yii::$app->user->identity->researcher->profile_photo : $placeholderImage ?>">
+                    src="<?= Html::encode($profilePhoto) ?>">
             </div>
         </div>
     </header>
