@@ -44,6 +44,8 @@ class ResearcherEducation extends \yii\db\ActiveRecord
             [['degree', 'institution_name'], 'required'],
             [['researcher_id', 'graduation_year', 'sort_order', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['degree'], 'string', 'max' => 100],
+            ['graduation_year', 'integer', 'min' => 1950, 'max' => (int) date('Y') + 10,
+                'tooSmall' => 'Year must be 1950 or later.', 'tooBig' => 'Year is too far in the future.'],
             [['institution_name', 'field_of_study'], 'string', 'max' => 255],
             [['researcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Researcher::class, 'targetAttribute' => ['researcher_id' => 'id']],
         ];
@@ -91,11 +93,25 @@ class ResearcherEducation extends \yii\db\ActiveRecord
     // Get Degree options for dropdown
     public static function getDegreeOptions()
     {
+        // Keys are stored as-is; existing values (Ph.D., M.D., M.S., B.S.) are kept.
         return [
             'Ph.D.' => 'Ph.D.',
             'M.D.' => 'M.D.',
+            'MMed' => 'MMed (Master of Medicine)',
+            'MBChB' => 'MBChB',
+            'MBBS' => 'MBBS',
+            'MPH' => 'MPH (Master of Public Health)',
+            'MSc' => 'MSc',
             'M.S.' => 'M.S.',
+            'MA' => 'MA',
+            'BSc' => 'BSc',
             'B.S.' => 'B.S.',
+            'BPharm' => 'BPharm',
+            'BSN' => 'BSc Nursing',
+            'Higher Diploma' => 'Higher Diploma',
+            'Diploma' => 'Diploma',
+            'Postdoctoral' => 'Postdoctoral Fellowship',
+            'Other' => 'Other',
         ];
 
     }

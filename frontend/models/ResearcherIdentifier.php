@@ -101,4 +101,13 @@ class ResearcherIdentifier extends \yii\db\ActiveRecord
         ];
     }
 
+    /** Human-readable verification status (same source of truth as the form dropdown). */
+    public function getVerificationLabel(): string
+    {
+        if ($this->verification_status === null || $this->verification_status === '') {
+            return Yii::t('app', 'Unverified');
+        }
+
+        return self::getVerificationOptions()[(int) $this->verification_status] ?? Yii::t('app', 'Unverified');
+    }
 }

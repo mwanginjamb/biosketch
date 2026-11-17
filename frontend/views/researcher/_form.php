@@ -116,7 +116,7 @@ use frontend\models\ResearcherStatement;
 
 <section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
     <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
-        <h2 class="font-headline-md text-headline-md">Select Publications</h2>
+        <h2 class="font-headline-md text-headline-md">Publications</h2>
 
         <button type="button" class="text-secondary flex items-center" id="add-publication">
             <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>

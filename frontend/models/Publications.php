@@ -47,6 +47,12 @@ class Publications extends \yii\db\ActiveRecord
             [['researcher_id', 'publication_year', 'is_selected', 'sort_order', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
             [['title', 'citation_text'], 'string'],
             [['journal', 'doi', 'pmid', 'imported_from'], 'string', 'max' => 255],
+            ['publication_year', 'integer', 'min' => 1950, 'max' => (int) date('Y') + 1,
+                'tooSmall' => 'Year must be 1950 or later.', 'tooBig' => 'Year cannot be in the future.'],
+            ['doi', 'trim'],
+            // Bare DOI (10.xxxx/...) or a doi.org link.
+            ['doi', 'match', 'pattern' => '~^(https?://(dx\.)?doi\.org/)?10\.\d{4,9}/\S+$~i',
+                'message' => 'DOI must look like 10.1186/s12936-023-04500-0.'],
             [['researcher_id'], 'exist', 'skipOnError' => true, 'targetClass' => Researcher::class, 'targetAttribute' => ['researcher_id' => 'id']],
         ];
     }
@@ -65,7 +71,7 @@ class Publications extends \yii\db\ActiveRecord
             'doi' => Yii::t('app', 'DOI'),
             'pmid' => Yii::t('app', 'PMID'),
             'citation_text' => Yii::t('app', 'Citation Text'),
-            'is_selected' => Yii::t('app', 'Is Selected'),
+            'is_selected' => Yii::t('app', 'Highlight on profile'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'imported_from' => Yii::t('app', 'Imported From'),
             'created_at' => Yii::t('app', 'Created At'),

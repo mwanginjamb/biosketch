@@ -80,6 +80,8 @@ class Researcher extends \yii\db\ActiveRecord
             [['website'], 'string', 'max' => 500],
             [['!profile_photo'], 'string', 'max' => 500],
             [['era_commons_id', 'orcid'], 'string', 'max' => 100],
+            ['orcid', 'trim'],
+            ['orcid', 'validateOrcid', 'skipOnEmpty' => true],
             [['!user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // Attachment  - jpeg, jpg,png
             [
@@ -110,8 +112,8 @@ class Researcher extends \yii\db\ActiveRecord
             'email' => Yii::t('app', 'Email'),
             'website' => Yii::t('app', 'Website'),
             'location' => Yii::t('app', 'Location'),
-            'era_commons_id' => Yii::t('app', 'Era Commons ID'),
-            'orcid' => Yii::t('app', 'Orcid'),
+            'era_commons_id' => Yii::t('app', 'eRA Commons ID'),
+            'orcid' => Yii::t('app', 'ORCID'),
             'profile_photo' => Yii::t('app', 'Profile Photo'),
             'status' => Yii::t('app', 'Status'),
             'version' => Yii::t('app', 'Version'),
@@ -217,4 +219,30 @@ class Researcher extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * ORCID iD: 0000-0000-0000-000X format with a valid ISO 7064 11,2 check digit.
+     * A full https://orcid.org/... URL is accepted and normalised to the bare iD.
+     */
+    public function validateOrcid(string $attribute): void
+    {
+        $value = preg_replace('~^https?://(www\.)?orcid\.org/~i', '', (string) $this->$attribute);
+        if (!preg_match('/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/', $value)) {
+            $this->addError($attribute, 'ORCID must look like 0000-0002-1825-0097.');
+            return;
+        }
+
+        $digits = str_replace('-', '', $value);
+        $total = 0;
+        for ($i = 0; $i < 15; $i++) {
+            $total = ($total + (int) $digits[$i]) * 2;
+        }
+        $check = (12 - ($total % 11)) % 11;
+        $expected = $check === 10 ? 'X' : (string) $check;
+        if ($digits[15] !== $expected) {
+            $this->addError($attribute, 'This ORCID iD is not valid (check digit mismatch).');
+            return;
+        }
+
+        $this->$attribute = $value;
+    }
 }

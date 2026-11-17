@@ -55,7 +55,7 @@ class ResearcherGrant extends \yii\db\ActiveRecord
             [['researcher_id', 'grant_number', 'title', 'funding_agency_id', 'grant_type_id', 'role_id', 'amount', 'currency', 'start_date', 'end_date', 'status_id', 'description', 'created_by', 'update_by', 'created_at', 'updated_at'], 'default', 'value' => null],
             [['researcher_id', 'funding_agency_id', 'grant_type_id', 'role_id', 'status_id', 'created_by', 'update_by', 'created_at', 'updated_at'], 'integer'],
             [['title', 'description'], 'string'],
-            [['amount'], 'number'],
+            [['amount'], 'number', 'min' => 0, 'tooSmall' => 'Award Amount must be a positive number.'],
             [['start_date', 'end_date'], 'safe'],
             [['grant_number', 'currency'], 'string', 'max' => 255],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['created_by' => 'id']],
@@ -81,7 +81,7 @@ class ResearcherGrant extends \yii\db\ActiveRecord
             'currency' => Yii::t('app', 'Currency'),
             'start_date' => Yii::t('app', 'Start Date'),
             'end_date' => Yii::t('app', 'End Date'),
-            'status_id' => Yii::t('app', 'Status ID'),
+            'status_id' => Yii::t('app', 'Status'),
             'description' => Yii::t('app', 'Description'),
             'created_by' => Yii::t('app', 'Created By'),
             'update_by' => Yii::t('app', 'Update By'),
@@ -157,6 +157,7 @@ class ResearcherGrant extends \yii\db\ActiveRecord
     public static function getCurrencyOptions()
     {
         return [
+            'KES' => 'Kenyan Shilling',
             'USD' => 'US Dollar',
             'EUR' => 'Euro',
             'GBP' => 'British Pound',
@@ -187,6 +188,12 @@ class ResearcherGrant extends \yii\db\ActiveRecord
             'THB' => 'Thai Baht',
             'TRY' => 'Turkish Lira',
             'ZAR' => 'South African Rand',
+            'UGX' => 'Ugandan Shilling',
+            'TZS' => 'Tanzanian Shilling',
+            'RWF' => 'Rwandan Franc',
+            'ETB' => 'Ethiopian Birr',
+            'NGN' => 'Nigerian Naira',
+            'GHS' => 'Ghanaian Cedi',
         ];
     }
 
@@ -244,7 +251,49 @@ class ResearcherGrant extends \yii\db\ActiveRecord
             48 => 'The Gordon and Betty Moore Foundation',
             49 => 'The Simons Foundation',
             50 => 'The Alfred P. Sloan Foundation',
+            // Kenyan and African funders (new IDs appended; existing IDs keep their meaning)
+            51 => 'National Research Fund (NRF) Kenya',
+            52 => 'National Commission for Science, Technology and Innovation (NACOSTI)',
+            53 => 'KEMRI Internal Research Grant',
+            54 => 'African Academy of Sciences (AAS)',
+            55 => 'European & Developing Countries Clinical Trials Partnership (EDCTP)',
+            56 => 'Science for Africa Foundation (SFA)',
+            57 => 'Africa CDC',
+            58 => 'International Development Research Centre (IDRC)',
+            59 => 'UK Research and Innovation (UKRI) / Medical Research Council (MRC)',
+            60 => 'National Institute for Health and Care Research (NIHR)',
+            61 => 'World Health Organization (WHO) / TDR',
+            62 => 'USAID',
+            63 => 'Other (specify in description)',
         ];
     }
 
+    /** Funding agency name for display. */
+    public function getFundingAgencyLabel(): ?string
+    {
+        return $this->funding_agency_id !== null
+            ? (self::getFundingAgencyOptions()[(int) $this->funding_agency_id] ?? null)
+            : null;
+    }
+
+    /** Grant status for display (Active, Completed, ...). */
+    public function getStatusLabel(): ?string
+    {
+        return $this->status_id !== null
+            ? (self::getStatusOptions()[(int) $this->status_id] ?? null)
+            : null;
+    }
+
+    /** Researcher role on the grant for display. */
+    public function getRoleLabel(): ?string
+    {
+        return $this->role_id !== null
+            ? (self::getRoleOptions()[(int) $this->role_id] ?? null)
+            : null;
+    }
+
+    public function isActive(): bool
+    {
+        return (int) $this->status_id === 1;
+    }
 }
