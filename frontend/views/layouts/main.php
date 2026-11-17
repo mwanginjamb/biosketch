@@ -32,8 +32,7 @@ $this->beginPage();
     <nav
         class="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-12 h-16 bg-primary text-on-primary border-b-4 border-accent shadow-md no-print">
         <div class="flex items-center gap-2">
-            <?= Html::a(' <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
-        BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-on-primary flex items-center gap-xs']) ?>
+            <?= $this->render('_brand', ['label' => 'BioSketch Professional', 'textClass' => 'text-lg']) ?>
 
         </div>
 

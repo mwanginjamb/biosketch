@@ -20,10 +20,7 @@ $this->render('_head');
     <!-- Institutional band -->
     <div class="w-full bg-primary text-on-primary border-b-4 border-accent shadow-md">
         <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop h-14 flex items-center justify-between">
-            <span class="flex items-center gap-xs font-bold">
-                <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
-                BioSketch Professional
-            </span>
+            <?= $this->render('_brand', ['label' => 'BioSketch Professional', 'textClass' => 'text-base']) ?>
             <span class="hidden sm:inline font-label-caps text-label-caps tracking-widest text-accent-light uppercase">
                 Kenya Medical Research Institute
             </span>

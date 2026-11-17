@@ -133,6 +133,28 @@ class SiteController extends Controller
         return $this->render('home');
     }
 
+    /** Video file, relative to the web root (frontend/web). */
+    public const TUTORIAL_VIDEO = 'media/biosketch-tutorial.mp4';
+
+    /**
+     * /tutorial: the instructional video. Public, like the home page, so new staff
+     * can watch it before signing up. The file is served statically by the web server
+     * (which handles byte ranges for seeking); this action only renders the player.
+     */
+    public function actionTutorial(): string
+    {
+        $this->layout = 'plain';
+        $this->view->title = 'Tutorial';
+
+        $file = Yii::getAlias('@frontend/web/' . self::TUTORIAL_VIDEO);
+
+        return $this->render('tutorial', [
+            'videoUrl' => is_file($file)
+                ? Url::to('@web/' . self::TUTORIAL_VIDEO) . '?v=' . filemtime($file)   // bust caches on replace
+                : null,
+        ]);
+    }
+
     /**
      * Logs in a user.
      *

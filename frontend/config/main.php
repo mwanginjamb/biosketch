@@ -71,6 +71,8 @@ return [
             //'enableStrictParsing' => false,
             'rules' => [
                 // Readable profile URL: /researcher/<username> (same page as researcher/view?id=<id>)
+                'tutorial' => 'site/tutorial',
+
                 "researcher/<username:(?!(?i:{$reservedResearcherSlugs})$)[A-Za-z0-9._+\-]+>" => 'researcher/profile',
 
                 // API token issuance / revocation
