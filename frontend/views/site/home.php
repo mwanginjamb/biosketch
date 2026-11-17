@@ -21,6 +21,21 @@ use yii\helpers\Url;
             </div>
         </a>
 
+        <!-- guest: sign in -->
+        <?php if (\Yii::$app->user->isGuest): ?>
+
+            <a href="<?= Url::toRoute(['site/login']) ?>"
+                class="w-full md:w-auto flex-1 flex flex-col items-center justify-center gap-sm p-md rounded-xl bg-primary text-on-primary hover:bg-on-surface-variant transition-all group shadow-md hover:shadow-lg">
+                <span class="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform"
+                    data-icon="login" aria-hidden="true">login</span>
+                <div class="text-center">
+                    <span class="font-headline-md text-headline-md block">Sign In</span>
+                    <span class="font-body-md text-body-md opacity-80 mt-1 block">Access your BioSketch</span>
+                </div>
+            </a>
+
+        <?php endif; ?>
+
         <!-- researcher without a profile: create -->
 
         <?php if (!\Yii::$app->user->isGuest && !Yii::$app->user->identity->researcher): ?>
