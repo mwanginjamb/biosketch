@@ -17,4 +17,15 @@ final class Functional extends Module
     {
         $this->getModule('Yii2')->dontSee($message, '.invalid-feedback');
     }
+
+    /**
+     * Header of the last response (the Yii2 module has no header assertions of its own).
+     */
+    public function grabResponseHeader(string $name): ?string
+    {
+        /** @var \Codeception\Module\Yii2 $yii2 */
+        $yii2 = $this->getModule('Yii2');
+
+        return $yii2->client->getInternalResponse()->getHeader($name);
+    }
 }

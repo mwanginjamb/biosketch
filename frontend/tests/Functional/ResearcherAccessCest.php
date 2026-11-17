@@ -78,7 +78,7 @@ final class ResearcherAccessCest
     {
         $I->amLoggedInAs($this->ownerId);
 
-        foreach (['researcher/view', 'researcher/update', 'researcher/report'] as $route) {
+        foreach (['researcher/view', 'researcher/update', 'researcher/report', 'researcher/report-pdf'] as $route) {
             $I->amOnRoute($route, ['id' => $this->otherProfileId]);
             $I->seeResponseCodeIs(403);
         }

@@ -18,6 +18,7 @@ use yii\bootstrap5\Html;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -95,10 +96,38 @@ class ResearcherController extends Controller
 
     // Report Generation
 
+    /**
+     * BioSketch PDF viewer page: app layout with navigation, the PDF in a frame
+     * (served by actionReportPdf) and a download button.
+     */
     public function actionReport($id)
+    {
+        $researcher = $this->findAccessibleModel($id, RbacHelper::PERM_VIEW);
+
+        return $this->render('_report_render', [
+            'model' => $researcher,
+            'isOwner' => (int) $researcher->user_id === (int) Yii::$app->user->id,
+        ]);
+    }
+
+    /**
+     * The BioSketch PDF itself: inline by default, as an attachment with ?download=1.
+     */
+    public function actionReportPdf($id, $download = 0)
     {
         $researcher = $this->findAccessibleModel($id, RbacHelper::PERM_VIEW, withRelations: true);
 
+        $filename = 'BioSketch-' . (Inflector::slug((string) $researcher->full_name) ?: $researcher->id) . '.pdf';
+
+        return Yii::$app->response->sendContentAsFile($this->renderPdf($researcher), $filename, [
+            'mimeType' => 'application/pdf',
+            'inline' => !$download,
+        ]);
+    }
+
+    /** Renders the BioSketch PDF (binary string) with mPDF. */
+    private function renderPdf(Researcher $researcher): string
+    {
         $footerHtml = '
     <table style="width:100%; border-collapse:collapse;">
         <tr>
@@ -138,15 +167,7 @@ class ResearcherController extends Controller
                 ' - Researcher BioSketch',
         ];
 
-        $binary = $pdf->render();
-
-        $base64Content = chunk_split(
-            base64_encode($binary)
-        );
-
-        return $this->renderAjax('_report_render', [
-            'content' => $base64Content,
-        ]);
+        return $pdf->render();
     }
 
     /**
