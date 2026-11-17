@@ -34,21 +34,8 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
             <span
                 class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors"
                 data-icon="notifications">notifications</span>
-            <!-- logout button -->
-
-            <?= Html::a('<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors">logout</span>', ['site/logout'], [
-                'class' => '',
-                'data' => [
-                    'method' => 'post',
-                ],
-            ]) ?>
-
-
-            <div
-                class="h-8 w-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer flex items-center justify-center">
-                <img alt="Scientist profile"
-                    src="<?= Html::encode($profilePhoto) ?>">
-            </div>
+            <!-- Account menu (includes Sign out as a CSRF-protected POST) -->
+            <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'h-8 w-8']) ?>
         </div>
     </header>
     <!-- Main Content Area -->
