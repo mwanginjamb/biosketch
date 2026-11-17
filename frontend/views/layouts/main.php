@@ -15,6 +15,7 @@ $this->beginPage();
 <html lang="<?= Yii::$app->language ?>" class="light">
 
 <head>
+    <title><?= Html::encode($this->title ?: Yii::$app->name) ?></title>
     <style>
         body {
             min-height: max(884px, 100dvh);
@@ -39,16 +40,14 @@ $this->beginPage();
         <div class="flex items-center gap-6">
             <div class="hidden md:flex gap-4">
                 <?php if (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher): ?>
-                    <a href="<?= Url::toRoute(['researcher/report', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
+                    <a href="<?= Url::toRoute(['researcher/view', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
                         class="font-bold border-b-2 border-primary">Public Profile</a>
                     <a href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
                         BioSketch</a>
                 <?php endif; ?>
             </div>
-            <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
-                <img alt="Scientist profile"
-                    src="<?= Html::encode($profilePhoto) ?>">
-            </div>
+            <?= $this->render('_notifications') ?>
+            <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'w-12 h-12']) ?>
 
         </div>
     </nav>

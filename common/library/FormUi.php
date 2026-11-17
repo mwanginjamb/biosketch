@@ -957,13 +957,21 @@ class FormUi
         $previewId = 'photo-preview-' . uniqid();
         $circleClass = self::UPLOAD_CIRCLE_CLASS;
         $bgStyle = $currentImage ? "background-image: url('" . Html::encode($currentImage) . "'); background-size: cover; background-position: center;" : '';
+        // With an existing photo the prompt sits below the circle (as "Change photo") instead of over the image.
+        $hasImage = $currentImage !== '';
+        $overlayStyle = $hasImage ? 'display:none;' : '';
+        $belowStyle = $hasImage ? '' : 'display:none;';
 
         return <<<HTML
 <div id="{$containerId}" class="flex flex-col items-center gap-xs mb-sm">
-    <div class="{$circleClass} photo-upload-circle" style="{$bgStyle}" onclick="document.getElementById('{$fileInputId}').click();">
-        <span class="material-symbols-outlined text-3xl" data-icon="add_a_photo">add_a_photo</span>
-        <span class="text-[10px] font-bold uppercase mt-1">Upload Photo</span>
+    <div class="{$circleClass} photo-upload-circle" style="{$bgStyle}" role="button" tabindex="0" aria-label="Upload photo"
+        onclick="document.getElementById('{$fileInputId}').click();"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); document.getElementById('{$fileInputId}').click(); }">
+        <span class="material-symbols-outlined text-3xl photo-upload-icon" data-icon="add_a_photo" style="{$overlayStyle}" aria-hidden="true">add_a_photo</span>
+        <span class="text-[10px] font-bold uppercase mt-1 photo-upload-label" style="{$overlayStyle}">Upload Photo</span>
     </div>
+    <button type="button" class="photo-upload-change text-xs font-bold uppercase text-secondary hover:underline" style="{$belowStyle}"
+        onclick="document.getElementById('{$fileInputId}').click();">Change photo</button>
     <input type="file" id="{$fileInputId}" name="{$inputName}" accept="image/*" style="display: none;" onchange="previewPhoto(this, '{$previewId}', '{$containerId}')">
     <div id="{$previewId}"></div>
 </div>
@@ -980,11 +988,13 @@ function previewPhoto(input, previewContainerId, containerId) {
                     uploadDiv.style.backgroundImage = "url('" + e.target.result + "')";
                     uploadDiv.style.backgroundSize = "cover";
                     uploadDiv.style.backgroundPosition = "center";
-                    var iconSpan = uploadDiv.querySelector('.material-symbols-outlined');
-                    var textSpan = uploadDiv.querySelector('.text-\\[10px\\]');
-                    if (iconSpan) iconSpan.style.display = 'none';
-                    if (textSpan) textSpan.style.display = 'none';
+                    // Hide the overlay prompt once a preview exists; offer "Change photo" below instead.
+                    uploadDiv.querySelectorAll('.photo-upload-icon, .photo-upload-label').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
                 }
+                var change = container.querySelector('.photo-upload-change');
+                if (change) change.style.display = '';
             }
         };
         reader.readAsDataURL(input.files[0]);
@@ -1055,9 +1065,11 @@ HTML;
      *       ... form fields ...
      *   <?= FormUi::endSection() ?>
      */
-    public static function beginSection(string $title, string $icon): string
+    public static function beginSection(string $title, string $icon, ?string $id = null): string
     {
-        return '<section class="' . self::SECTION_CLASS . '">'
+        $idAttr = $id !== null ? ' id="' . Html::encode($id) . '"' : '';
+
+        return '<section' . $idAttr . ' class="' . self::SECTION_CLASS . ' scroll-mt-20">'
             . '<div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">'
             . '<h2 class="font-headline-md text-headline-md">' . Html::encode($title) . '</h2>'
             . '<span class="material-symbols-outlined text-on-surface-variant" data-icon="' . Html::encode($icon) . '">' . Html::encode($icon) . '</span>'

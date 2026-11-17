@@ -11,6 +11,8 @@ return [
         '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
+    // Dates/times are shown in Kenya time; override with APP_TIMEZONE in .env if needed.
+    'timeZone' => env('APP_TIMEZONE', 'Africa/Nairobi'),
     'components' => [
         'cache' => [
             'class' => \yii\caching\FileCache::class,

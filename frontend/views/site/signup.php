@@ -9,6 +9,7 @@ declare(strict_types=1);
 use common\library\FormUi;
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use yii\helpers\Json;
 use yii\web\View;
 
 $this->title = 'Create a Bio Sketch Account';
@@ -63,21 +64,24 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <?= $form->field($model, 'password', FormUi::fieldConfig('lock'))->passwordInput([
     'class' => FormUi::inputClass(true),
     'placeholder' => '••••••••',
-    'autocomplete' => 'current-password'
+    'autocomplete' => 'new-password'
 ])
     ?>
 
 <?= $form->field($model, 'passwordConfirm', FormUi::fieldConfig('lock'))->passwordInput([
     'class' => FormUi::inputClass(true),
     'placeholder' => '••••••••',
-    'autocomplete' => 'current-password'
+    'autocomplete' => 'new-password'
 ])
     ?>
 
 
 
 
-<?= Html::submitButton('Sign Up', ['class' => FormUi::buttonClass('auth')]) ?>
+<?= Html::submitButton('Sign Up', [
+    'id' => 'signup-submit-btn',
+    'class' => FormUi::buttonClass('auth') . ' disabled:opacity-60 disabled:cursor-wait',
+]) ?>
 
 <?php ActiveForm::end(); ?>
 
@@ -88,197 +92,80 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 
 <?php
 
-$lookupUrl = yii\helpers\Url::to(['site/lookup-employee']);
+$lookupUrl = Json::htmlEncode(yii\helpers\Url::to(['site/lookup-employee']));
 
 $js = <<<JS
-const employeeInput =
-    document.getElementById('signupform-staffid');
+(function () {
+    const form = document.getElementById('signup-form');
+    const submitBtn = document.getElementById('signup-submit-btn');
+    const employeeInput = document.getElementById('signupform-staffid');
+    const usernameInput = document.getElementById('signupform-username');
+    const emailInput = document.getElementById('signupform-email');
+    const passwordInput = document.getElementById('signupform-password');
+    const statusBox = document.getElementById('employee-lookup-status');
+    const successBox = document.getElementById('employee-success');
+    const errorBox = document.getElementById('employee-error');
 
-const usernameInput =
-    document.getElementById('signupform-username');
+    const show = (el, text) => { if (el) { el.textContent = text; el.classList.remove('hidden'); } };
+    const hide = (el) => { if (el) { el.classList.add('hidden'); } };
 
-const emailInput =
-    document.getElementById('signupform-email');
-
-const passwordInput =
-    document.getElementById('signupform-password');
-
-const submitBtn =
-    document.getElementById('signup-submit-btn');
-
-const statusBox =
-    document.getElementById('employee-lookup-status');
-
-const successBox =
-    document.getElementById('employee-success');
-
-const errorBox =
-    document.getElementById('employee-error');
-
-let debounceTimeout = null;
-
- 
-if (employeeInput) {
-
-    employeeInput.addEventListener('input', function () {
-
-        clearTimeout(debounceTimeout);
-
-        const employeeNumber = this.value.trim();
-
-        // reset states
-        successBox.classList.add('hidden');
-        errorBox.classList.add('hidden');
-
-        if (!employeeNumber) {
-            submitBtn.disabled = true;
-            return;
-        }
-
-        debounceTimeout = setTimeout(async () => {
-
-            try {
-
-                statusBox.classList.remove('hidden');
-                statusBox.innerText = 'Looking up employee...';
-
-                const response = await fetch(
-                    '{$lookupUrl}?employeeNumber=' +
-                    encodeURIComponent(employeeNumber)
-                );
-
-                const data = await response.json();
-
-                statusBox.classList.add('hidden');
-
-                if (data.success) {
-
-                    usernameInput.value =
-                        data.username.toLowerCase();
-
-                    emailInput.value =
-                        data.email.toLowerCase();
-
-                    successBox.innerText =
-                        '✓ Employee verified successfully';
-
-                    successBox.classList.remove('hidden');
-
-                    errorBox.classList.add('hidden');
-
-                    submitBtn.disabled = false;
-
-                    passwordInput.focus();
-
-                } else {
-
-                    submitBtn.disabled = true;
-
-                    errorBox.innerText =
-                        data.message || 'Employee not found';
-
-                    errorBox.classList.remove('hidden');
-
-                    successBox.classList.add('hidden');
-
-                }
-
-            } catch (error) {
-
-                console.error(error);
-
-                submitBtn.disabled = true;
-
-                statusBox.classList.add('hidden');
-
-                errorBox.innerText =
-                    'Could not connect to employee directory';
-
-                errorBox.classList.remove('hidden');
+    // ── Staff ID lookup: prefill username and email ───────────────────
+    let debounceTimeout = null;
+    if (employeeInput) {
+        employeeInput.addEventListener('input', function () {
+            clearTimeout(debounceTimeout);
+            const employeeNumber = this.value.trim();
+            hide(successBox);
+            hide(errorBox);
+            if (!employeeNumber) {
+                hide(statusBox);
+                return;
             }
 
-        }, 600);
+            debounceTimeout = setTimeout(async () => {
+                show(statusBox, 'Looking up employee...');
+                let data = null;
+                try {
+                    const response = await fetch({$lookupUrl} + '?employeeNumber=' + encodeURIComponent(employeeNumber), {
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    data = await response.json();
+                } catch (error) {
+                    console.error(error);
+                }
+                hide(statusBox);
 
-    });
+                if (!data) {
+                    show(errorBox, 'Could not connect to the employee directory. You can still fill in your details.');
+                    return;
+                }
+                if (!data.success) {
+                    show(errorBox, data.message || 'Employee not found');
+                    return;
+                }
 
-    /*
-|--------------------------------------------------------------------------
-| PASSWORD VISIBILITY TOGGLE
-|--------------------------------------------------------------------------
-*/
-
-const togglePasswordBtn =
-    document.getElementById('toggle-password');
-
-togglePasswordBtn.addEventListener('click', function () {
-
-    if (passwordInput.type === 'password') {
-
-        passwordInput.type = 'text';
-
-        this.innerText = 'Hide Password';
-
-    } else {
-
-        passwordInput.type = 'password';
-
-        this.innerText = 'Show Password';
-    }   
-});
-}
-
-/*
-|--------------------------------------------------------------------------
-| PASSWORD STRENGTH METER
-|--------------------------------------------------------------------------
-*/
-
-const strengthBar =
-document.getElementById('password-strength-bar');
-
-const strengthText =
-document.getElementById('password-strength-text');
-
-passwordInput.addEventListener('input', function () {
-
-    const password = this.value;
-
-    let strength = 0;
-
-    if (password.length >= 8) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-
-    let width = '0%';
-    let text = 'Weak';
-
-    if (strength === 1) {
-        width = '25%';
-        text = 'Weak';
+                if (usernameInput) { usernameInput.value = (data.username || '').toLowerCase(); }
+                if (emailInput) { emailInput.value = (data.email || '').toLowerCase(); }
+                show(successBox, '✓ Employee verified');
+                if (passwordInput) { passwordInput.focus(); }
+            }, 600);
+        });
     }
 
-    if (strength === 2) {
-        width = '50%';
-        text = 'Fair';
+    // ── Submit feedback: sending the verification email can take a few seconds ──
+    // 'beforeSubmit' fires only after client-side validation has passed.
+    if (form && window.jQuery) {
+        jQuery(form).on('beforeSubmit', function () {
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML =
+                    '<span class="material-symbols-outlined animate-spin" aria-hidden="true">progress_activity</span>'
+                    + ' Creating your account…';
+            }
+            return true;
+        });
     }
-
-    if (strength === 3) {
-        width = '75%';
-        text = 'Good';
-    }
-
-    if (strength === 4) {
-        width = '100%';
-        text = 'Strong';
-    }
-
-    strengthBar.style.width = width;
-
-    strengthText.innerText =
-        password.length ? 'Password strength: ' + text : 'Password strength';
-});
-
+})();
 JS;
 
 $this->registerJs($js, View::POS_READY);

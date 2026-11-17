@@ -33,9 +33,9 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
             <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
         BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-primary']) ?>
         </div>
-        <div class="w-12 h-12 rounded-full overflow-hidden border border-outline-variant">
-            <img alt="Scientist profile"
-                src="<?= Html::encode($profilePhoto) ?>">
+        <div class="flex items-center gap-sm">
+            <?= $this->render('_notifications') ?>
+            <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'w-12 h-12']) ?>
         </div>
     </header>
 

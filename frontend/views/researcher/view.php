@@ -2,6 +2,17 @@
 use yii\bootstrap5\Html;
 
 /** @var \frontend\models\Researcher $model */
+/** @var yii\web\View $this */
+
+$displayName = trim(ucfirst((string) $model->title) . ' ' . ucwords((string) $model->full_name));
+$this->title = $displayName . ' - BioSketch';
+
+// Active grants first, then the rest (completed, pending, terminated).
+$grants = $model->researcherGrants;
+usort($grants, static fn($a, $b) => (int) $b->isActive() <=> (int) $a->isActive());
+
+$statement = $model->researcherStatement;
+$statementTypes = \frontend\models\ResearcherStatement::getStatementTypeOptions();
 
 // Only link DOIs that are bare DOIs or http(s) URLs; anything else (e.g. javascript:) is shown as text.
 $doiUrl = static function (?string $doi): ?string {
@@ -31,10 +42,13 @@ $doiUrl = static function (?string $doi): ?string {
                 src="<?= Html::encode($model->profile_photo ?: 'https://via.placeholder.com/150') ?>">
 
             <h2 class="font-headline-lg text-headline-lg text-primary mb-base">
-                <?= Html::encode(ucfirst((string) $model->title) . ' ' . ucwords((string) $model->full_name)) ?>
+                <?= Html::encode($displayName) ?>
             </h2>
 
             <p class="text-on-surface-variant mb-xs"><?= Html::encode($model->role_title ?? 'N/A') ?></p>
+            <?php if ($model->primary_institution): ?>
+                <p class="text-on-surface font-bold mb-xs"><?= Html::encode($model->primary_institution) ?></p>
+            <?php endif; ?>
 
             <div class="inline-flex items-center gap-xs px-sm py-xs bg-tertiary-fixed rounded-full mb-sm">
                 <span class="material-symbols-outlined text-[16px]">account_balance</span>
@@ -66,10 +80,30 @@ $doiUrl = static function (?string $doi): ?string {
             </div>
         </div>
 
-        <!-- ORCID -->
+        <!-- Researcher identifiers -->
         <div class="bg-surface-container-low p-md border border-outline-variant rounded-lg scientific-grid">
-            <h3 class="text-label-caps text-on-surface-variant mb-sm">ORCID IDENTITY</h3>
-            <p class="font-data-mono text-primary font-bold"><?= Html::encode($model->orcid ?? 'N/A') ?></p>
+            <h3 class="text-label-caps text-on-surface-variant mb-sm">RESEARCHER IDENTIFIERS</h3>
+            <dl class="space-y-xs text-sm">
+                <div>
+                    <dt class="text-on-surface-variant text-xs">ORCID</dt>
+                    <dd class="font-data-mono text-primary font-bold"><?= Html::encode($model->orcid ?: 'N/A') ?></dd>
+                </div>
+                <?php if ($model->era_commons_id): ?>
+                    <div>
+                        <dt class="text-on-surface-variant text-xs">eRA Commons ID</dt>
+                        <dd class="font-data-mono text-primary font-bold"><?= Html::encode($model->era_commons_id) ?></dd>
+                    </div>
+                <?php endif; ?>
+                <?php foreach ($model->researcherIdentifiers as $identifier): ?>
+                    <div>
+                        <dt class="text-on-surface-variant text-xs">
+                            <?= Html::encode($identifier->identifier_type ?: 'Identifier') ?>
+                            · <span class="italic"><?= Html::encode($identifier->getVerificationLabel()) ?></span>
+                        </dt>
+                        <dd class="font-data-mono text-primary font-bold break-all"><?= Html::encode($identifier->identifier_value ?: 'N/A') ?></dd>
+                    </div>
+                <?php endforeach; ?>
+            </dl>
 
             <div class="mt-md flex flex-wrap gap-xs">
                 <!-- Get research tags as array of tags -->
@@ -103,11 +137,7 @@ $doiUrl = static function (?string $doi): ?string {
 
 
 
-            <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Research Highlights</h3>
-
-
-
-            <h3 class="font-headline-md uppercase mb-md">Research Highlights</h3>
+            <h3 class="font-headline-md text-headline-md uppercase tracking-tight mb-md">Research Highlights</h3>
 
 
 
@@ -127,6 +157,17 @@ $doiUrl = static function (?string $doi): ?string {
 
             </div>
         </section>
+
+
+        <?php if ($statement !== null && trim((string) $statement->content) !== ''): ?>
+            <!-- Research statement -->
+            <section class="section-anchor" id="statement">
+                <h3 class="font-headline-md text-headline-md uppercase tracking-tight mb-md">
+                    <?= Html::encode($statementTypes[$statement->statement_type] ?? 'Personal Statement') ?>
+                </h3>
+                <p class="font-body-md text-on-surface leading-relaxed"><?= nl2br(Html::encode($statement->content)) ?></p>
+            </section>
+        <?php endif; ?>
 
 
         <!-- Academic -->
@@ -195,13 +236,13 @@ $doiUrl = static function (?string $doi): ?string {
         <section class="section-anchor" id="grants">
             <div class="flex items-center gap-xs mb-md border-b border-outline-variant pb-xs">
                 <span class="material-symbols-outlined text-primary" data-icon="monetization_on">monetization_on</span>
-                <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Ongoing Grants</h3>
+                <h3 class="font-headline-md text-headline-md uppercase tracking-tight">Grants &amp; Funding</h3>
             </div>
 
             <div class="space-y-sm">
 
 
-                <?php foreach ($model->researcherGrants as $grant): ?>
+                <?php foreach ($grants as $grant): ?>
 
                     <div
                         class="bg-surface-container-low p-sm rounded border border-outline-variant flex justify-between items-start">
@@ -213,12 +254,17 @@ $doiUrl = static function (?string $doi): ?string {
                                 <?= Html::encode($grant->title ?? 'N/A') ?>
                             </p>
                             <p class="font-body-md text-on-surface-variant">Role:
-                                <?= Html::encode($grant->roleOptions[$grant->role_id] ?? 'N/A') ?> |
-                                <?= Html::encode(Yii::$app->formatter->asCurrency($grant->amount, $grant->currency) ?? 'N/A') ?>
+                                <?= Html::encode($grant->getRoleLabel() ?? 'N/A') ?> |
+                                <?= Html::encode($grant->amount !== null ? Yii::$app->formatter->asCurrency($grant->amount, $grant->currency) : 'N/A') ?>
                             </p>
+                            <?php if ($grant->getFundingAgencyLabel() !== null): ?>
+                                <p class="font-body-md text-on-surface-variant">Funder:
+                                    <?= Html::encode($grant->getFundingAgencyLabel()) ?>
+                                </p>
+                            <?php endif; ?>
                         </div>
-                        <div class="px-xs py-[2px] bg-secondary text-on-secondary rounded font-bold text-[10px]">
-                            <?= Html::encode($grant->statusOptions[$grant->status_id] ?? 'N/A') ?>
+                        <div class="px-xs py-[2px] rounded font-bold text-[10px] <?= $grant->isActive() ? 'bg-secondary text-on-secondary' : 'bg-surface-container-high text-on-surface-variant' ?>">
+                            <?= Html::encode($grant->getStatusLabel() ?? 'N/A') ?>
                         </div>
                     </div>
 

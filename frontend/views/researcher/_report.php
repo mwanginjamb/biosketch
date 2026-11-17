@@ -1,5 +1,6 @@
 <?php
 
+use frontend\models\ResearcherIdentifier;
 use yii\helpers\Html;
 
 /**
@@ -219,26 +220,16 @@ $sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
                 Research Areas
             </div>
 
-            <div>
-                <?php
-
-                $tags = array_filter(
-                    array_map(
-                        'trim',
-                        explode(',', $researcher->research_tags)
-                    )
-                );
-
-                foreach ($tags as $tag):
-
-                    ?>
-
-                    <span
-                        style="display:inline-block; background-color:<?= $colorBgSoft ?>; color:<?= $colorHeading ?>; font-size:9.5px; padding:3px 8px; margin:0 4px 4px 0; border:1px solid <?= $colorBorder ?>;">
-                        <?= Html::encode($tag) ?>
-                    </span>
-
-                <?php endforeach; ?>
+            <?php
+            // mPDF does not lay out inline-block "chips" reliably, so tags ran together.
+            // Render a plain separated list instead.
+            $tags = array_filter(array_map('trim', explode(',', (string) $researcher->research_tags)));
+            ?>
+            <div style="font-size:10.5px; line-height:1.6; color:<?= $colorText ?>;">
+                <?= implode(
+                    ' &nbsp;&bull;&nbsp; ',
+                    array_map(static fn(string $tag): string => Html::encode($tag), $tags)
+                ) ?>
             </div>
 
         </div>
@@ -340,21 +331,18 @@ $sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
 
                             <td style="<?= $sTd ?> width:20%; text-align:center;">
 
-                                <?php if (
-                                    (int) $identifier->verification_status === 1
-                                ): ?>
-
-                                    <span style="color:#2f855a; font-weight:bold; font-size:9.5px;">
-                                        Verified
-                                    </span>
-
-                                <?php else: ?>
-
-                                    <span style="color:#a0aec0; font-size:9.5px;">
-                                        Unverified
-                                    </span>
-
-                                <?php endif; ?>
+                                <?php
+                                // Same labels as the form dropdown (ResearcherIdentifier::getVerificationOptions()).
+                                $statusColor = match ((int) $identifier->verification_status) {
+                                    ResearcherIdentifier::VERIFICATION_VERIFIED => 'color:#2f855a; font-weight:bold;',
+                                    ResearcherIdentifier::VERIFICATION_PENDING => 'color:#b7791f; font-weight:bold;',
+                                    ResearcherIdentifier::VERIFICATION_REJECTED => 'color:#c53030; font-weight:bold;',
+                                    default => 'color:#a0aec0;',
+                                };
+                                ?>
+                                <span style="<?= $statusColor ?> font-size:9.5px;">
+                                    <?= Html::encode($identifier->getVerificationLabel()) ?>
+                                </span>
 
                             </td>
 
@@ -407,11 +395,11 @@ $sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
 
                             <div style="font-size:9.5px; color:<?= $colorText ?>;">
 
-                                <?php if (!empty($grant->role_id)): ?>
+                                <?php if ($grant->getRoleLabel() !== null): ?>
 
                                     <span style="margin-right:12px;">
                                         <strong>Role:</strong>
-                                        <?= Html::encode($grant->roleOptions[$grant->role_id] ?? 'N/A') ?>
+                                        <?= Html::encode($grant->getRoleLabel()) ?>
                                     </span>
 
                                 <?php endif; ?>
@@ -431,14 +419,12 @@ $sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
 
                                 <?php endif; ?>
 
-                                <?php if (!empty($grant->funding_agency)): ?>
+                                <?php if ($grant->getFundingAgencyLabel() !== null): ?>
 
-                                    <span>
+                                    <div style="margin-top:2px;">
                                         <strong>Funder:</strong>
-                                        <?= $value(
-                                            $grant->funding_agency
-                                        ) ?>
-                                    </span>
+                                        <?= $value($grant->getFundingAgencyLabel()) ?>
+                                    </div>
 
                                 <?php endif; ?>
 
@@ -448,12 +434,12 @@ $sTdYear = $sTd . ' text-align:center; white-space:nowrap;';
 
                         <td style="width:90px; padding:8px 10px; text-align:right; vertical-align:top;">
 
-                            <?php if (!empty($grant->status)): ?>
+                            <?php if ($grant->getStatusLabel() !== null): ?>
 
                                 <span
                                     style="display:inline-block; background-color:<?= $colorBgSoft ?>; color:<?= $colorHeading ?>; font-size:8.5px; font-weight:bold; padding:3px 7px; border:1px solid <?= $colorBorder ?>;">
                                     <?= Html::encode(
-                                        strtoupper($grant->status)
+                                        strtoupper($grant->getStatusLabel())
                                     ) ?>
                                 </span>
 

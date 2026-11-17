@@ -272,6 +272,26 @@ final class SignupFormTest extends Unit
         ]);
 
         verify($second->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->empty();
-        verify($second->getFirstError('staffID'))->equals('An account already exists for this employee number.');
+        verify($second->getFirstError('staffID'))->equals(SignupForm::DUPLICATE_ACCOUNT_MESSAGE);
+    }
+
+    public function testDoubleSubmitShowsOneDuplicateAccountMessage(): void
+    {
+        $data = [
+            'staffID' => '90296',
+            'username' => 'jlangat',
+            'email' => 'jlangat@kemri.go.ke',
+            'password' => 'some_password',
+            'passwordConfirm' => 'some_password',
+        ];
+        verify($this->formWithDirectory($data)->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->true();
+
+        // Same data again, as when a user clicks Sign Up twice.
+        $again = $this->formWithDirectory($data);
+        verify($again->signup(Yii::$app->mailer, Yii::$app->params['supportEmail'], Yii::$app->name))->empty();
+
+        verify($again->getFirstError('staffID'))->equals(SignupForm::DUPLICATE_ACCOUNT_MESSAGE);
+        verify($again->getErrors('username'))->empty();
+        verify($again->getErrors('email'))->empty();
     }
 }

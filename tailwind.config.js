@@ -6,6 +6,10 @@ module.exports = {
         './frontend/widgets/**/*.js',
         './frontend/web/js/**/*.js',
         './frontend/views/layouts/*.php',
+        // PHP helpers that emit Tailwind classes (FormUi, components) must be scanned too,
+        // otherwise their classes are missing from the compiled CSS.
+        './common/library/**/*.php',
+        './frontend/components/**/*.php',
     ],
     theme: {
         extend: {

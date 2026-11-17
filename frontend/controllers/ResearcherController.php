@@ -127,7 +127,8 @@ class ResearcherController extends Controller
         //$pdf->cssFile = Yii::getAlias('@webroot/css/report.css');
 
         $pdf->methods = [
-            'SetHeader' => [$title . ' Generated On: ' . date("r")],
+            // Formatter uses the app time zone (Africa/Nairobi by default), e.g. "17 Nov 2026, 19:42 EAT".
+            'SetHeader' => [$title . ' Generated On: ' . Yii::$app->formatter->asDatetime(time(), 'php:d M Y, H:i T')],
             'SetFooter' => [$footerHtml],
 
             'SetAuthor' => env('DEVELOPER'),

@@ -1,0 +1,16 @@
+{
+  "name": "biosketch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Front-end build tooling for BioSketch (Tailwind CSS).",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i css/tailwind.src.css -o frontend/web/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i css/tailwind.src.css -o frontend/web/css/tailwind.css --watch",
+    "build": "npm run build:css"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "0.1.1",
+    "@tailwindcss/forms": "0.5.9",
+    "tailwindcss": "3.4.17"
+  }
+}

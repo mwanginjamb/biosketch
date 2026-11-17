@@ -36,6 +36,17 @@ class ResearcherIdentifier extends \yii\db\ActiveRecord
     }
 
     /**
+     * Keeps created_at / updated_at current so the notification bell can tell when a
+     * section was last changed. updated_at only moves when the row actually changes.
+     */
+    public function behaviors()
+    {
+        return [
+            \yii\behaviors\TimestampBehavior::class,
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -101,4 +112,13 @@ class ResearcherIdentifier extends \yii\db\ActiveRecord
         ];
     }
 
+    /** Human-readable verification status (same source of truth as the form dropdown). */
+    public function getVerificationLabel(): string
+    {
+        if ($this->verification_status === null || $this->verification_status === '') {
+            return Yii::t('app', 'Unverified');
+        }
+
+        return self::getVerificationOptions()[(int) $this->verification_status] ?? Yii::t('app', 'Unverified');
+    }
 }
