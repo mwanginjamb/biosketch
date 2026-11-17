@@ -19,6 +19,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 
@@ -43,14 +44,10 @@ class ResearcherController extends Controller
                 ],
                 'access' => [
                     'class' => AccessControl::class,
-                    'only' => ['logout', 'signup', 'index', 'view', 'create', 'update', 'delete'],
+                    // Every action requires an authenticated user; per-record
+                    // ownership is enforced in findAccessibleModel().
                     'rules' => [
                         [
-                            'actions' => ['login', 'error'],
-                            'allow' => true,
-                        ],
-                        [
-                            'actions' => ['logout', 'index', 'view', 'create', 'update', 'delete'],
                             'allow' => true,
                             'roles' => ['@'],
                         ],
@@ -70,6 +67,10 @@ class ResearcherController extends Controller
         $searchModel = new ResearcherSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
+        if (!$this->isAdmin()) {
+            $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -84,15 +85,8 @@ class ResearcherController extends Controller
      */
     public function actionView($id)
     {
-        $researcher = Researcher::find()->where(['id' => $id])->with([
-            'researcherEducations',
-            'publications',
-            'researcherIdentifiers',
-            'researcherStatement',
-            'researcherMedia',
-            'researcherGrants'
-        ])->one();
-        //$researcher->profile_photo = 'https://randomuser.me/api/portraits/men/75.jpg';
+        $researcher = $this->findAccessibleModel($id, withRelations: true);
+
         return $this->render('view', [
             'model' => $researcher,
         ]);
@@ -102,14 +96,7 @@ class ResearcherController extends Controller
 
     public function actionReport($id)
     {
-        $researcher = Researcher::find()->where(['id' => $id])->with([
-            'researcherEducations',
-            'publications',
-            'researcherIdentifiers',
-            'researcherStatement',
-            'researcherMedia',
-            'researcherGrants'
-        ])->one();
+        $researcher = $this->findAccessibleModel($id, withRelations: true);
 
         $footerHtml = '
     <table style="width:100%; border-collapse:collapse;">
@@ -122,10 +109,6 @@ class ResearcherController extends Controller
             </td>
         </tr>
     </table>';
-
-        if (!$researcher) {
-            throw new NotFoundHttpException('Researcher BioSketch not found.');
-        }
 
         $content = $this->renderPartial('_report', [
             'biosketch' => $researcher,
@@ -211,17 +194,10 @@ class ResearcherController extends Controller
             // Parent model
             $modelProfile->load($post);
 
-            // Handle file upload for profile photo
+            // Profile photo is validated with the model and only written to disk
+            // after validation passes (see transaction below).
             $modelProfile->attachment = UploadedFile::getInstanceByName('attachment');
-
-            if ($modelProfile->attachment instanceof UploadedFile) {
-                $newPhotoPath = $this->saveProfilePhoto(
-                    $modelProfile,
-                    $modelProfile->attachment
-                );
-                $modelProfile->profile_photo = $newPhotoPath;
-                $modelProfile->save(false); // persist the profile photo path before validation of child models
-            }
+            $newPhotoPath = null;
 
 
             // Child models
@@ -241,6 +217,7 @@ class ResearcherController extends Controller
             );
 
             $modelStatements = new ResearcherStatement();
+            $modelStatements->load($post);
 
             $modelMedia = $this->createMultipleModels(
                 ResearcherMedia::class,
@@ -290,6 +267,15 @@ class ResearcherController extends Controller
                 try {
 
                     $modelProfile->save(false);
+
+                    if ($modelProfile->attachment instanceof UploadedFile) {
+                        $newPhotoPath = $this->saveProfilePhoto(
+                            $modelProfile,
+                            $modelProfile->attachment
+                        );
+                        $modelProfile->profile_photo = $newPhotoPath;
+                        $modelProfile->save(false, ['profile_photo']);
+                    }
 
                     foreach ($modelEducations as $education) {
 
@@ -543,7 +529,7 @@ class ResearcherController extends Controller
     public function actionUpdate($id)
     {
         $this->layout = 'create';
-        $modelProfile = $this->findModel($id);
+        $modelProfile = $this->findAccessibleModel($id);
 
         $modelEducations = $modelProfile->researcherEducations ?: [new ResearcherEducation()];
         $modelPublications = $modelProfile->publications ?: [new Publications()];
@@ -875,7 +861,7 @@ class ResearcherController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $this->findAccessibleModel($id)->delete();
 
         return $this->redirect(['index']);
     }
@@ -894,6 +880,44 @@ class ResearcherController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+
+    /**
+     * Finds a Researcher the current user may access: their own profile, or any
+     * profile when they hold the `admin` role.
+     *
+     * @throws NotFoundHttpException if the record does not exist
+     * @throws ForbiddenHttpException if the user neither owns it nor is an admin
+     */
+    protected function findAccessibleModel($id, bool $withRelations = false): Researcher
+    {
+        $query = Researcher::find()->where(['id' => $id]);
+        if ($withRelations) {
+            $query->with([
+                'researcherEducations',
+                'publications',
+                'researcherIdentifiers',
+                'researcherStatement',
+                'researcherMedia',
+                'researcherGrants',
+            ]);
+        }
+
+        $model = $query->one();
+        if ($model === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+
+        if ((int) $model->user_id !== (int) Yii::$app->user->id && !$this->isAdmin()) {
+            throw new ForbiddenHttpException(Yii::t('app', 'You are not allowed to access this profile.'));
+        }
+
+        return $model;
+    }
+
+    protected function isAdmin(): bool
+    {
+        return Yii::$app->user->can('admin');
     }
 
     /**
@@ -935,14 +959,24 @@ class ResearcherController extends Controller
 
     protected function deleteProfilePhoto(?string $photoPath): void
     {
-        if ($photoPath) {
-            $absolutePath = Yii::getAlias('@frontend/web') . $photoPath;
-            if (is_file($absolutePath)) {
-                unlink($absolutePath);
-            }
+        if (!$photoPath) {
+            return;
         }
 
-        return;
+        // Only ever delete files that resolve inside the profile uploads directory.
+        $uploadDir = realpath(Yii::getAlias('@frontend/web/uploads/researchers/profile'));
+        $absolutePath = realpath(Yii::getAlias('@frontend/web') . $photoPath);
+
+        if (
+            $uploadDir === false
+            || $absolutePath === false
+            || !str_starts_with($absolutePath, $uploadDir . DIRECTORY_SEPARATOR)
+            || !is_file($absolutePath)
+        ) {
+            return;
+        }
+
+        unlink($absolutePath);
     }
 
 

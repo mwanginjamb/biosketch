@@ -65,16 +65,22 @@ class Researcher extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+        // Attributes prefixed with "!" are validated but never mass-assigned from
+        // request data: ownership, photo path and audit columns are server-controlled.
         return [
-            [['title', 'primary_institution', 'department', 'role_title', 'email', 'website', 'location', 'era_commons_id', 'orcid', 'profile_photo', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'default', 'value' => null],
+            [['title', 'primary_institution', 'department', 'role_title', 'email', 'website', 'location', 'era_commons_id', 'orcid'], 'default', 'value' => null],
+            [['!profile_photo', '!created_at', '!updated_at', '!created_by', '!updated_by'], 'default', 'value' => null],
             [['status'], 'default', 'value' => 0],
-            [['version'], 'default', 'value' => 1],
-            [['user_id', 'full_name'], 'required'],
-            [['user_id', 'status', 'version', 'created_at', 'updated_at', 'created_by', 'updated_by'], 'integer'],
+            [['!version'], 'default', 'value' => 1],
+            [['full_name'], 'required'],
+            [['!user_id'], 'required'],
+            [['status'], 'integer'],
+            [['!user_id', '!version', '!created_at', '!updated_at', '!created_by', '!updated_by'], 'integer'],
             [['title', 'full_name', 'primary_institution', 'department', 'role_title', 'email', 'location'], 'string', 'max' => 255],
-            [['website', 'profile_photo'], 'string', 'max' => 500],
+            [['website'], 'string', 'max' => 500],
+            [['!profile_photo'], 'string', 'max' => 500],
             [['era_commons_id', 'orcid'], 'string', 'max' => 100],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['!user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // Attachment  - jpeg, jpg,png
             [
                 ['attachment'],
