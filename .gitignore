@@ -30,10 +30,8 @@ composer.lock
 # Mac DS_Store Files
 .DS_Store
 
-# node
+# node (package.json / package-lock.json are tracked: they define the Tailwind build)
 /node_modules
-/package.json
-/package-lock.json
 
 # phpunit itself is not needed
 phpunit.phar
@@ -54,7 +52,6 @@ phpunit.phar
 .env
 
 node_modules/
-package-lock.json
 
 # OS / editor noise (if not already present)
 .DS_Store
