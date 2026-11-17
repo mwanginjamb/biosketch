@@ -20,6 +20,7 @@ class DefaultController extends Controller
             'resources' => [
                 'GET|POST /apiv1/researchers',
                 'GET|PUT|PATCH|DELETE /apiv1/researchers/{id}',
+                'GET /apiv1/researchers/by-username/{username}',
                 'POST /apiv1/researchers/{id}/photo',
                 'GET|POST /apiv1/researchers/{id}/{educations|identifiers|media|grants|publications}',
                 'GET|PUT|PATCH|DELETE /apiv1/researchers/{id}/{resource}/{child_id}',

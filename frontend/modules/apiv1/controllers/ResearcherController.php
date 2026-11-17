@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace frontend\modules\apiv1\controllers;
 
 use common\components\RbacHelper;
+use common\models\User;
 use frontend\components\ProfilePhotoStorage;
 use frontend\modules\apiv1\components\BaseController;
 use frontend\modules\apiv1\models\Researcher;
@@ -21,7 +22,8 @@ use yii\web\UploadedFile;
  * /apiv1/researchers
  *
  *   GET    /researchers                 search active profiles (?q=, staff_id, primary_institution, department, orcid, expand=)
- *   GET    /researchers/<id>            one profile (drafts: owner/admin only)
+ *   GET    /researchers/<id>            one profile (drafts: owner/drd/admin only)
+ *   GET    /researchers/by-username/<username>   the same, looked up by the owner's username
  *   POST   /researchers                 create the caller's own profile (one per user)
  *   PUT    /researchers/<id>            update (owner/admin)
  *   DELETE /researchers/<id>            delete (owner/admin)
@@ -50,8 +52,27 @@ class ResearcherController extends BaseController
     {
         $verbs = parent::verbs();
         $verbs['upload-photo'] = ['POST'];
+        $verbs['view-by-username'] = ['GET', 'HEAD'];
 
         return $verbs;
+    }
+
+    /**
+     * GET /apiv1/researchers/by-username/<username>
+     *
+     * Same representation, visibility rules and ?expand= support as GET /researchers/<id>.
+     */
+    public function actionViewByUsername(string $username): Researcher
+    {
+        $user = User::findOne(['username' => $username]);
+        $model = $user !== null ? Researcher::findOne(['user_id' => $user->id]) : null;
+        if ($model === null) {
+            throw new NotFoundHttpException('Researcher not found.');
+        }
+
+        $this->checkAccess('view', $model);   // drafts: 404 unless owner/drd/admin
+
+        return $model;
     }
 
     public function actionCreate()
