@@ -5,7 +5,7 @@ use common\library\FormUi;
 ?>
 
 <div id="identifier-container" class="space-y-sm">
-    <div class="identifier-item" data-index="<?= $index + 1 ?>">
+    <div class="identifier-item" data-index="<?= $index ?>">
         <div class="flex items-center justify-between mb-2">
 
             <button type="button"
