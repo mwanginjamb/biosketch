@@ -333,39 +333,23 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $model = new SignupForm();
+        $employee = (new SignupForm())->findEmployee((string) $employeeNumber);
 
-        $assignees = $model->fetchAssignees();
-
-        foreach ($assignees as $key => $displayName) {
-
-            $parts = array_map('trim', explode('-', $key, 3));
-
-            if (count($parts) < 3) {
-                continue;
-            }
-
-            [$empno, $email, $fullnames] = $parts;
-
-            if ($empno === trim($employeeNumber)) {
-
-                $username = strstr($email, '@', true);
-
-                return [
-                    'success' => true,
-                    'username' => strtolower($username),
-                    'email' => strtolower($email),
-                    'displayName' => $displayName,
-                    'fullNames' => $fullnames
-                ];
-            }
+        if ($employee === null) {
+            return [
+                'success' => false,
+                'message' => 'Employee not found'
+            ];
         }
 
         return [
-            'success' => false,
-            'message' => 'Employee not found'
+            'success' => true,
+            'username' => strtolower((string) strstr($employee['email'], '@', true)),
+            'email' => $employee['email'],
+            'displayName' => $employee['displayName'],
+            'fullNames' => $employee['fullNames'],
+            'department' => $employee['department'],
+            'departmentCode' => $employee['departmentCode'],
         ];
     }
-
-
 }

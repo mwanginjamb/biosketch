@@ -43,7 +43,15 @@ class SignupForm extends Model
             ['passwordConfirm', 'required'],
             ['passwordConfirm', 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords do not match.'],
 
-            ['staffID', 'safe'],
+            ['staffID', 'trim'],
+            ['staffID', 'string', 'max' => 50],
+            [
+                'staffID',
+                'unique',
+                'targetClass' => User::class,
+                'targetAttribute' => 'staff_id',
+                'message' => 'An account already exists for this employee number.',
+            ],
         ];
     }
 
@@ -66,6 +74,15 @@ class SignupForm extends Model
 
         $user->username = $this->username;
         $user->email = $this->email;
+
+        // Persist employee details only when verified against the staff directory,
+        // never from values posted by the browser.
+        $employee = $this->staffID !== '' ? $this->findEmployee($this->staffID) : null;
+        if ($employee !== null) {
+            $user->staff_id = $employee['staffID'];
+            $user->department = $employee['department'];
+            $user->department_code = $employee['departmentCode'];
+        }
 
         $user->setPassword($this->password);
         $user->generateAuthKey();
@@ -135,5 +152,82 @@ class SignupForm extends Model
                 'error' => $response->data ?? 'Unexpected error occurred'
             ];
         }
+    }
+
+    /**
+     * Looks up a single employee in the staff directory.
+     *
+     * @return array{staffID: string, email: string, fullNames: string, displayName: string, department: string|null, departmentCode: string|null}|null
+     *         null when the employee is not found or the directory is unavailable.
+     */
+    public function findEmployee(string $staffID): ?array
+    {
+        $staffID = trim($staffID);
+        if ($staffID === '') {
+            return null;
+        }
+
+        try {
+            $assignees = $this->fetchAssignees();
+        } catch (\Throwable $e) {
+            Yii::error('Staff directory lookup failed: ' . $e->getMessage(), __METHOD__);
+            return null;
+        }
+
+        if (!is_array($assignees)) {
+            return null;
+        }
+
+        foreach ($assignees as $key => $displayName) {
+            $employee = self::parseAssignee((string) $key, (string) $displayName);
+            if ($employee !== null && strcasecmp($employee['staffID'], $staffID) === 0) {
+                return $employee;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parses one staff directory entry.
+     *
+     * Key:   "90296 - jlangat@kemri.go.ke - DR.JOAN CHERONO LANGAT"
+     * Value: "90296 - DR.JOAN CHERONO LANGAT - SSRC - DIR005"
+     *        "EMP11727 - Edwin Kaibei Test - No Dept. - "   (no department)
+     *
+     * Fields are separated by " - " (with spaces) so hyphenated emails/names survive.
+     */
+    public static function parseAssignee(string $key, string $value): ?array
+    {
+        $keyParts = array_map('trim', explode(' - ', $key, 3));
+        if (count($keyParts) < 3 || $keyParts[0] === '') {
+            return null;
+        }
+        [$staffID, $email, $fullNames] = $keyParts;
+
+        $department = null;
+        $departmentCode = null;
+        $valueParts = array_map('trim', explode(' - ', $value));
+        if (count($valueParts) >= 4) {
+            $department = $valueParts[count($valueParts) - 2];
+            $departmentCode = $valueParts[count($valueParts) - 1];
+        }
+
+        // Directory placeholder for staff without a department.
+        if ($department === '' || strcasecmp((string) $department, 'No Dept.') === 0) {
+            $department = null;
+        }
+        if ($departmentCode === '') {
+            $departmentCode = null;
+        }
+
+        return [
+            'staffID' => $staffID,
+            'email' => strtolower($email),
+            'fullNames' => $fullNames,
+            'displayName' => $value,
+            'department' => $department,
+            'departmentCode' => $departmentCode,
+        ];
     }
 }
