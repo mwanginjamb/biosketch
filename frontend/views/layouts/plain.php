@@ -25,9 +25,10 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
     <?php $this->beginBody() ?>
     <!-- TopNavBar (Rendered from JSON structure) -->
     <header
-        class="bg-surface-container-lowest border-b border-outline-variant fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16">
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-primary text-on-primary border-b-4 border-accent shadow-md">
         <div class="flex items-center gap-xs">
-            <span class="font-headline-md text-headline-md font-bold text-primary">BioSketch Pro</span>
+            <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
+            <span class="font-headline-md text-headline-md font-bold text-on-primary">BioSketch Pro</span>
         </div>
         <!-- Navigation removed as this is a destination landing page for logged in user starting their journey -->
         <div class="flex items-center gap-md">

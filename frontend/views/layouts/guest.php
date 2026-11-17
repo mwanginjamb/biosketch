@@ -17,9 +17,22 @@ $this->render('_head');
     class="bg-background text-on-background font-body-md clinical-gradient min-h-screen flex flex-col items-center justify-center">
     <?php $this->beginBody(); ?>
 
+    <!-- Institutional band -->
+    <div class="w-full bg-primary text-on-primary border-b-4 border-accent shadow-md">
+        <div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop h-14 flex items-center justify-between">
+            <span class="flex items-center gap-xs font-bold">
+                <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
+                BioSketch Professional
+            </span>
+            <span class="hidden sm:inline font-label-caps text-label-caps tracking-widest text-accent-light uppercase">
+                Kenya Medical Research Institute
+            </span>
+        </div>
+    </div>
+
     <main class="w-full max-w-[1280px] px-margin-mobile md:px-margin-desktop py-xl flex flex-col items-center">
         <div
-            class="w-full max-w-[440px] bg-surface-container-lowest border border-outline-variant p-lg md:p-xl shadow-sm transition-all duration-300">
+            class="w-full max-w-[440px] bg-surface-container-lowest border border-outline-variant border-t-4 border-t-primary p-lg md:p-xl shadow-md transition-all duration-300">
             <?= $this->render('_alerts') ?>
             <?= $content ?>
         </div>
@@ -36,10 +49,10 @@ $this->render('_head');
     </main>
 
     <div
-        class="fixed top-1/4 -left-20 w-80 h-80 bg-secondary-container opacity-10 blur-[100px] pointer-events-none rounded-full">
+        class="fixed top-1/4 -left-20 w-80 h-80 bg-accent opacity-20 blur-[100px] pointer-events-none rounded-full -z-10">
     </div>
     <div
-        class="fixed bottom-1/4 -right-20 w-64 h-64 bg-primary-container opacity-5 blur-[100px] pointer-events-none rounded-full">
+        class="fixed bottom-1/4 -right-20 w-64 h-64 bg-primary-container opacity-20 blur-[100px] pointer-events-none rounded-full -z-10">
     </div>
 
     <footer

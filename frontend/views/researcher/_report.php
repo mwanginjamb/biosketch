@@ -52,7 +52,7 @@ $grants = $researcher->researcherGrants ?? [];
  * only ever sees plain inline style="" attributes.)
  * ========================================================= */
 
-$colorHeading = '#1a365d';
+$colorHeading = '#0a3263'; // KEMRI navy (matches the web theme)
 $colorText = '#2d3748';
 $colorMuted = '#4a5568';
 $colorBorder = '#cbd5e0';

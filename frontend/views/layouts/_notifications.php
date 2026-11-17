@@ -25,11 +25,11 @@ $levelStyle = [
 $label = $count === 0 ? 'Notifications: your BioSketch is up to date' : "Notifications: {$count} item(s) need attention";
 ?>
 <details class="relative" data-notification-menu>
-    <summary class="list-none cursor-pointer relative p-1 rounded-full hover:bg-surface-container-low focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    <summary class="list-none cursor-pointer relative p-1 rounded-full hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-light"
         aria-label="<?= Html::encode($label) ?>">
-        <span class="material-symbols-outlined text-on-surface-variant" aria-hidden="true">notifications</span>
+        <span class="material-symbols-outlined text-on-primary" aria-hidden="true">notifications</span>
         <?php if ($count > 0): ?>
-            <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center"
+            <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error ring-2 ring-primary text-[10px] font-bold flex items-center justify-center"
                 data-notification-count><?= $count > 9 ? '9+' : $count ?></span>
         <?php endif; ?>
     </summary>

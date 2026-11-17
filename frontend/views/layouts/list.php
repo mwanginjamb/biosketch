@@ -51,12 +51,13 @@ $this->render('_head');
 
     <!-- TopNavBar -->
     <header
-        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface-container-lowest border-b border-outline-variant">
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-primary text-on-primary border-b-4 border-accent shadow-md">
         <div class="flex items-center gap-md">
-            <span class="font-headline-md text-headline-md font-bold text-primary">BioSketch Pro</span>
+            <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
+            <span class="font-headline-md text-headline-md font-bold text-on-primary">BioSketch Pro</span>
             <nav class="hidden md:flex gap-md ml-lg">
 
-                <a class="text-secondary font-bold border-b-2 border-secondary px-xs py-xs" href="#">List</a>
+                <a class="text-on-primary font-bold border-b-2 border-accent px-xs py-xs" href="#">List</a>
 
             </nav>
         </div>
