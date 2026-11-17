@@ -19,6 +19,9 @@ use yii\web\IdentityInterface;
  * @property string|null $password_reset_token
  * @property string $verification_token
  * @property string $email
+ * @property string|null $staff_id employee number from the staff directory
+ * @property string|null $department e.g. SSRC
+ * @property string|null $department_code e.g. DIR005
  * @property string $auth_key
  * @property int $status
  * @property int $created_at
