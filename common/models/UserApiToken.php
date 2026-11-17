@@ -41,12 +41,13 @@ class UserApiToken extends ActiveRecord
     /**
      * Issues a new token for $user.
      *
+     * @param int|null $ttl lifetime in seconds; null = params['api.tokenTtl'] / DEFAULT_TTL, 0 = never expires
      * @return array{0: self, 1: string} the stored record and the plain token (show it once).
      */
-    public static function issue(User $user, ?string $name = null): array
+    public static function issue(User $user, ?string $name = null, ?int $ttl = null): array
     {
         $plain = Yii::$app->security->generateRandomString(48);
-        $ttl = (int) (Yii::$app->params['api.tokenTtl'] ?? self::DEFAULT_TTL);
+        $ttl ??= (int) (Yii::$app->params['api.tokenTtl'] ?? self::DEFAULT_TTL);
 
         $token = new self();
         $token->user_id = $user->id;

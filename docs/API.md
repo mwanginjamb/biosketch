@@ -33,6 +33,8 @@ The main integration use case is **pulling a researcher's profile by their staff
 
 ### 1. Get a token (once)
 
+Usually a BioSketch administrator creates your integration account and hands you its token (see [Create an integration account](#create-an-integration-account-administrators)). An account with a password can also request one itself:
+
 ```bash
 curl -X POST https://<biosketch-host>/apiv1/auth/token \
   -H "Content-Type: application/json" \
@@ -99,6 +101,44 @@ Read access to published profiles needs no special role. Roles change what else 
 
 An administrator assigns roles under **RBAC Mgt → User Role Assignment** in the web app, or with `php yii rbac/assign <role> <username>`. A read-only integration needs no extra role. Give it `drd` only if it must see drafts, and never give it `admin`.
 
+### Create an integration account (administrators)
+
+On the server, from the app directory, one command creates an API-only account and prints a token:
+
+```bash
+php yii api-token/create-integration hr-portal-sync --name="HR portal sync"
+```
+
+```
+Created integration user 'hr-portal-sync' (id 42, role: none).
+
+Token (id 7, expires 2027-11-18 10:15). Copy it now; it cannot be shown again:
+
+  pX3...48 characters...
+
+Use it as:  Authorization: Bearer <token>
+```
+
+The account is active straight away, has **no role** (it reads published profiles only), and has a random password nobody knows, so it cannot sign in to the web app. Hand the token to the integrator over a secure channel.
+
+| Option | Default | Description |
+|---|---|---|
+| `--name`, `-n` | `integration` | Token label, e.g. the consuming system |
+| `--days`, `-d` | `365` | Token lifetime in days; `0` = never expires |
+| `--role`, `-r` | none | Role for the account, e.g. `drd` to read drafts (`admin` is refused) |
+| `--email`, `-e` | `<username>@integration.invalid` | Account e-mail, if you want a real contact address |
+
+Managing tokens afterwards:
+
+```bash
+php yii api-token/issue hr-portal-sync --name="rotation 2027" --days=365   # another token (any active user)
+php yii api-token/list [hr-portal-sync]                                    # ids, labels, expiry, last use
+php yii api-token/revoke <token-id>                                        # revoke one token
+php yii api-token/revoke-all hr-portal-sync                                # revoke all of an account's tokens
+```
+
+To rotate without downtime: `issue` a new token, switch the integration over, then `revoke` the old token id.
+
 ### Issue a token
 
 `POST /apiv1/auth/token`
@@ -134,7 +174,7 @@ A missing, unknown, expired or revoked token gets `401`. When you see `401` on a
 
 ### Token lifetime
 
-30 days by default. Server operators can change it with the `api.tokenTtl` application param (seconds; `0` = never expires). Only a SHA-256 hash of each token is stored on the server, so a lost token cannot be recovered, only replaced.
+Tokens from `POST /apiv1/auth/token` last 30 days by default; server operators can change that with the `api.tokenTtl` application param (seconds; `0` = never expires). Tokens issued with `php yii api-token/...` last 365 days unless `--days` says otherwise. Only a SHA-256 hash of each token is stored on the server, so a lost token cannot be recovered, only replaced.
 
 ---
 
@@ -418,7 +458,7 @@ Keep tokens on the server side. Don't ship them in browser or mobile code that e
 
 ## Integration checklist
 
-- [ ] A dedicated, email-verified BioSketch account exists for your system (not a person's login).
+- [ ] A dedicated BioSketch account exists for your system (not a person's login), e.g. created with `php yii api-token/create-integration`.
 - [ ] The token is stored in a secret store, reused until it expires, and renewed automatically on `401`.
 - [ ] Lookups use `?staff_id=` (exact), not `q`.
 - [ ] An empty `items` list is handled as "no published profile", not as an error.
