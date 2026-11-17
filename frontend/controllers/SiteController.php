@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace frontend\controllers;
 
+use common\components\RbacHelper;
 use common\components\Throttle;
 use common\models\LoginForm;
+use common\models\User;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\Researcher;
@@ -47,13 +49,19 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'lookup-employee', 'index', 'view', 'create', 'update', 'delete'],
+                'only' => ['logout', 'signup', 'lookup-employee', 'index', 'users', 'view', 'create', 'update', 'delete'],
                 'rules' => [
                     [
                         // Employee lookup only exists to prefill the signup form.
                         'actions' => ['signup', 'lookup-employee'],
                         'allow' => true,
                         'roles' => ['?'],
+                    ],
+                    [
+                        // System users list is part of RBAC administration.
+                        'actions' => ['users'],
+                        'allow' => true,
+                        'roles' => [RbacHelper::PERM_MANAGE_RBAC],
                     ],
                     [
                         'actions' => ['logout', 'index', 'view', 'create', 'update', 'delete'],
@@ -94,8 +102,8 @@ class SiteController extends Controller
      */
     public function actionIndex(): string|Response
     {
-        // Admin role access the list of all researcher bio sketches, while a researcher can only access their own bio sketch.
-        if (\Yii::$app->user->can('admin')) {
+        // drd and admin see the list of all biosketches; researchers go to their own landing page.
+        if (Yii::$app->user->can(RbacHelper::PERM_VIEW_LIST)) {
             $this->layout = 'list';
             // Get All researcher models
             $researchers = Researcher::find()->all();
@@ -105,6 +113,18 @@ class SiteController extends Controller
         } else { // Access home route
             return $this->redirect(Url::toRoute(['site/home']));
         }
+    }
+
+    /**
+     * Lists system users with their roles (RBAC administration).
+     */
+    public function actionUsers(): string
+    {
+        $this->layout = 'list';
+
+        return $this->render('users', [
+            'users' => User::find()->orderBy(['username' => SORT_ASC])->all(),
+        ]);
     }
 
     public function actionHome(): string
