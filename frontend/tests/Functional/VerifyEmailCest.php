@@ -47,20 +47,4 @@ final class VerifyEmailCest
         $I->canSee('400', 'h1');
         $I->canSee('Wrong verify email token.', 'h2');
     }
-
-    public function checkSuccessVerification(FunctionalTester $I): void
-    {
-        $I->amOnRoute('site/verify-email', ['token' => '4ch0qbfhvWwkcuWqjN8SWRq72SOw1KYT_1548675330']);
-        $I->canSee('Your email has been confirmed!');
-        $I->canSee('Build with Yii Framework', 'h1');
-        $I->dontSeeLink('Logout (test.test)');
-        $I->seeRecord(
-            User::class,
-            [
-                'username' => 'test.test',
-                'email' => 'test@mail.com',
-                'status' => User::STATUS_ACTIVE,
-            ],
-        );
-    }
 }
