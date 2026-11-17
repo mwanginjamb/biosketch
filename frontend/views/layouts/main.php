@@ -40,7 +40,7 @@ $this->beginPage();
         <div class="flex items-center gap-6">
             <div class="hidden md:flex gap-4">
                 <?php if (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher): ?>
-                    <a href="<?= Url::toRoute(['researcher/view', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
+                    <a href="<?= Url::toRoute(Yii::$app->user->identity->researcher->getProfileRoute()) ?>"
                         class="font-bold border-b-2 border-accent pb-0.5">Public Profile</a>
                     <a class="text-on-primary/90 hover:text-accent-light transition-colors" href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
                         BioSketch</a>

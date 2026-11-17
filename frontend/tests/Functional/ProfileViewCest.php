@@ -136,7 +136,8 @@ final class ProfileViewCest
 
         // "Public Profile" goes to the profile page, not the PDF.
         $href = $I->grabAttributeFrom('//a[normalize-space(.)="Public Profile"]', 'href');
-        verify($href)->stringContainsString('researcher/view');
+        verify($href)->stringEndsWith('/researcher/profile_owner');   // readable username URL
+        verify($href)->stringNotContainsString('report');
 
         // Account menu with sign-out as a POST form.
         $I->seeElement('details[data-account-menu]');

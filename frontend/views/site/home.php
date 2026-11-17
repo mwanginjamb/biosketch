@@ -40,7 +40,7 @@ use yii\helpers\Url;
         <!-- researcher with a profile: view/edit -->
         <?php if (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher): ?>
 
-            <a href="<?= Url::toRoute(['researcher/view', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
+            <a href="<?= Url::toRoute(Yii::$app->user->identity->researcher->getProfileRoute()) ?>"
                 class="w-full md:w-auto flex-1 flex flex-col items-center justify-center gap-sm p-md rounded-xl bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low transition-all group shadow-md hover:shadow-lg">
                 <span class="material-symbols-outlined text-4xl group-hover:scale-110 transition-transform"
                     data-icon="person">person</span>

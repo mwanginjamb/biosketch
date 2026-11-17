@@ -150,7 +150,7 @@ $this->title = 'List of Pulished BioSketches';
 
                                     <?= Html::a(
                                         '<span class="material-symbols-outlined">visibility</span>',
-                                        ['researcher/view', 'id' => $model->id],
+                                        $model->getProfileRoute(),
                                         [
                                             'class' => 'p-2 hover:bg-primary-container hover:text-on-primary-container rounded transition-colors',
                                             'title' => 'View'

@@ -35,7 +35,7 @@ $icon = static fn(string $name): string => Html::tag('span', $name, ['class' => 
         </div>
 
         <?php if ($researcher): ?>
-            <?= Html::a($icon('person') . ' My BioSketch', ['/researcher/view', 'id' => $researcher->id], ['class' => $itemClass]) ?>
+            <?= Html::a($icon('person') . ' My BioSketch', $researcher->getProfileRoute(), ['class' => $itemClass]) ?>
             <?= Html::a($icon('edit_square') . ' Update BioSketch', ['/researcher/update', 'id' => $researcher->id], ['class' => $itemClass]) ?>
             <?= Html::a($icon('picture_as_pdf') . ' BioSketch PDF', ['/researcher/report', 'id' => $researcher->id], ['class' => $itemClass]) ?>
         <?php elseif ($webUser->can(RbacHelper::PERM_CREATE)): ?>

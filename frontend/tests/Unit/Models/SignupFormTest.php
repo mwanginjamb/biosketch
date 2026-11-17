@@ -275,6 +275,20 @@ final class SignupFormTest extends Unit
         verify($second->getFirstError('staffID'))->equals(SignupForm::DUPLICATE_ACCOUNT_MESSAGE);
     }
 
+    public function testReservedUsernamesAreRejected(): void
+    {
+        foreach (['create', 'report-pdf', 'Update'] as $username) {
+            $model = $this->formWithDirectory([
+                'username' => $username,
+                'email' => $username . '@example.com',
+                'password' => 'some_password',
+                'passwordConfirm' => 'some_password',
+            ]);
+            verify($model->validate(['username']))->false();
+            verify($model->getFirstError('username'))->equals('This username is reserved. Please choose another.');
+        }
+    }
+
     public function testDoubleSubmitShowsOneDuplicateAccountMessage(): void
     {
         $data = [
