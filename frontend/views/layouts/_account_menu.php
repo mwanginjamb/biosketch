@@ -22,8 +22,8 @@ $itemClass = 'flex items-center gap-xs px-sm py-xs text-on-surface hover:bg-surf
 $icon = static fn(string $name): string => Html::tag('span', $name, ['class' => 'material-symbols-outlined text-[20px]', 'aria-hidden' => 'true']);
 ?>
 <details class="relative" data-account-menu>
-    <summary class="list-none cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Account menu">
-        <span class="block <?= Html::encode($sizeClass) ?> rounded-full overflow-hidden border border-outline-variant">
+    <summary class="list-none cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-light" aria-label="Account menu">
+        <span class="block <?= Html::encode($sizeClass) ?> rounded-full overflow-hidden border-2 border-accent-light">
             <img alt="" class="w-full h-full object-cover" src="<?= Html::encode($profilePhoto) ?>">
         </span>
     </summary>

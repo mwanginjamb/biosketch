@@ -30,10 +30,10 @@ $this->beginPage();
 
     <!-- NAVBAR -->
     <nav
-        class="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-12 h-16 bg-surface border-b border-outline-variant no-print">
+        class="fixed top-0 w-full z-50 flex justify-between items-center px-4 md:px-12 h-16 bg-primary text-on-primary border-b-4 border-accent shadow-md no-print">
         <div class="flex items-center gap-2">
-            <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
-        BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-primary']) ?>
+            <?= Html::a(' <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
+        BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-on-primary flex items-center gap-xs']) ?>
 
         </div>
 
@@ -41,8 +41,8 @@ $this->beginPage();
             <div class="hidden md:flex gap-4">
                 <?php if (!\Yii::$app->user->isGuest && Yii::$app->user->identity->researcher): ?>
                     <a href="<?= Url::toRoute(['researcher/view', 'id' => Yii::$app->user->identity->researcher->id]) ?>"
-                        class="font-bold border-b-2 border-primary">Public Profile</a>
-                    <a href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
+                        class="font-bold border-b-2 border-accent pb-0.5">Public Profile</a>
+                    <a class="text-on-primary/90 hover:text-accent-light transition-colors" href="<?= Url::toRoute(['researcher/update', 'id' => Yii::$app->user->identity->researcher->id]) ?>">Update
                         BioSketch</a>
                 <?php endif; ?>
             </div>
@@ -61,10 +61,11 @@ $this->beginPage();
 
     <!-- FOOTER -->
     <footer
-        class="w-full py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mt-10 bg-gray-100 border-t no-print">
-        <p class="text-sm text-gray-600 mb-2 md:mb-0">
-            © <?= date('Y') ?> <?= \Yii::$app->name ?>. All rights reserved.
+        class="w-full py-4 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center mt-10 bg-primary text-on-primary border-t-4 border-accent no-print">
+        <p class="text-sm text-on-primary/80 mb-2 md:mb-0">
+            © <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?>. All rights reserved.
         </p>
+        <p class="font-label-caps text-label-caps tracking-widest uppercase text-accent-light">Kenya Medical Research Institute</p>
 
         <!-- <div class="flex gap-6 text-sm">
             <a href="#">Compliance</a>
@@ -76,7 +77,7 @@ $this->beginPage();
 
     <!-- PRINT BUTTON -->
     <button
-        class="fixed bottom-4 right-4 w-12 h-12 bg-black text-white rounded-full shadow-lg flex items-center justify-center no-print"
+        class="fixed bottom-4 right-4 w-12 h-12 bg-primary text-on-primary hover:bg-primary-container border-2 border-accent rounded-full shadow-lg flex items-center justify-center no-print" title="Print" aria-label="Print"
         onclick="window.print()">
         <span class="material-symbols-outlined">print</span>
     </button>

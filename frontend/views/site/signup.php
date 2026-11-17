@@ -38,7 +38,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <?= $form->field($model, 'staffID', FormUi::fieldConfig('id_card'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Staff Employee No']) ?>
 
 <!-- helper text -->
-<p class="text-xs text-gray-500 mt-1">
+<p class="text-xs text-on-surface-variant mt-1">
     Enter your official employee number to auto-fill your account details.
 </p>
 
@@ -47,7 +47,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 </div>
 
 <!-- success state -->
-<div id="employee-success" class="hidden text-sm mt-2 text-green-600 font-medium">
+<div id="employee-success" class="hidden text-sm mt-2 text-green-700 font-medium">
 </div>
 
 <!-- error state -->

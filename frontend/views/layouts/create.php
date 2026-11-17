@@ -28,10 +28,10 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
     <?php $this->beginBody(); ?>
 
     <header
-        class="fixed top-0 w-full z-50 bg-surface flex justify-between items-center px-margin-mobile h-16 border-b border-outline-variant">
+        class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-primary text-on-primary border-b-4 border-accent shadow-md">
         <div class="flex items-center gap-sm">
-            <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
-        BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-primary']) ?>
+            <?= Html::a(' <span class="material-symbols-outlined text-accent-light" aria-hidden="true">biotech</span>
+        BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-on-primary flex items-center gap-xs']) ?>
         </div>
         <div class="flex items-center gap-sm">
             <?= $this->render('_notifications') ?>
