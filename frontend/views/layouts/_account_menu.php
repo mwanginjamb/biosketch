@@ -28,7 +28,7 @@ $icon = static fn(string $name): string => Html::tag('span', $name, ['class' => 
         </span>
     </summary>
 
-    <div class="absolute right-0 mt-xs w-60 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg py-xs z-[60]">
+    <div class="absolute right-0 top-full mt-xs w-64 max-w-[calc(100vw-1.5rem)] bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg py-xs z-[60]">
         <div class="px-sm py-xs border-b border-outline-variant mb-xs">
             <div class="font-bold text-on-surface truncate"><?= Html::encode($webUser->identity->username) ?></div>
             <div class="text-xs text-on-surface-variant truncate"><?= Html::encode($webUser->identity->email) ?></div>

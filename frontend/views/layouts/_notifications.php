@@ -34,7 +34,7 @@ $label = $count === 0 ? 'Notifications: your BioSketch is up to date' : "Notific
         <?php endif; ?>
     </summary>
 
-    <div class="absolute right-0 mt-xs w-80 max-h-[70vh] overflow-y-auto bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg z-[60]">
+    <div class="absolute right-0 top-full mt-xs w-80 max-w-[calc(100vw-1.5rem)] max-h-[70vh] overflow-y-auto bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg z-[60]">
         <div class="px-sm py-xs border-b border-outline-variant font-bold text-on-surface">BioSketch checklist</div>
 
         <?php if ($count === 0): ?>

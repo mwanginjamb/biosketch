@@ -236,3 +236,14 @@ table.dataTable > tbody > tr.child ul.dtr-details li {
 
 
 }
+/* Header dropdowns (account menu, notification bell) use <details>/<summary>:
+   hide the browser's disclosure triangle. */
+@layer base {
+    summary {
+        list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+}
