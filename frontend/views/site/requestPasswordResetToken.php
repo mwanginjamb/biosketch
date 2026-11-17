@@ -31,7 +31,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 
                     <?php $form = ActiveForm::begin(FormUi::formConfig('signup-form')); ?>
 
-                    <?= $form->errorSummary($model) ?>
+                    <?= $form->errorSummary($model, FormUi::errorSummaryOptions()) ?>
 
                     
                     <?= $form->field($model, 'email',FormUi::fieldConfig('mail') )->textInput(['class' => FormUi::inputClass(true)])->label('Your Email', $labelOptions) ?>

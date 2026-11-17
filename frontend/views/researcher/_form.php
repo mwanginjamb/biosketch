@@ -22,7 +22,7 @@ use frontend\models\ResearcherStatement;
 <?= FormUi::beginSection('Personal Information', 'person', 'section-personal') ?>
 
 <!-- Error Summary: tailwind styling -->
-<?= $form->errorSummary($model, ['class' => 'bg-error-container text-on-error-container rounded-md p-sm space-y-2', 'header' => '<h4 class="font-label-caps text-label-caps text-lg">Error Summary</h4>']) ?>
+<?= $form->errorSummary($model, FormUi::errorSummaryOptions()) ?>
 <!-- Personal Information -->
 
 

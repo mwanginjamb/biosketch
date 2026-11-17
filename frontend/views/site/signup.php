@@ -34,7 +34,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 
 <?php $form = ActiveForm::begin(FormUi::formConfig('signup-form')); ?>
 
-<?= $form->errorSummary($model) ?>
+<?= $form->errorSummary($model, FormUi::errorSummaryOptions()) ?>
 
 <?= $form->field($model, 'staffID', FormUi::fieldConfig('id_card'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Staff Employee No']) ?>
 
