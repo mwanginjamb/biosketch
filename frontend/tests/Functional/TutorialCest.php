@@ -42,6 +42,12 @@ final class TutorialCest
         $I->seeElement('a[href$="/tutorial"]');
     }
 
+    public function loginLinksToTutorial(FunctionalTester $I): void
+    {
+        $I->amOnPage('/index-test.php/site/login');
+        $I->seeLink('New here? Watch the 3-minute tutorial');
+    }
+
     public function showsPlayerWhenVideoExists(FunctionalTester $I): void
     {
         @mkdir(dirname($this->file), 0775, true);

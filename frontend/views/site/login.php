@@ -68,4 +68,9 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <div class="mt-lg pt-lg border-t border-outline-variant flex flex-col items-center gap-md">
     <?= FormUi::divider() ?>
     <?= FormUi::secondaryButton('Create an account', '', ['site/signup']) ?>
+    <a href="<?= \yii\helpers\Url::toRoute(['site/tutorial']) ?>"
+        class="inline-flex items-center gap-xs text-secondary hover:text-primary hover:underline font-label-md text-label-md transition-colors">
+        <span class="material-symbols-outlined text-xl" aria-hidden="true">play_circle</span>
+        New here? Watch the 3-minute tutorial
+    </a>
 </div>
