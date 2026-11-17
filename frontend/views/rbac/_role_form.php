@@ -19,7 +19,7 @@ ksort($permissionItems);
 <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg max-w-3xl">
     <?php $form = ActiveForm::begin(FormUi::formConfig('role-form')); ?>
 
-    <?= $form->errorSummary($model, ['class' => 'text-sm text-red-600']) ?>
+    <?= $form->errorSummary($model, \common\library\FormUi::errorSummaryOptions()) ?>
 
     <?= $form->field($model, 'role_name')->textInput([
         'class' => FormUi::inputClass(),

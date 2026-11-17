@@ -26,7 +26,7 @@ foreach ($allRoles as $role) {
     <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md md:p-lg max-w-3xl">
         <?php $form = ActiveForm::begin(FormUi::formConfig('assign-role-form')); ?>
 
-        <?= $form->errorSummary($model, ['class' => 'text-sm text-red-600']) ?>
+        <?= $form->errorSummary($model, \common\library\FormUi::errorSummaryOptions()) ?>
 
         <?= $form->field($model, 'roles')->checkboxList($roleItems, [
             'class' => 'grid grid-cols-1 sm:grid-cols-2 gap-xs',

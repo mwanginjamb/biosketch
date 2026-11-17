@@ -13,8 +13,12 @@ $this->render('_head');
     <?php $this->head() ?>
 </head>
 
+<?php
+// Views may widen the card (e.g. the two-column signup form): $this->params['cardWidth'] = 'max-w-[640px]';
+$cardWidth = $this->params['cardWidth'] ?? 'max-w-[440px]';
+?>
 <body
-    class="bg-background text-on-background font-body-md clinical-gradient min-h-screen flex flex-col items-center justify-center">
+    class="bg-background text-on-background font-body-md clinical-gradient min-h-dvh flex flex-col items-center">
     <?php $this->beginBody(); ?>
 
     <!-- Institutional band -->
@@ -27,21 +31,20 @@ $this->render('_head');
         </div>
     </div>
 
-    <main class="w-full max-w-[1280px] px-margin-mobile md:px-margin-desktop py-xl flex flex-col items-center">
+    <!-- flex-1 + justify-center: the card is centred in whatever height is left between band and footer -->
+    <main class="w-full max-w-[1280px] flex-1 px-margin-mobile md:px-margin-desktop py-md flex flex-col items-center justify-center">
         <div
-            class="w-full max-w-[440px] bg-surface-container-lowest border border-outline-variant border-t-4 border-t-primary p-lg md:p-xl shadow-md transition-all duration-300">
+            class="w-full <?= $cardWidth ?> bg-surface-container-lowest border border-outline-variant border-t-4 border-t-primary px-md py-md md:px-lg shadow-md transition-all duration-300">
             <?= $this->render('_alerts') ?>
             <?= $content ?>
         </div>
 
-        <div class="mt-xl text-center max-w-[440px]">
-            <div class="flex items-center justify-center gap-xs text-on-surface-variant mb-sm">
-                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-                <span class="font-label-caps text-label-caps tracking-wide">All Institutional Systems Operational</span>
-            </div>
-            <p class="font-body-md text-body-md text-on-surface-variant opacity-70">
-                Unauthorized access is strictly prohibited. Your session is monitored in compliance with ICT Policies.
-            </p>
+        <div class="mt-sm text-center <?= $cardWidth ?> text-xs text-on-surface-variant">
+            <span class="inline-flex items-center gap-xs">
+                <span class="w-2 h-2 rounded-full bg-secondary animate-pulse" aria-hidden="true"></span>
+                <span class="font-semibold tracking-wide">All Institutional Systems Operational.</span>
+            </span>
+            <span class="opacity-70">Unauthorized access is prohibited; sessions are monitored under ICT Policies.</span>
         </div>
     </main>
 
@@ -53,8 +56,8 @@ $this->render('_head');
     </div>
 
     <footer
-        class="w-full py-sm px-margin-desktop flex flex-col md:flex-row justify-between items-center mt-lg border-t border-outline-variant bg-surface-container-lowest">
-        <div class="font-label-caps text-label-caps tracking-widest text-on-surface-variant mb-sm md:mb-0">
+        class="w-full py-xs px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-xs border-t border-outline-variant bg-surface-container-lowest">
+        <div class="font-label-caps text-label-caps tracking-widest text-on-surface-variant text-center">
             © <?= date('Y') ?> KEMRI Institutional Researcher Scientist BioSketch. All rights reserved.
         </div>
         <div class="flex gap-md">

@@ -459,6 +459,36 @@ class FormUi
 
     /*
     |--------------------------------------------------------------------------
+    | Error summary
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Options for ActiveForm::errorSummary(): a compact error-container alert.
+     * The list is styled through arbitrary variants because Html::errorSummary()
+     * gives no hook for <ul>/<li> attributes. ActiveForm still adds its
+     * errorSummaryCssClass (`alert alert-danger` in bootstrap5, unstyled here: no
+     * Bootstrap CSS is loaded), so client-side validation keeps finding and toggling it.
+     *
+     * Usage:
+     *   <?= $form->errorSummary($model, FormUi::errorSummaryOptions()) ?>
+     */
+    public static function errorSummaryOptions(string $header = 'Please fix the following:'): array
+    {
+        return [
+            'class' => 'rounded-lg border border-error/30 border-l-4 border-l-error bg-error-container '
+                . 'text-on-error-container px-sm py-xs text-sm '
+                . '[&_ul]:mt-base [&_ul]:list-disc [&_ul]:pl-md [&_ul]:space-y-0.5',
+            'header' => '<p class="flex items-center gap-xs font-semibold">'
+                . '<span class="material-symbols-outlined text-[18px]" aria-hidden="true">error</span>'
+                . Html::encode($header) . '</p>',
+            'role' => 'alert',
+        ];
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Checkbox field config
     |--------------------------------------------------------------------------
     */

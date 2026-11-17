@@ -18,17 +18,9 @@ $this->params['meta_keywords'] = 'yii, yii2, verification, email, resend, confir
 ?>
 
 
-<!-- Brand Identity -->
-<div class="flex flex-col items-center mb-lg">
-<div class="flex items-center gap-xs mb-sm">
-<span class="material-symbols-outlined text-primary text-[32px]" data-icon="biotech">biotech</span>
-<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">BioSketch Professional</h1>
-</div>
-<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Clinical Grade Precision</p>
-</div>
-<!-- Sign In Heading -->
-<div class="mb-lg border-b border-outline-variant pb-sm text-center">
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Resend Account Activation Email</h2>
+<!-- Heading (logo + app name are in the layout's top band) -->
+<div class="mb-md border-b border-outline-variant pb-sm text-center">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Resend Account Activation Email</h1>
 <p class="font-body-md text-body-md text-on-surface-variant mt-base">Enter your Signup E-mail Address to Receive the Activation Link</p>
 </div>
    
