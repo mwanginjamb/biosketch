@@ -20,19 +20,9 @@ HTML;
 $labelOptions = ['class' => 'form-label fw-semibold small'];
 ?>
 
-<!-- Brand Identity -->
-<div class="flex flex-col items-center mb-lg">
-    <div class="flex items-center gap-xs mb-sm">
-        <img src="<?= \yii\helpers\Url::to('@web/icons/icon-144x144.png') ?>" alt="KEMRI" width="48" height="48"
-            class="h-12 w-12 object-contain">
-        <h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">BioSketch Professional</h1>
-    </div>
-    <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Clinical Grade
-        Precision</p>
-</div>
-<!-- Sign In Heading -->
-<div class="mb-lg border-b border-outline-variant pb-sm text-center">
-    <h2 class="font-headline-lg text-headline-lg text-on-surface">Sign In</h2>
+<!-- Sign In Heading (logo + app name are in the layout's top band) -->
+<div class="mb-md border-b border-outline-variant pb-sm text-center">
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Sign In</h1>
     <p class="font-body-md text-body-md text-on-surface-variant mt-base">Access your secure institutional research
         profile.</p>
 </div>
@@ -64,9 +54,11 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 
 
 
-<?= FormUi::link('Resend Verification Email? ', ['site/resend-verification-email']) ?>
+<div class="mt-xs">
+    <?= FormUi::link('Resend Verification Email? ', ['site/resend-verification-email']) ?>
+</div>
 
-<div class="mt-lg pt-lg border-t border-outline-variant flex flex-col items-center gap-md">
+<div class="mt-sm flex flex-col items-center gap-sm">
     <?= FormUi::divider() ?>
     <?= FormUi::secondaryButton('Create an account', '', ['site/signup']) ?>
     <a href="<?= \yii\helpers\Url::toRoute(['site/tutorial']) ?>"

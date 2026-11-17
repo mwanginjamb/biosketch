@@ -22,7 +22,8 @@ HTML;
 $labelOptions = ['class' => 'form-label fw-semibold small'];
 ?>
 
-<div class="mb-lg text-center">
+<?php $this->params['cardWidth'] = 'max-w-[640px]'; // two-column form on md+ ?>
+<div class="mb-md text-center">
     <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs"><?= Html::encode($this->title) ?></h2>
     <p class="font-body-md text-body-md text-on-surface-variant">Start building your verified professional biosketch
         today.</p>
@@ -54,12 +55,10 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
 <div id="employee-error" class="hidden text-sm mt-2 text-red-500 font-medium">
 </div>
 
-<?= $form->field($model, 'username', FormUi::fieldConfig('account_circle'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional Username'])->label('Scientist Username') ?>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<?= $form->field($model, 'username', FormUi::fieldConfig('account_circle'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Username'])->label('Scientist Username') ?>
 
-
-<?= $form->field($model, 'email', FormUi::fieldConfig('mail'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional E-mail Address', 'type' => 'email'])->label('E-mail Address') ?>
-
-
+<?= $form->field($model, 'email', FormUi::fieldConfig('mail'))->textInput(['class' => FormUi::inputClass(true), 'placeholder' => 'Institutional e-mail', 'type' => 'email'])->label('E-mail Address') ?>
 
 <?= $form->field($model, 'password', FormUi::fieldConfig('lock'))->passwordInput([
     'class' => FormUi::inputClass(true),
@@ -74,6 +73,7 @@ $labelOptions = ['class' => 'form-label fw-semibold small'];
     'autocomplete' => 'new-password'
 ])
     ?>
+</div>
 
 
 
