@@ -1065,9 +1065,11 @@ HTML;
      *       ... form fields ...
      *   <?= FormUi::endSection() ?>
      */
-    public static function beginSection(string $title, string $icon): string
+    public static function beginSection(string $title, string $icon, ?string $id = null): string
     {
-        return '<section class="' . self::SECTION_CLASS . '">'
+        $idAttr = $id !== null ? ' id="' . Html::encode($id) . '"' : '';
+
+        return '<section' . $idAttr . ' class="' . self::SECTION_CLASS . ' scroll-mt-20">'
             . '<div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">'
             . '<h2 class="font-headline-md text-headline-md">' . Html::encode($title) . '</h2>'
             . '<span class="material-symbols-outlined text-on-surface-variant" data-icon="' . Html::encode($icon) . '">' . Html::encode($icon) . '</span>'

@@ -46,6 +46,7 @@ $this->beginPage();
                         BioSketch</a>
                 <?php endif; ?>
             </div>
+            <?= $this->render('_notifications') ?>
             <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'w-12 h-12']) ?>
 
         </div>

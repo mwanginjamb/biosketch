@@ -19,7 +19,7 @@ use frontend\models\ResearcherStatement;
 </div>
 
 <?php $form = ActiveForm::begin(FormUi::formConfig('researcher-form', true, true)); ?>
-<?= FormUi::beginSection('Personal Information', 'person') ?>
+<?= FormUi::beginSection('Personal Information', 'person', 'section-personal') ?>
 
 <!-- Error Summary: tailwind styling -->
 <?= $form->errorSummary($model, ['class' => 'bg-error-container text-on-error-container rounded-md p-sm space-y-2', 'header' => '<h4 class="font-label-caps text-label-caps text-lg">Error Summary</h4>']) ?>
@@ -70,7 +70,7 @@ use frontend\models\ResearcherStatement;
 <!-- Education and Training  -->
 
 
-<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+<section id="section-education" class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm scroll-mt-20">
     <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
         <h2 class="font-headline-md text-headline-md">Education &amp; Training</h2>
 
@@ -92,7 +92,7 @@ use frontend\models\ResearcherStatement;
 </section>
 
 <!-- Researcher Statement -->
-<?= FormUi::beginSection('Researcher Statement', 'description') ?>
+<?= FormUi::beginSection('Researcher Statement', 'description', 'section-statement') ?>
 
 <?= $form->field($modelStatements, 'statement_type', FormUi::fieldConfig())->dropDownList(\frontend\models\ResearcherStatement::getStatementTypeOptions(), ['prompt' => 'Select statement type', 'class' => FormUi::selectClass()]) ?>
 
@@ -102,7 +102,7 @@ use frontend\models\ResearcherStatement;
 
 
 <!-- Accomplishments and Intellectual Property -->
-<?= FormUi::beginSection('Accomplishments & Intellectual Property', 'emoji_events') ?>
+<?= FormUi::beginSection('Accomplishments & Intellectual Property', 'emoji_events', 'section-accomplishments') ?>
 
 <?= $form->field($model, 'major_breakthrough', FormUi::fieldConfig())->textarea(['rows' => 6, 'class' => FormUi::textareaClass(), 'placeholder' => 'Describe your most significant scientific contribution...']) ?>
 
@@ -114,7 +114,7 @@ use frontend\models\ResearcherStatement;
 <!-- Publications -->
 
 
-<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+<section id="section-publications" class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm scroll-mt-20">
     <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
         <h2 class="font-headline-md text-headline-md">Publications</h2>
 
@@ -141,7 +141,7 @@ use frontend\models\ResearcherStatement;
 <!--/ Publications -->
 
 <!-- Researcher Identifiers -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+<section id="section-identifiers" class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm scroll-mt-20">
 
     <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
         <h2 class="font-headline-md text-headline-md">Researcher Identifiers</h2>
@@ -168,7 +168,7 @@ use frontend\models\ResearcherStatement;
 
 <!-- Researcher Grants -->
 
-<section class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm">
+<section id="section-grants" class="bg-surface-container-lowest border border-outline-variant rounded p-sm space-y-sm scroll-mt-20">
     <div class="flex items-center justify-between border-b border-outline-variant pb-xs mb-sm">
         <h2 class="font-headline-md text-headline-md">Researcher Grants</h2>
 

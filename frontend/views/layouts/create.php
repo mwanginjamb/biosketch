@@ -33,7 +33,10 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
             <?= Html::a(' <span class="material-symbols-outlined text-primary">biotech</span>
         BioSketch Professional', ['site/index'], ['class' => 'font-bold text-lg text-primary']) ?>
         </div>
-        <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'w-12 h-12']) ?>
+        <div class="flex items-center gap-sm">
+            <?= $this->render('_notifications') ?>
+            <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'w-12 h-12']) ?>
+        </div>
     </header>
 
     <main class="pt-20 pb-xl px-margin-mobile max-w-2xl mx-auto space-y-md">

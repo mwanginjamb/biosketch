@@ -31,9 +31,7 @@ $profilePhoto = (!\Yii::$app->user->isGuest ? Yii::$app->user->identity?->resear
         </div>
         <!-- Navigation removed as this is a destination landing page for logged in user starting their journey -->
         <div class="flex items-center gap-md">
-            <span
-                class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors"
-                data-icon="notifications">notifications</span>
+            <?= $this->render('_notifications') ?>
             <!-- Account menu (includes Sign out as a CSRF-protected POST) -->
             <?= $this->render('_account_menu', ['profilePhoto' => $profilePhoto, 'sizeClass' => 'h-8 w-8']) ?>
         </div>

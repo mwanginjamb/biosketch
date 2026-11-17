@@ -47,6 +47,17 @@ class ResearcherGrant extends \yii\db\ActiveRecord
     }
 
     /**
+     * Keeps created_at / updated_at current so the notification bell can tell when a
+     * section was last changed. updated_at only moves when the row actually changes.
+     */
+    public function behaviors()
+    {
+        return [
+            \yii\behaviors\TimestampBehavior::class,
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
