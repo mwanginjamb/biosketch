@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\components\ProfilePhotoStorage;
 use frontend\models\Publications;
 use frontend\models\Researcher;
 use frontend\models\ResearcherEducation;
@@ -16,7 +17,6 @@ use yii\bootstrap5\Html;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\helpers\FileHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
@@ -269,7 +269,7 @@ class ResearcherController extends Controller
                     $modelProfile->save(false);
 
                     if ($modelProfile->attachment instanceof UploadedFile) {
-                        $newPhotoPath = $this->saveProfilePhoto(
+                        $newPhotoPath = ProfilePhotoStorage::save(
                             $modelProfile,
                             $modelProfile->attachment
                         );
@@ -332,7 +332,7 @@ class ResearcherController extends Controller
 
                     // role back even file system activity if profile photo was uploaded
                     if ($newPhotoPath !== null) {
-                        $this->deleteProfilePhoto($newPhotoPath);
+                        ProfilePhotoStorage::delete($newPhotoPath);
                     }
 
                     $modelProfile->addError(
@@ -697,7 +697,7 @@ class ResearcherController extends Controller
 
                     if ($modelProfile->attachment instanceof UploadedFile) {
 
-                        $newProfilePhoto = $this->saveProfilePhoto(
+                        $newProfilePhoto = ProfilePhotoStorage::save(
                             $modelProfile,
                             $modelProfile->attachment
                         );
@@ -798,7 +798,7 @@ class ResearcherController extends Controller
                         $oldProfilePhoto &&
                         $oldProfilePhoto !== $newProfilePhoto
                     ) {
-                        $this->deleteProfilePhoto($oldProfilePhoto);
+                        ProfilePhotoStorage::delete($oldProfilePhoto);
                     }
 
                     Yii::$app->session->setFlash(
@@ -817,7 +817,7 @@ class ResearcherController extends Controller
 
                     // role back even file system activity if profile photo was uploaded
                     if ($newProfilePhoto !== null) {
-                        $this->deleteProfilePhoto($newProfilePhoto);
+                        ProfilePhotoStorage::delete($newProfilePhoto);
                     }
 
                     $modelProfile->addError(
@@ -920,64 +920,6 @@ class ResearcherController extends Controller
         return Yii::$app->user->can('admin');
     }
 
-    /**
-     * File operations helper (upload and delete) for profile photo.
-     * @param int $id Researcher ID
-     */
-
-    protected function saveProfilePhoto(Researcher $model, UploadedFile $file): string
-    {
-
-        $uploadDir = Yii::getAlias('@frontend/web/uploads/researchers/profile');
-
-        if (!is_dir($uploadDir)) {
-            //mkdir($uploadDir, 0777, true);
-            FileHelper::createDirectory($uploadDir, 0775, true);
-        }
-
-        $extension = strtolower($file->extension);
-
-        // $fileName = 'researcher_' . $model->id . '_' . time() . '.' . $file->extension;
-        $filename = sprintf(
-            'researcher_%d_%s.%s',
-            $model->id,
-            Yii::$app->security->generateRandomString(6),
-            $extension
-        );
-
-        $absolutePath = $uploadDir . DIRECTORY_SEPARATOR . $filename;
-
-
-        if (!$file->saveAs($absolutePath)) {
-            throw new \RuntimeException(
-                'Unable to save researcher profile photo.'
-            );
-        }
-
-        return '/uploads/researchers/profile/' . $filename;
-    }
-
-    protected function deleteProfilePhoto(?string $photoPath): void
-    {
-        if (!$photoPath) {
-            return;
-        }
-
-        // Only ever delete files that resolve inside the profile uploads directory.
-        $uploadDir = realpath(Yii::getAlias('@frontend/web/uploads/researchers/profile'));
-        $absolutePath = realpath(Yii::getAlias('@frontend/web') . $photoPath);
-
-        if (
-            $uploadDir === false
-            || $absolutePath === false
-            || !str_starts_with($absolutePath, $uploadDir . DIRECTORY_SEPARATOR)
-            || !is_file($absolutePath)
-        ) {
-            return;
-        }
-
-        unlink($absolutePath);
-    }
 
 
 }
