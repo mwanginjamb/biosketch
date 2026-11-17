@@ -1,7 +1,11 @@
 <?php
-// apiv1/modules/v1/components/BaseController.php
-namespace api\modules\v1\components;
 
+declare(strict_types=1);
+
+namespace frontend\modules\apiv1\components;
+
+use frontend\models\Researcher;
+use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
@@ -10,6 +14,9 @@ use yii\filters\Cors;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
+/**
+ * Base for all authenticated API v1 resource controllers.
+ */
 abstract class BaseController extends ActiveController
 {
     public $serializer = [
@@ -19,23 +26,43 @@ abstract class BaseController extends ActiveController
 
     public function behaviors()
     {
-        $b = parent::behaviors();
-        unset($b['authenticator']);
+        $behaviors = parent::behaviors();
+        unset($behaviors['authenticator']);
 
-        $b['contentNegotiator'] = [
+        $behaviors['contentNegotiator'] = [
             'class' => ContentNegotiator::class,
             'formats' => ['application/json' => Response::FORMAT_JSON],
         ];
-        $b['corsFilter'] = ['class' => Cors::class];   // must come before authenticator
-        $b['authenticator'] = [
-            //'class' => HttpBearerAuth::class,
+        // CORS must run before authentication so preflight requests succeed.
+        $behaviors['corsFilter'] = ['class' => Cors::class];
+
+        $authMethods = [HttpBearerAuth::class];
+        if (YII_ENV_DEV) {
+            // ?access-token=... convenience for local testing only (tokens in URLs end up in logs).
+            $authMethods[] = QueryParamAuth::class;
+        }
+        $behaviors['authenticator'] = [
             'class' => CompositeAuth::class,
-            'authMethods' => [
-                HttpBearerAuth::class,
-                YII_ENV === 'dev' ? QueryParamAuth::class : null,   // dev only, remove before production
-            ],
+            'authMethods' => $authMethods,
             'except' => ['options'],
         ];
-        return $b;
+
+        return $behaviors;
+    }
+
+    protected function isAdmin(): bool
+    {
+        return Yii::$app->user->can('admin');
+    }
+
+    protected function ownsOrAdmin(Researcher $researcher): bool
+    {
+        return (int) $researcher->user_id === (int) Yii::$app->user->id || $this->isAdmin();
+    }
+
+    /** Active profiles are readable by any API user; drafts only by their owner or an admin. */
+    protected function canRead(Researcher $researcher): bool
+    {
+        return (int) $researcher->status === 1 || $this->ownsOrAdmin($researcher);
     }
 }

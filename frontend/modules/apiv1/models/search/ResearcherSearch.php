@@ -2,8 +2,12 @@
 namespace frontend\modules\apiv1\models\search;
 
 use frontend\models\Researcher;
+use frontend\modules\apiv1\models\Researcher as ApiResearcher;
 use yii\data\ActiveDataProvider;
-// api/modules/v1/models/search/ResearcherSearch.php
+
+/**
+ * Search for GET /apiv1/researchers.
+ */
 class ResearcherSearch extends Researcher
 {
     public $q;
@@ -16,9 +20,11 @@ class ResearcherSearch extends Researcher
 
     public function search($params)
     {
-        $query = Researcher::find()
+        // Query the API model so results are serialized with its fields(); only active profiles are listed.
+        $query = ApiResearcher::find()
             ->alias('r')
             ->joinWith(['user u'], false)
+            ->with('user')
             ->where(['r.status' => 1]);
 
         $dp = new ActiveDataProvider([

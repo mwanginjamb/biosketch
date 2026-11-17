@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace frontend\controllers;
 
+use common\components\Throttle;
 use common\models\LoginForm;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
@@ -334,7 +335,7 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if (!$this->allowLookup()) {
+        if (!Throttle::hit('lookup-employee', (string) Yii::$app->request->userIP, self::LOOKUP_LIMIT, self::LOOKUP_WINDOW)) {
             Yii::$app->response->statusCode = 429;
             return [
                 'success' => false,
@@ -362,25 +363,4 @@ class SiteController extends Controller
     /** Max employee lookups per client IP within LOOKUP_WINDOW seconds. */
     private const LOOKUP_LIMIT = 20;
     private const LOOKUP_WINDOW = 600;
-
-    /**
-     * Per-IP rate limit backed by the application cache. The counter expires
-     * LOOKUP_WINDOW seconds after the last allowed lookup.
-     */
-    private function allowLookup(): bool
-    {
-        $cache = Yii::$app->cache;
-        if ($cache === null) {
-            return true;
-        }
-
-        $key = ['lookup-employee', Yii::$app->request->userIP];
-        $hits = (int) $cache->get($key);
-        if ($hits >= self::LOOKUP_LIMIT) {
-            return false;
-        }
-        $cache->set($key, $hits + 1, self::LOOKUP_WINDOW);
-
-        return true;
-    }
 }

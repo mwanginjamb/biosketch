@@ -2,8 +2,14 @@
 
 namespace frontend\modules\apiv1;
 
+use Yii;
+use yii\web\Response;
+
 /**
- * apiv1 module definition class
+ * REST API v1.
+ *
+ * Stateless: clients authenticate every request with `Authorization: Bearer <token>`,
+ * obtained from POST /apiv1/auth/token.
  */
 class Module extends \yii\base\Module
 {
@@ -18,9 +24,12 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
-        // Disable Sessions
-        \Yii::$app->user->enableSession = false;
 
-        // custom initialization code goes here
+        // No sessions/cookies and no login redirects for API requests: 401 instead.
+        Yii::$app->user->enableSession = false;
+        Yii::$app->user->loginUrl = null;
+
+        // Errors raised anywhere inside the module (404s, auth failures) are returned as JSON.
+        Yii::$app->response->format = Response::FORMAT_JSON;
     }
 }

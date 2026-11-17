@@ -61,36 +61,29 @@ return [
             'showScriptName' => false,
             //'enableStrictParsing' => false,
             'rules' => [
+                // API token issuance / revocation
+                'POST apiv1/auth/token' => 'apiv1/auth/token',
+                'DELETE apiv1/auth/token' => 'apiv1/auth/revoke',
+                'OPTIONS apiv1/auth/token' => 'apiv1/auth/options',
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['apiv1/researchers' => 'apiv1/researcher'],
                     'extraPatterns' => ['POST {id}/photo' => 'upload-photo']
                 ],
-                // nested resources: researcher_id is passed to the child controller
+                // Nested resources: /apiv1/researchers/<researcher_id>/<resource>[/<id>].
+                // The placeholder must live in `prefix`: rest\UrlRule matches controller keys
+                // as literal substrings of the path, so a "<...>" inside a key never matches.
                 [
                     'class' => 'yii\rest\UrlRule',
+                    'prefix' => 'apiv1/researchers/<researcher_id:\d+>',
                     'pluralize' => false,
-                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/educations' => 'apiv1/researcher-education']
-                ],
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'pluralize' => false,
-                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/identifiers' => 'apiv1/researcher-identifier']
-                ],
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'pluralize' => false,
-                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/media' => 'apiv1/researcher-media']
-                ],
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'pluralize' => false,
-                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/grants' => 'apiv1/researcher-grant']
-                ],
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'pluralize' => false,
-                    'controller' => ['apiv1/researchers/<researcher_id:\d+>/publications' => 'apiv1/publications']
+                    'controller' => [
+                        'educations' => 'apiv1/researcher-education',
+                        'identifiers' => 'apiv1/researcher-identifier',
+                        'media' => 'apiv1/researcher-media',
+                        'grants' => 'apiv1/researcher-grant',
+                        'publications' => 'apiv1/publications',
+                    ],
                 ],
             ],
         ],

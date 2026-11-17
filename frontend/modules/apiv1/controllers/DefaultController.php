@@ -1,20 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace frontend\modules\apiv1\controllers;
 
-use yii\web\Controller;
+use yii\rest\Controller;
 
 /**
- * Default controller for the `apiv1` module
+ * GET /apiv1 — public summary of the API.
  */
 class DefaultController extends Controller
 {
-    /**
-     * Renders the index view for the module
-     * @return string
-     */
-    public function actionIndex()
+    public function actionIndex(): array
     {
-        return $this->render('index');
+        return [
+            'name' => 'BioSketch API',
+            'version' => 'v1',
+            'auth' => 'POST /apiv1/auth/token with {username, password}; send "Authorization: Bearer <token>"',
+            'resources' => [
+                'GET|POST /apiv1/researchers',
+                'GET|PUT|PATCH|DELETE /apiv1/researchers/{id}',
+                'POST /apiv1/researchers/{id}/photo',
+                'GET|POST /apiv1/researchers/{id}/{educations|identifiers|media|grants|publications}',
+                'GET|PUT|PATCH|DELETE /apiv1/researchers/{id}/{resource}/{child_id}',
+            ],
+        ];
     }
 }
