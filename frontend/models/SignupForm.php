@@ -32,6 +32,14 @@ class SignupForm extends Model
             ['username', 'required'],
             ['username', 'unique', 'targetClass' => User::class, 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
+            // Profiles live at /researcher/<username>; these names are taken by the app's own pages.
+            [
+                'username',
+                // Case-insensitive: usernames are matched case-insensitively by the database.
+                fn(string $attribute) => in_array(strtolower($this->$attribute), \frontend\controllers\ResearcherController::RESERVED_SLUGS, true)
+                    ? $this->addError($attribute, 'This username is reserved. Please choose another.')
+                    : null,
+            ],
 
             ['email', 'trim'],
             ['email', 'required'],

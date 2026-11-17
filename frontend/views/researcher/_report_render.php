@@ -37,7 +37,7 @@ $icon = static fn(string $name): string => Html::tag('span', $name, ['class' => 
         <nav class="flex flex-wrap gap-xs" aria-label="BioSketch actions">
             <?= Html::a(
                 $icon('arrow_back') . ($isOwner ? ' Back to my BioSketch' : ' Back to profile'),
-                ['view', 'id' => $model->id],
+                $model->getProfileRoute(),
                 ['class' => $btnSecondary]
             ) ?>
             <?php if (Yii::$app->user->can(RbacHelper::PERM_VIEW_LIST)): ?>

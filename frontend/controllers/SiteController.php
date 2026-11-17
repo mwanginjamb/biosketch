@@ -106,7 +106,7 @@ class SiteController extends Controller
         if (Yii::$app->user->can(RbacHelper::PERM_VIEW_LIST)) {
             $this->layout = 'list';
             // Get All researcher models
-            $researchers = Researcher::find()->all();
+            $researchers = Researcher::find()->with('user')->all();
             return $this->render('index', [
                 'models' => $researchers
             ]);

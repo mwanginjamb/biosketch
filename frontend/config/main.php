@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
+use frontend\controllers\ResearcherController;
 use kartik\mpdf\Pdf;
+
+// /researcher/<username> profile URLs must not swallow the controller's own actions
+// (researcher/create, researcher/update, ...): exclude them with a negative lookahead.
+$reservedResearcherSlugs = implode('|', array_map(
+    static fn(string $slug): string => preg_quote($slug, '#'),
+    ResearcherController::RESERVED_SLUGS,
+));
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -61,6 +70,9 @@ return [
             'showScriptName' => false,
             //'enableStrictParsing' => false,
             'rules' => [
+                // Readable profile URL: /researcher/<username> (same page as researcher/view?id=<id>)
+                "researcher/<username:(?!(?i:{$reservedResearcherSlugs})$)[A-Za-z0-9._+\-]+>" => 'researcher/profile',
+
                 // API token issuance / revocation
                 'POST apiv1/auth/token' => 'apiv1/auth/token',
                 'DELETE apiv1/auth/token' => 'apiv1/auth/revoke',

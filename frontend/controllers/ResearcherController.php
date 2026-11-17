@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\components\RbacHelper;
+use common\models\User;
 use frontend\components\ProfilePhotoStorage;
 use frontend\models\Publications;
 use frontend\models\Researcher;
@@ -30,6 +31,13 @@ use yii\web\UploadedFile;
  */
 class ResearcherController extends Controller
 {
+    /**
+     * Path segments under /researcher/ that belong to this controller's actions, so the
+     * "researcher/<username>" profile URL rule (frontend/config/main.php) must not capture
+     * them and signup must not accept them as usernames. Add new action IDs here.
+     */
+    public const RESERVED_SLUGS = ['index', 'view', 'profile', 'create', 'update', 'delete', 'report', 'report-pdf'];
+
     /**
      * @inheritDoc
      */
@@ -91,6 +99,25 @@ class ResearcherController extends Controller
 
         return $this->render('view', [
             'model' => $researcher,
+        ]);
+    }
+
+    /**
+     * Same profile page addressed by the owner's username: /researcher/<username>.
+     * Access rules are identical to actionView().
+     *
+     * @throws NotFoundHttpException if the user does not exist or has no biosketch
+     */
+    public function actionProfile(string $username)
+    {
+        $user = User::findOne(['username' => $username]);
+        $researcherId = $user?->researcher?->id;
+        if ($researcherId === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+
+        return $this->render('view', [
+            'model' => $this->findAccessibleModel($researcherId, RbacHelper::PERM_VIEW, withRelations: true),
         ]);
     }
 

@@ -190,6 +190,19 @@ class Researcher extends \yii\db\ActiveRecord
     }
 
     /**
+     * Route to this profile page. Uses the readable /researcher/<username> URL when the
+     * owner's username is available, otherwise /researcher/view?id=<id>.
+     */
+    public function getProfileRoute(): array
+    {
+        $username = $this->user?->username;
+
+        return $username !== null && $username !== ''
+            ? ['/researcher/profile', 'username' => $username]
+            : ['/researcher/view', 'id' => $this->id];
+    }
+
+    /**
      * {@inheritdoc}
      * @return \frontend\models\query\ResearcherQuery the active query used by this AR class.
      */
