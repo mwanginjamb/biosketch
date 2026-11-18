@@ -167,6 +167,13 @@ User-uploaded profile photos are stored in `frontend/web/uploads/`, which must b
   }
   ```
 
+**Frame headers:** the BioSketch PDF page shows the PDF in an `<iframe>` served by the same site, so the browser must be allowed to frame same-origin pages. Use `SAMEORIGIN`, not `DENY` (server-wide hardening templates often ship `DENY`, which leaves the PDF preview blank):
+
+```nginx
+add_header X-Frame-Options "SAMEORIGIN" always;
+# if you also send a CSP: frame-ancestors 'self';   (not 'none')
+```
+
 ```bash
 mkdir -p frontend/web/uploads/researchers/profile
 chown -R www-data:www-data frontend/web/uploads frontend/runtime frontend/web/assets console/runtime   # adjust user
@@ -177,7 +184,7 @@ chown -R www-data:www-data frontend/web/uploads frontend/runtime frontend/web/as
 - [ ] `https://<host>/` loads the login page over HTTPS, with no debug toolbar in the bottom-right corner
 - [ ] Sign-up: entering a staff ID fills in username and email; the verification email arrives
 - [ ] Login works; the home page shows the notification bell and avatar menu
-- [ ] Create a biosketch with a photo; the profile and **BioSketch PDF** pages load, and **Download PDF** saves a file
+- [ ] Create a biosketch with a photo; the profile and **BioSketch PDF** pages load (the PDF shows in the page, not a blank frame), and **Download PDF** saves a file
 - [ ] As an admin: **BioSketch List** and **RBAC Mgt → Roles** load
 - [ ] `https://<host>/apiv1` returns the API summary as JSON (see [API.md](API.md))
 
